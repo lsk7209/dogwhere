@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { ArrowLeft, Car, Clock, Shield, CheckCircle, AlertCircle, Star, BookOpen, Home, Utensils, PawPrint, Plane, Heart, Camera, MapPin, Calendar, Users, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee } from 'lucide-react'
+import { ArrowLeft, Car, Clock, Shield, CheckCircle, AlertCircle, Star, BookOpen, Home, Utensils, PawPrint, Plane, Heart, Camera, MapPin, Calendar, Users, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Compass, Map, Navigation } from 'lucide-react'
 import Link from 'next/link'
 
 interface GuideDetailPageProps {

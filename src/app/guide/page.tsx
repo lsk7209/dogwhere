@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee } from 'lucide-react'
+import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Clock, Compass, Map, Navigation } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -162,6 +162,132 @@ export default function GuidePage() {
       description: '강아지와 함께하는 카페 문화',
       items: ['펫프렌들리 카페', '카페 매너', '카페 선택법', '카페 활동'],
       slug: 'dog-cafe-culture-guide'
+    },
+    {
+      icon: <Music className="w-8 h-8 text-purple-500" />,
+      title: '음악과 소리 치료',
+      description: '강아지의 정서 안정을 위한 음악과 소리 치료법',
+      items: ['진정 음악 선택', '소리 공포증 대처', '음악 치료법', '소리 환경 조성'],
+      slug: 'dog-music-therapy-guide'
+    },
+    {
+      icon: <Gamepad2 className="w-8 h-8 text-green-500" />,
+      title: '인터랙티브 놀이',
+      description: '강아지와 함께하는 인터랙티브 놀이와 게임',
+      items: ['퍼즐 장난감', '인터랙티브 게임', '두뇌 자극 놀이', '문제 해결 놀이'],
+      slug: 'dog-interactive-play-guide'
+    },
+    {
+      icon: <Palette className="w-8 h-8 text-pink-500" />,
+      title: '창의적 활동',
+      description: '강아지와 함께하는 창의적 활동과 예술',
+      items: ['펫 아트 만들기', '사진 촬영 기법', '창의적 놀이', '예술 활동'],
+      slug: 'dog-creative-activities-guide'
+    },
+    {
+      icon: <Dumbbell className="w-8 h-8 text-blue-500" />,
+      title: '체력 단련',
+      description: '강아지 체력 향상과 근력 강화 운동법',
+      items: ['근력 운동', '지구력 훈련', '체력 측정', '운동 계획 수립'],
+      slug: 'dog-fitness-training-guide'
+    },
+    {
+      icon: <TreePine className="w-8 h-8 text-green-600" />,
+      title: '자연 친화 활동',
+      description: '강아지와 함께하는 자연 친화적 활동',
+      items: ['자연 탐험', '야외 활동', '환경 보호', '자연 학습'],
+      slug: 'dog-nature-activities-guide'
+    },
+    {
+      icon: <Sun className="w-8 h-8 text-yellow-500" />,
+      title: '일광욕과 비타민 D',
+      description: '강아지 건강을 위한 일광욕과 비타민 D 관리',
+      items: ['일광욕 방법', '비타민 D 중요성', '자외선 보호', '건강한 햇빛 노출'],
+      slug: 'dog-sunlight-therapy-guide'
+    },
+    {
+      icon: <Moon className="w-8 h-8 text-indigo-500" />,
+      title: '수면 패턴 관리',
+      description: '강아지 건강한 수면 패턴과 수면 환경 조성',
+      items: ['수면 환경 조성', '수면 패턴 관리', '수면 질 향상', '수면 문제 해결'],
+      slug: 'dog-sleep-management-guide'
+    },
+    {
+      icon: <Wind className="w-8 h-8 text-cyan-500" />,
+      title: '호흡기 건강 관리',
+      description: '강아지 호흡기 건강과 공기 질 관리',
+      items: ['호흡기 건강 체크', '공기 질 관리', '호흡 운동', '호흡기 질환 예방'],
+      slug: 'dog-respiratory-health-guide'
+    },
+    {
+      icon: <Thermometer className="w-8 h-8 text-red-500" />,
+      title: '체온 관리',
+      description: '강아지 체온 측정과 체온 관리 방법',
+      items: ['체온 측정법', '정상 체온 범위', '체온 이상 대처', '체온 관리 도구'],
+      slug: 'dog-temperature-management-guide'
+    },
+    {
+      icon: <Droplets className="w-8 h-8 text-blue-400" />,
+      title: '수분 섭취 관리',
+      description: '강아지 적절한 수분 섭취와 탈수 예방',
+      items: ['수분 섭취량 관리', '탈수 증상 파악', '급수 방법', '수분 보충'],
+      slug: 'dog-hydration-management-guide'
+    },
+    {
+      icon: <Sparkles className="w-8 h-8 text-yellow-400" />,
+      title: '정신 건강 관리',
+      description: '강아지 정신 건강과 스트레스 관리',
+      items: ['스트레스 신호 파악', '정신 건강 관리', '불안 완화법', '정신적 자극'],
+      slug: 'dog-mental-health-guide'
+    },
+    {
+      icon: <Target className="w-8 h-8 text-orange-500" />,
+      title: '목표 설정과 성취',
+      description: '강아지 훈련 목표 설정과 성취 관리',
+      items: ['목표 설정 방법', '단계별 훈련', '성취 측정', '동기 부여'],
+      slug: 'dog-goal-setting-guide'
+    },
+    {
+      icon: <Award className="w-8 h-8 text-gold-500" />,
+      title: '보상 시스템',
+      description: '강아지 효과적인 보상과 강화 시스템',
+      items: ['보상 종류', '보상 시기', '강화 방법', '보상 효과 극대화'],
+      slug: 'dog-reward-system-guide'
+    },
+    {
+      icon: <Gift className="w-8 h-8 text-purple-400" />,
+      title: '선물과 장난감',
+      description: '강아지에게 적합한 선물과 장난감 선택법',
+      items: ['장난감 선택 기준', '안전한 장난감', '장난감 관리', '선물 아이디어'],
+      slug: 'dog-toys-gifts-guide'
+    },
+    {
+      icon: <Clock className="w-8 h-8 text-gray-500" />,
+      title: '일상 루틴 관리',
+      description: '강아지 건강한 일상 루틴과 시간 관리',
+      items: ['일상 루틴 설정', '시간 관리', '규칙적인 생활', '루틴 변화 대응'],
+      slug: 'dog-daily-routine-guide'
+    },
+    {
+      icon: <Compass className="w-8 h-8 text-teal-500" />,
+      title: '방향 감각 훈련',
+      description: '강아지 방향 감각과 공간 인식 능력 향상',
+      items: ['방향 감각 훈련', '공간 인식', '길 찾기 훈련', '방향 감각 테스트'],
+      slug: 'dog-direction-training-guide'
+    },
+    {
+      icon: <Map className="w-8 h-8 text-brown-500" />,
+      title: '지리 학습',
+      description: '강아지와 함께하는 지리 학습과 탐험',
+      items: ['지리 학습법', '지도 활용', '지역 탐험', '지리적 지식'],
+      slug: 'dog-geography-learning-guide'
+    },
+    {
+      icon: <Navigation className="w-8 h-8 text-navy-500" />,
+      title: '내비게이션 훈련',
+      description: '강아지 내비게이션과 길 찾기 능력 개발',
+      items: ['내비게이션 훈련', '길 찾기 기술', '방향 지시', '내비게이션 도구'],
+      slug: 'dog-navigation-training-guide'
     }
   ]
 
