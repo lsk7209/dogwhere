@@ -288,6 +288,69 @@ export default function GuidePage() {
       description: '강아지 내비게이션과 길 찾기 능력 개발',
       items: ['내비게이션 훈련', '길 찾기 기술', '방향 지시', '내비게이션 도구'],
       slug: 'dog-navigation-training-guide'
+    },
+    {
+      icon: <Heart className="w-8 h-8 text-red-400" />,
+      title: '감정 표현과 소통',
+      description: '강아지의 감정을 이해하고 효과적으로 소통하는 방법',
+      items: ['감정 신호 파악', '소통 방법', '감정 표현 훈련', '관계 개선'],
+      slug: 'dog-emotion-communication-guide'
+    },
+    {
+      icon: <Shield className="w-8 h-8 text-blue-600" />,
+      title: '면역력 강화',
+      description: '강아지 면역력 향상과 질병 예방 방법',
+      items: ['면역력 강화법', '예방접종 관리', '건강한 생활습관', '질병 예방'],
+      slug: 'dog-immunity-boost-guide'
+    },
+    {
+      icon: <Activity className="w-8 h-8 text-green-400" />,
+      title: '유산소 운동',
+      description: '강아지 심폐 기능 향상을 위한 유산소 운동법',
+      items: ['유산소 운동 종류', '운동 강도 조절', '심폐 기능 향상', '운동 계획'],
+      slug: 'dog-cardio-exercise-guide'
+    },
+    {
+      icon: <Brain className="w-8 h-8 text-purple-600" />,
+      title: '인지 능력 향상',
+      description: '강아지 인지 능력과 학습 능력 개발',
+      items: ['인지 훈련법', '학습 능력 향상', '기억력 강화', '문제 해결 능력'],
+      slug: 'dog-cognitive-enhancement-guide'
+    },
+    {
+      icon: <Apple className="w-8 h-8 text-green-500" />,
+      title: '식이 요법과 다이어트',
+      description: '강아지 체중 관리와 건강한 식이 요법',
+      items: ['체중 관리', '다이어트 계획', '건강한 식단', '칼로리 관리'],
+      slug: 'dog-diet-therapy-guide'
+    },
+    {
+      icon: <Stethoscope className="w-8 h-8 text-red-600" />,
+      title: '예방 의학',
+      description: '강아지 질병 예방과 건강 관리',
+      items: ['정기 검진', '예방 접종', '건강 체크', '질병 조기 발견'],
+      slug: 'dog-preventive-medicine-guide'
+    },
+    {
+      icon: <Users className="w-8 h-8 text-indigo-600" />,
+      title: '다중 반려동물 관리',
+      description: '여러 마리 강아지와 함께 살아가는 방법',
+      items: ['다중 반려동물 환경', '갈등 해결', '개별 관리', '집단 생활'],
+      slug: 'dog-multi-pet-management-guide'
+    },
+    {
+      icon: <GraduationCap className="w-8 h-8 text-blue-700" />,
+      title: '전문 훈련 기법',
+      description: '강아지 전문 훈련과 특수 기술 습득',
+      items: ['전문 훈련법', '특수 기술', '고급 명령어', '전문가 훈련'],
+      slug: 'dog-professional-training-guide'
+    },
+    {
+      icon: <Clock className="w-8 h-8 text-gray-600" />,
+      title: '노령견 케어',
+      description: '노령견을 위한 특별한 케어와 관리법',
+      items: ['노령견 특성', '특별 케어법', '건강 관리', '생활 환경 조성'],
+      slug: 'dog-senior-care-guide'
     }
   ]
 
