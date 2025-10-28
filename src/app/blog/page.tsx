@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -16,8 +15,7 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -101,6 +99,5 @@ export default function BlogPage() {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

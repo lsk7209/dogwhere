@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, Calendar, Users, MapPin, Star, Heart, ChevronRight, Filter } from 'lucide-react'
-import { Layout } from '@/components/layout/Layout'
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -11,8 +10,7 @@ export default function HomePage() {
   const [guestCount, setGuestCount] = useState('2인 1마리')
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
       {/* 히어로 섹션 */}
       <section className="relative h-[600px] bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
         {/* 배경 이미지 */}
@@ -269,6 +267,5 @@ export default function HomePage() {
         </section>
       </div>
     </div>
-    </Layout>
   )
 }

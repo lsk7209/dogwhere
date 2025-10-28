@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 import { RegionPage } from '@/components/regions/RegionPage'
 
 export const metadata: Metadata = {
@@ -16,8 +15,6 @@ export const metadata: Metadata = {
 
 export default function SeoulPage() {
   return (
-    <Layout>
-      <RegionPage region="seoul" regionName="서울" />
-    </Layout>
+    <RegionPage region="seoul" regionName="서울" />
   )
 }

@@ -1,6 +1,5 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
-import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint } from 'lucide-react'
+import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -58,12 +57,81 @@ export default function GuidePage() {
       description: '강아지와 함께하는 해외여행 준비사항',
       items: ['여권 및 서류', '항공편 예약', '검역 절차', '현지 규정 확인'],
       slug: 'dog-international-travel-guide'
+    },
+    {
+      icon: <Camera className="w-8 h-8 text-pink-500" />,
+      title: '여행 사진 촬영',
+      description: '강아지와 함께하는 완벽한 여행 사진 촬영법',
+      items: ['사진 촬영 팁', '자연스러운 포즈', '조명 활용법', '인스타그램 업로드'],
+      slug: 'dog-travel-photography-guide'
+    },
+    {
+      icon: <MapPin className="w-8 h-8 text-indigo-500" />,
+      title: '지역별 여행지',
+      description: '전국 강아지 동반 추천 여행지 가이드',
+      items: ['서울 추천 코스', '제주도 여행지', '강원도 자연여행', '경상도 해안여행'],
+      slug: 'dog-regional-travel-guide'
+    },
+    {
+      icon: <Calendar className="w-8 h-8 text-teal-500" />,
+      title: '계절별 여행',
+      description: '계절에 따른 강아지 여행 준비사항',
+      items: ['봄 여행 준비', '여름 더위 대비', '가을 단풍 여행', '겨울 추위 대비'],
+      slug: 'dog-seasonal-travel-guide'
+    },
+    {
+      icon: <Users className="w-8 h-8 text-amber-500" />,
+      title: '가족 여행',
+      description: '강아지와 아이들이 함께하는 가족 여행 가이드',
+      items: ['아이와 강아지 동반', '가족 여행 준비물', '안전 수칙', '추억 만들기'],
+      slug: 'dog-family-travel-guide'
+    },
+    {
+      icon: <Star className="w-8 h-8 text-yellow-500" />,
+      title: '특별한 경험',
+      description: '강아지와 함께하는 특별하고 의미있는 여행 경험',
+      items: ['펫 페스티벌 참여', '자원봉사 활동', '강아지 카페 투어', '특별한 기념일'],
+      slug: 'dog-special-experience-guide'
+    },
+    {
+      icon: <Users className="w-8 h-8 text-indigo-500" />,
+      title: '사회화 훈련',
+      description: '강아지 사회화 훈련 방법',
+      items: ['기본 사회화 환경', '사람들과의 사회화', '다른 동물들과의 사회화', '지속적인 사회화'],
+      slug: 'dog-socialization-guide'
+    },
+    {
+      icon: <Scissors className="w-8 h-8 text-pink-500" />,
+      title: '그루밍 관리',
+      description: '강아지 그루밍 및 관리 방법',
+      items: ['일상 브러싱', '목욕 및 샴푸', '발톱 관리', '정기적인 그루밍'],
+      slug: 'dog-grooming-guide'
+    },
+    {
+      icon: <Activity className="w-8 h-8 text-emerald-500" />,
+      title: '운동 및 활동',
+      description: '강아지 운동 및 활동 방법',
+      items: ['일상 산책', '실내 놀이 활동', '훈련과 함께하는 운동', '정기적인 운동'],
+      slug: 'dog-exercise-guide'
+    },
+    {
+      icon: <Brain className="w-8 h-8 text-amber-500" />,
+      title: '행동 이해 및 교정',
+      description: '강아지 행동 이해 및 교정 방법',
+      items: ['행동 관찰 및 분석', '문제 행동 원인 파악', '행동 교정 방법 적용', '지속적인 교정'],
+      slug: 'dog-behavior-guide'
+    },
+    {
+      icon: <Apple className="w-8 h-8 text-lime-500" />,
+      title: '영양 및 사료 선택',
+      description: '강아지 영양 및 사료 선택 방법',
+      items: ['필수 영양소 이해', '사료 선택 및 구매', '급여 방법 및 관리', '지속적인 영양 관리'],
+      slug: 'dog-nutrition-guide'
     }
   ]
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -134,6 +202,5 @@ export default function GuidePage() {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

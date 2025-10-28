@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 
 export const metadata: Metadata = {
   title: '오늘의 추천 장소 | 어서오개',
@@ -15,8 +14,7 @@ export const metadata: Metadata = {
 
 export default function TodayRecommendationsPage() {
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -63,6 +61,5 @@ export default function TodayRecommendationsPage() {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

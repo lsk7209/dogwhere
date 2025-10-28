@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 import { ClusterDetailPage } from '@/components/regions/ClusterDetailPage'
 
 interface PageProps {
@@ -52,12 +51,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default function SeoulClusterPage({ params }: PageProps) {
   return (
-    <Layout>
-      <ClusterDetailPage 
-        region="seoul" 
-        regionName="서울" 
-        clusterId={params.clusterId} 
-      />
-    </Layout>
+    <ClusterDetailPage 
+      region="seoul" 
+      regionName="서울" 
+      clusterId={params.clusterId} 
+    />
   )
 }

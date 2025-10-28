@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 import { MessageSquare, MapPin, Star, Upload, Send } from 'lucide-react'
 
 export default function ReportPage() {
@@ -33,8 +32,7 @@ export default function ReportPage() {
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -245,6 +243,5 @@ export default function ReportPage() {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

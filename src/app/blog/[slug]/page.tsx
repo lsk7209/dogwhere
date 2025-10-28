@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 import { Calendar, User, Tag, ArrowLeft, Share2, Heart, Bookmark, MapPin, Clock } from 'lucide-react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
@@ -1065,22 +1064,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   if (!post) {
     return (
-      <Layout>
-        <div className="min-h-screen bg-white flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">블로그 포스트를 찾을 수 없습니다</h1>
-            <Link href="/blog" className="text-blue-600 hover:text-blue-800">
-              ← 블로그로 돌아가기
-            </Link>
-          </div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">블로그 포스트를 찾을 수 없습니다</h1>
+          <Link href="/blog" className="text-blue-600 hover:text-blue-800">
+            ← 블로그로 돌아가기
+          </Link>
         </div>
-      </Layout>
+      </div>
     )
   }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-8">
           {/* 네비게이션 */}
           <div className="mb-8">
@@ -1277,6 +1273,5 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         </div>
       </div>
-    </Layout>
   )
 }

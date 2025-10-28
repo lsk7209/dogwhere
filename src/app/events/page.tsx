@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Layout } from '@/components/layout/Layout'
 
 export const metadata: Metadata = {
   title: '강아지 행사 일정 | 어서오개',
@@ -15,8 +14,7 @@ export const metadata: Metadata = {
 
 export default function EventsPage() {
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
         {/* 페이지 헤더 */}
         <div className="text-center mb-12">
@@ -176,6 +174,5 @@ export default function EventsPage() {
         </section>
       </div>
       </div>
-    </Layout>
   )
 }
