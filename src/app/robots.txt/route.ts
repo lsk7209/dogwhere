@@ -18,9 +18,9 @@ Allow: /
 Sitemap: ${baseUrl}/sitemap.xml
 
 # RSS 피드
-Sitemap: ${baseUrl}/rss
-Sitemap: ${baseUrl}/rss/blog
-Sitemap: ${baseUrl}/rss/guide
+Sitemap: ${baseUrl}/rss.xml
+Sitemap: ${baseUrl}/rss-blog.xml
+Sitemap: ${baseUrl}/rss-guide.xml
 
 # 관리자 페이지 차단
 Disallow: /admin/

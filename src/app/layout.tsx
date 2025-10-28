@@ -26,9 +26,9 @@ export const metadata: Metadata = {
   alternates: {
     types: {
       'application/rss+xml': [
-        { url: '/rss', title: '어서오개 전체 RSS' },
-        { url: '/rss/blog', title: '어서오개 블로그 RSS' },
-        { url: '/rss/guide', title: '어서오개 가이드 RSS' },
+        { url: '/rss.xml', title: '어서오개 전체 RSS' },
+        { url: '/rss-blog.xml', title: '어서오개 블로그 RSS' },
+        { url: '/rss-guide.xml', title: '어서오개 가이드 RSS' },
       ],
     },
   },
