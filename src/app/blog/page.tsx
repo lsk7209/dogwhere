@@ -227,6 +227,86 @@ export default function BlogPage() {
                 category: '소통',
                 date: '2024.12.28',
                 image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-grooming-basics-guide',
+                title: '강아지 그루밍 기초 - 올바른 털 관리법',
+                excerpt: '강아지의 털과 피부 건강을 위한 기본적인 그루밍 방법과 도구 사용법',
+                category: '그루밍',
+                date: '2024.12.29',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-nutrition-guide',
+                title: '강아지 영양 관리 - 균형 잡힌 식단 만들기',
+                excerpt: '강아지의 건강한 성장을 위한 올바른 영양 공급과 사료 선택법',
+                category: '영양',
+                date: '2024.12.30',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-behavior-training-guide',
+                title: '강아지 행동 훈련 - 기본 명령어와 예의',
+                excerpt: '강아지의 기본적인 행동 훈련과 사회화를 위한 효과적인 방법',
+                category: '훈련',
+                date: '2024.12.31',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-vaccination-schedule-guide',
+                title: '강아지 예방접종 - 건강한 성장을 위한 필수 백신',
+                excerpt: '강아지의 생명을 지키는 예방접종 스케줄과 백신 종류별 중요성',
+                category: '예방의학',
+                date: '2025.01.01',
+                image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-indoor-activities-guide',
+                title: '강아지 실내 활동 - 집에서 즐기는 놀이와 운동',
+                excerpt: '날씨가 좋지 않을 때 집에서 강아지와 함께할 수 있는 다양한 활동',
+                category: '실내활동',
+                date: '2025.01.02',
+                image: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-safety-home-guide',
+                title: '강아지 안전한 집 - 위험 요소 제거하기',
+                excerpt: '강아지가 안전하게 생활할 수 있는 집 환경 조성과 위험 요소 제거법',
+                category: '안전',
+                date: '2025.01.03',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-car-travel-guide',
+                title: '강아지 자동차 여행 - 안전한 이동 방법',
+                excerpt: '강아지와 함께하는 자동차 여행 시 안전 수칙과 편안한 이동 방법',
+                category: '교통',
+                date: '2025.01.04',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-seasonal-care-guide',
+                title: '강아지 사계절 관리 - 계절별 건강 케어',
+                excerpt: '봄, 여름, 가을, 겨울 각 계절에 맞는 강아지 건강 관리법',
+                category: '계절관리',
+                date: '2025.01.05',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-emotional-wellness-guide',
+                title: '강아지 정서 건강 - 마음의 평안과 행복',
+                excerpt: '강아지의 정서적 안정과 행복을 위한 마음 케어 방법',
+                category: '정서건강',
+                date: '2025.01.06',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-cost-management-guide',
+                title: '강아지 비용 관리 - 합리적인 반려견 생활',
+                excerpt: '강아지 양육 비용을 효율적으로 관리하는 방법과 절약 팁',
+                category: '경제',
+                date: '2025.01.07',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
