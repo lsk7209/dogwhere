@@ -307,6 +307,86 @@ export default function BlogPage() {
                 category: '경제',
                 date: '2025.01.07',
                 image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-water-safety-guide',
+                title: '강아지 물놀이 안전 가이드 - 수영과 물놀이',
+                excerpt: '강아지와 함께하는 안전한 물놀이와 수영 활동 방법',
+                category: '물놀이',
+                date: '2025.01.08',
+                image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-agility-training-guide',
+                title: '강아지 애지리티 훈련 - 장애물 극복하기',
+                excerpt: '강아지의 체력과 집중력을 기르는 애지리티 훈련 방법',
+                category: '애지리티',
+                date: '2025.01.09',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-massage-therapy-guide',
+                title: '강아지 마사지 테라피 - 스트레스 해소와 건강',
+                excerpt: '강아지의 근육 이완과 스트레스 해소를 위한 마사지 기법',
+                category: '마사지',
+                date: '2025.01.10',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-aromatherapy-guide',
+                title: '강아지 아로마테라피 - 자연의 힘으로 치유하기',
+                excerpt: '강아지에게 안전한 아로마테라피와 자연 치료법',
+                category: '아로마테라피',
+                date: '2025.01.11',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-music-therapy-guide',
+                title: '강아지 음악 치료 - 소리로 마음 치유하기',
+                excerpt: '강아지의 불안감 해소와 정서 안정을 위한 음악 치료법',
+                category: '음악치료',
+                date: '2025.01.12',
+                image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-puzzle-games-guide',
+                title: '강아지 퍼즐 게임 - 두뇌 발달 놀이',
+                excerpt: '강아지의 지능과 문제해결 능력을 기르는 퍼즐 게임',
+                category: '퍼즐게임',
+                date: '2025.01.13',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-hiking-preparation-guide',
+                title: '강아지 등산 준비 - 산행을 위한 완벽 가이드',
+                excerpt: '강아지와 함께하는 안전하고 즐거운 등산 준비와 주의사항',
+                category: '등산',
+                date: '2025.01.14',
+                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-senior-exercise-guide',
+                title: '시니어 강아지 운동법 - 노령견을 위한 맞춤 운동',
+                excerpt: '7세 이상 시니어 강아지를 위한 안전하고 효과적인 운동법',
+                category: '시니어운동',
+                date: '2025.01.15',
+                image: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-puppy-socialization-guide',
+                title: '강아지 사회화 훈련 - 어릴 때부터 시작하는 교감',
+                excerpt: '강아지의 건강한 사회성 발달을 위한 어린 시절 사회화 훈련',
+                category: '사회화훈련',
+                date: '2025.01.16',
+                image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-meditation-guide',
+                title: '강아지 명상과 휴식 - 마음의 평화 찾기',
+                excerpt: '강아지와 함께하는 명상과 깊은 휴식을 통한 정서적 안정',
+                category: '명상',
+                date: '2025.01.17',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
