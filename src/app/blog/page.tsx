@@ -99,11 +99,39 @@ export default function BlogPage() {
                 date: '2024.11.10'
               },
               {
-                slug: 'dog-exercise-indoor-activities',
-                title: '실내에서 할 수 있는 강아지 운동',
-                excerpt: '날씨가 좋지 않을 때 집에서 강아지와 함께할 수 있는 운동과 놀이',
-                category: '운동',
-                date: '2024.11.12'
+                slug: 'dog-senior-care-guide',
+                title: '시니어 강아지 케어 완벽 가이드 - 노령견 돌보기',
+                excerpt: '7세 이상 시니어 강아지를 위한 특별한 케어 방법과 건강 관리법을 상세히 알려드립니다.',
+                category: '케어',
+                date: '2024.11.28'
+              },
+              {
+                slug: 'dog-winter-care-guide',
+                title: '강아지 겨울 케어 완벽 가이드 - 추위 대비법',
+                excerpt: '추운 겨울철 강아지 건강 관리와 안전한 겨울 보내기 방법을 상세히 알려드립니다.',
+                category: '계절케어',
+                date: '2024.12.01'
+              },
+              {
+                slug: 'dog-summer-care-guide',
+                title: '강아지 여름 케어 완벽 가이드 - 더위 대비법',
+                excerpt: '더운 여름철 강아지 건강 관리와 안전한 여름 보내기 방법을 상세히 알려드립니다.',
+                category: '계절케어',
+                date: '2024.12.03'
+              },
+              {
+                slug: 'dog-first-time-owner-guide',
+                title: '강아지 첫 입양 완벽 가이드 - 초보 집사 필수 지식',
+                excerpt: '강아지를 처음 키우는 분들을 위한 완벽한 입양 가이드와 초기 케어 방법을 상세히 알려드립니다.',
+                category: '입양',
+                date: '2024.12.05'
+              },
+              {
+                slug: 'dog-multi-pet-household-guide',
+                title: '다중 반려동물 가정 완벽 가이드 - 여러 강아지 키우기',
+                excerpt: '여러 마리의 강아지를 함께 키우는 방법과 다중 반려동물 가정의 관리법을 상세히 알려드립니다.',
+                category: '관리',
+                date: '2024.12.07'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
