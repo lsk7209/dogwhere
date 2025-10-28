@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Clock, Compass, Map, Navigation } from 'lucide-react'
+import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Clock, Compass, Map, Navigation, Puzzle } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -351,6 +351,76 @@ export default function GuidePage() {
       description: '노령견을 위한 특별한 케어와 관리법',
       items: ['노령견 특성', '특별 케어법', '건강 관리', '생활 환경 조성'],
       slug: 'dog-senior-care-guide'
+    },
+    {
+      icon: <Music className="w-8 h-8 text-purple-500" />,
+      title: '강아지 음악치료',
+      description: '음악을 활용한 강아지 스트레스 해소와 정서 안정',
+      items: ['음악 선호도 파악', '진정 음악 활용', '소리 공포증 치료', '음악 환경 조성'],
+      slug: 'dog-music-therapy-guide'
+    },
+    {
+      icon: <Puzzle className="w-8 h-8 text-indigo-500" />,
+      title: '인터랙티브 놀이',
+      description: '뇌 발달을 위한 상호작용 놀이와 퍼즐 게임',
+      items: ['퍼즐 장난감', '인터랙티브 게임', '뇌 자극 활동', '문제 해결 능력'],
+      slug: 'dog-interactive-play-guide'
+    },
+    {
+      icon: <Palette className="w-8 h-8 text-rose-500" />,
+      title: '창의적 활동',
+      description: '강아지와 함께하는 예술 활동과 창의적 놀이',
+      items: ['펫 아트', '사진 촬영', '창작 활동', '표현력 향상'],
+      slug: 'dog-creative-activities-guide'
+    },
+    {
+      icon: <Dumbbell className="w-8 h-8 text-orange-500" />,
+      title: '체력 단련',
+      description: '강아지의 신체 발달과 근력 강화를 위한 운동',
+      items: ['근력 운동', '체력 향상', '근육 발달', '지구력 강화'],
+      slug: 'dog-fitness-training-guide'
+    },
+    {
+      icon: <TreePine className="w-8 h-8 text-green-600" />,
+      title: '자연 친화 활동',
+      description: '자연 환경에서의 안전한 활동과 환경 보호',
+      items: ['자연 탐험', '환경 보호', '자연 학습', '생태 교육'],
+      slug: 'dog-nature-activities-guide'
+    },
+    {
+      icon: <Sun className="w-8 h-8 text-yellow-500" />,
+      title: '햇빛 치료',
+      description: '적절한 일광욕과 비타민 D 관리법',
+      items: ['일광욕 방법', '비타민 D', '자외선 관리', '피부 건강'],
+      slug: 'dog-sunlight-therapy-guide'
+    },
+    {
+      icon: <Moon className="w-8 h-8 text-slate-500" />,
+      title: '수면 관리',
+      description: '건강한 수면 패턴과 숙면 환경 조성',
+      items: ['수면 패턴', '숙면 환경', '수면 질 향상', '휴식 관리'],
+      slug: 'dog-sleep-management-guide'
+    },
+    {
+      icon: <Wind className="w-8 h-8 text-cyan-500" />,
+      title: '호흡 건강',
+      description: '호흡기 건강 관리와 공기질 개선',
+      items: ['호흡기 관리', '공기질 개선', '호흡 운동', '환경 정화'],
+      slug: 'dog-respiratory-health-guide'
+    },
+    {
+      icon: <Thermometer className="w-8 h-8 text-red-500" />,
+      title: '체온 관리',
+      description: '강아지 체온 측정과 온도 관리법',
+      items: ['체온 측정', '온도 관리', '열사병 예방', '저체온 방지'],
+      slug: 'dog-temperature-management-guide'
+    },
+    {
+      icon: <Droplets className="w-8 h-8 text-blue-500" />,
+      title: '수분 관리',
+      description: '적절한 수분 섭취와 탈수 예방',
+      items: ['수분 섭취', '탈수 예방', '수질 관리', '건강한 수분'],
+      slug: 'dog-hydration-management-guide'
     }
   ]
 
