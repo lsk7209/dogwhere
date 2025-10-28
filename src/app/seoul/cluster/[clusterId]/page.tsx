@@ -8,6 +8,19 @@ interface PageProps {
   }
 }
 
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  const clusterNames: Record<string, string> = {
+    'gangnam-cluster': '강남권',
+    'hongdae-cluster': '홍대권',
+    'myeongdong-cluster': '명동권',
+    'jamsil-cluster': '잠실권',
+    'itaewon-cluster': '이태원권'
+  }
+  
+  return Object.keys(clusterNames).map(clusterId => ({ clusterId }))
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const clusterId = params.clusterId
   

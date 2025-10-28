@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { NextRequest, NextResponse } from 'next/server'
 
 // 메인 사이트맵 인덱스

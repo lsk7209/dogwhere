@@ -75,7 +75,7 @@ export function generatePlaceJsonLd(place: PlaceData, breadcrumbs?: BreadcrumbIt
 
   // 브레드크럼 추가
   if (breadcrumbs && breadcrumbs.length > 0) {
-    jsonLd["breadcrumb"] = {
+    (jsonLd as any)["breadcrumb"] = {
       "@type": "BreadcrumbList",
       "itemListElement": breadcrumbs.map((item, index) => ({
         "@type": "ListItem",
@@ -126,7 +126,7 @@ export function generateEventJsonLd(event: EventData, breadcrumbs?: BreadcrumbIt
 
   // 브레드크럼 추가
   if (breadcrumbs && breadcrumbs.length > 0) {
-    jsonLd["breadcrumb"] = {
+    (jsonLd as any)["breadcrumb"] = {
       "@type": "BreadcrumbList",
       "itemListElement": breadcrumbs.map((item, index) => ({
         "@type": "ListItem",

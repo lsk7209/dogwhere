@@ -75,6 +75,11 @@ const places: Record<string, {
   }
 }
 
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return Object.keys(places).map(slug => ({ slug }))
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const place = places[params.slug]
   
@@ -91,7 +96,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${place.name} | 어서오개`,
       description: place.summary,
-      type: 'place',
+      type: 'article',
     },
   }
 }

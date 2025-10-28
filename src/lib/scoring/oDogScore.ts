@@ -81,7 +81,13 @@ export function calculateODogScore(
       reviewTrust: reviewTrustScore,
       variance: varianceScore
     },
-    factors: weights
+    factors: {
+      ratingWeight: weights.rating,
+      recencyWeight: weights.recency,
+      safetyWeight: weights.safety,
+      reviewTrustWeight: weights.reviewTrust,
+      varianceWeight: weights.variance
+    }
   }
 }
 

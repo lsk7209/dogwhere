@@ -83,7 +83,13 @@ export function calculateCQS(content: ContentData): CQSResult {
       originality: originalityScore,
       geoAccuracy: geoAccuracyScore
     },
-    factors: weights,
+    factors: {
+      coverageWeight: weights.coverage,
+      freshnessWeight: weights.freshness,
+      structureWeight: weights.structure,
+      originalityWeight: weights.originality,
+      geoAccuracyWeight: weights.geoAccuracy
+    },
     shouldIndex,
     reason
   }

@@ -1092,6 +1092,11 @@ function getRelatedGuides(currentSlug: string) {
   return otherGuides.slice(0, 3)
 }
 
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return Object.keys(guideData).map(slug => ({ slug }))
+}
+
 export async function generateMetadata({ params }: GuideDetailPageProps): Promise<Metadata> {
   const { slug } = await params
   const guide = guideData[slug]

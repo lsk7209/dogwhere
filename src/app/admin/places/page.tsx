@@ -1,5 +1,19 @@
 'use client'
 
+// 관리자 페이지용 간단한 Place 타입
+interface AdminPlace {
+  id: string
+  name: string
+  address: string
+  category: string
+  region: string
+  rating: number
+  reviewCount: number
+  oDogScore: number
+  status: 'active' | 'pending' | 'inactive'
+  createdAt: string
+  updatedAt: string
+}
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
@@ -18,10 +32,9 @@ import {
   RefreshCw,
   Database
 } from 'lucide-react'
-import { Place } from '@/types/place'
 
 export default function PlacesManagement() {
-  const [places, setPlaces] = useState<Place[]>([])
+  const [places, setPlaces] = useState<AdminPlace[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
@@ -118,12 +131,12 @@ export default function PlacesManagement() {
     setIsLoading(true)
     try {
       // 실제 운영에서는 실제 API를 호출
-      const mockPlaces: Place[] = [
+      const mockPlaces: AdminPlace[] = [
         {
           id: '1',
           name: '카페 포우즈 마포점',
           address: '서울 마포구 어쩌구 123',
-          category: 'dog-cafe',
+          category: 'cafe',
           region: 'seoul-mapo-gu',
           rating: 4.6,
           reviewCount: 213,

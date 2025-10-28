@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { searchPlaces, getPlacesByRegion, getPlacesByCategory, getRecommendedPlaces } from '@/lib/database/places'
 import { PlaceFilter } from '@/types/place'
@@ -31,8 +33,8 @@ export async function GET(request: NextRequest) {
     const filter: PlaceFilter = {
       category: category ? [category] : undefined,
       subcategory: subcategory ? [subcategory] : undefined,
-      sido,
-      sigungu,
+      sido: sido || undefined,
+      sigungu: sigungu || undefined,
       petSize,
       priceRange,
       amenities,

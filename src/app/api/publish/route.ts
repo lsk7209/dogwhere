@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { NextRequest, NextResponse } from 'next/server'
 
 // 발행 API (Make.com에서 호출)

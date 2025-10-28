@@ -1,5 +1,15 @@
+export const dynamic = 'force-static'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getPlaceBySlug } from '@/lib/database/places'
+
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return [
+    { slug: 'cafe-paws-seoul' },
+    { slug: 'dog-park-love-gangnam' }
+  ]
+}
 
 // 장소 상세 API
 export async function GET(

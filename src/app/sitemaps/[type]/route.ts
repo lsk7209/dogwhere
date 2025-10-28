@@ -1,12 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-static'
 
-// 동적 사이트맵 생성
+import { NextRequest, NextResponse } from 'next/server'
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return [
+    { type: 'hub-sido' },
+    { type: 'hub-sig-seoul' },
+    { type: 'hub-sig-gyeonggi' },
+    { type: 'hub-sig-busan' },
+    { type: 'hub-sig-jeju' },
+    { type: 'cluster-seoul-dog-cafe-1' },
+    { type: 'cluster-seoul-dog-park-1' },
+    { type: 'posts' }
+  ]
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { type: string } }
+  { params }: { params: Promise<{ type: string }> }
 ) {
   try {
-    const { type } = params
+    const { type } = await params
     const { searchParams } = new URL(request.url)
     
     switch (type) {

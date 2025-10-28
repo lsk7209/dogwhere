@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
@@ -17,7 +19,7 @@ export async function POST(request: Request) {
       const token = Buffer.from(`${username}:${Date.now()}`).toString('base64')
       
       // 쿠키에 토큰 저장
-      const cookieStore = cookies()
+      const cookieStore = await cookies()
       cookieStore.set('admin_token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const token = cookieStore.get('admin_token')
 
     if (!token) {
@@ -92,7 +94,7 @@ export async function GET(request: Request) {
 
 export async function DELETE() {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     cookieStore.delete('admin_token')
 
     return NextResponse.json({

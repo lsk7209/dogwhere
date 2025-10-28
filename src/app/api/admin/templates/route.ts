@@ -1,3 +1,4 @@
+export const dynamic = 'force-static'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { TemplateRenderer, createRenderer } from '@/lib/templates/renderer'
@@ -9,7 +10,7 @@ import { ContentLinter, createLinter } from '@/lib/templates/validators/linter'
  */
 async function checkAdminAuth(): Promise<boolean> {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const token = cookieStore.get('admin_token')
 
     if (!token) return false

@@ -66,6 +66,11 @@ const events: Record<string, {
   }
 }
 
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return Object.keys(events).map(slug => ({ slug }))
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const event = events[params.slug]
   
@@ -82,9 +87,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${event.title} | 어서오개`,
       description: event.highlight,
-      type: 'event',
-      startTime: event.startDate,
-      endTime: event.endDate,
+      type: 'article',
     },
   }
 }

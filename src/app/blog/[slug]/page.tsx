@@ -969,6 +969,11 @@ function getRelatedPosts(currentSlug: string) {
   return otherPosts.slice(0, 3)
 }
 
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return Object.keys(blogPosts).map(slug => ({ slug }))
+}
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params
   const post = blogPosts[slug]

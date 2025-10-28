@@ -1,4 +1,15 @@
+export const dynamic = 'force-static'
+
 import { NextRequest, NextResponse } from 'next/server'
+
+// 정적 파라미터 생성
+export async function generateStaticParams() {
+  return [
+    { jobType: 'places' },
+    { jobType: 'events' },
+    { jobType: 'weather' }
+  ]
+}
 
 // 배치 작업 API (크론에서 호출)
 export async function POST(
