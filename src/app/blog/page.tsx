@@ -147,6 +147,86 @@ export default function BlogPage() {
                 category: '관리',
                 date: '2024.12.07',
                 image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-photography-tips-guide',
+                title: '강아지 사진 찍는 법 - 완벽한 순간 포착하기',
+                excerpt: '강아지의 귀여운 모습을 완벽하게 담는 사진 촬영 팁과 포즈 가이드',
+                category: '사진',
+                date: '2024.12.10',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-socialization-guide',
+                title: '강아지 사회화 훈련 - 다른 강아지와 사람과의 만남',
+                excerpt: '강아지가 건강한 사회성을 기를 수 있도록 도와주는 사회화 훈련 방법',
+                category: '사회화',
+                date: '2024.12.12',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-anxiety-management-guide',
+                title: '강아지 불안감 해소하기 - 스트레스 관리법',
+                excerpt: '강아지의 불안감과 스트레스를 효과적으로 관리하고 해소하는 방법',
+                category: '심리',
+                date: '2024.12.14',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-dental-care-guide',
+                title: '강아지 치아 관리 - 구강 건강 지키기',
+                excerpt: '강아지의 치아와 잇몸 건강을 위한 올바른 구강 관리법과 예방법',
+                category: '구강관리',
+                date: '2024.12.16',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-exercise-routine-guide',
+                title: '강아지 운동 루틴 - 체력과 건강을 위한 운동법',
+                excerpt: '강아지의 체력 향상과 건강 유지를 위한 효과적인 운동 루틴과 방법',
+                category: '운동',
+                date: '2024.12.18',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-toy-selection-guide',
+                title: '강아지 장난감 선택 가이드 - 안전하고 재미있는 놀이',
+                excerpt: '강아지에게 적합한 장난감을 선택하는 방법과 안전한 놀이 환경 조성',
+                category: '장난감',
+                date: '2024.12.20',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-emergency-first-aid-guide',
+                title: '강아지 응급처치 가이드 - 위급상황 대처법',
+                excerpt: '강아지에게 응급상황이 발생했을 때 즉시 할 수 있는 응급처치 방법',
+                category: '응급처치',
+                date: '2024.12.22',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-sleep-environment-guide',
+                title: '강아지 수면 환경 조성 - 편안한 잠자리 만들기',
+                excerpt: '강아지가 편안하고 안전하게 잘 수 있는 수면 환경 조성 방법',
+                category: '수면환경',
+                date: '2024.12.24',
+                image: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-seasonal-allergy-guide',
+                title: '강아지 계절성 알레르기 관리 - 봄가을 대비법',
+                excerpt: '계절 변화에 따른 강아지 알레르기 증상과 효과적인 관리 방법',
+                category: '알레르기',
+                date: '2024.12.26',
+                image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-communication-signals-guide',
+                title: '강아지 신호 이해하기 - 몸짓과 소리로 읽는 마음',
+                excerpt: '강아지의 몸짓, 소리, 행동을 통해 강아지의 마음과 상태를 이해하는 방법',
+                category: '소통',
+                date: '2024.12.28',
+                image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
