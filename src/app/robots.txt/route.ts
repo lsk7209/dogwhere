@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // robots.txt 생성
 export async function GET(request: NextRequest) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
     
     const robotsTxt = `User-agent: *
 Allow: /

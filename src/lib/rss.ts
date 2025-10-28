@@ -21,7 +21,7 @@ export interface RSSChannel {
 
 // 블로그 포스트 RSS 아이템 생성
 export function generateBlogRSSItems(): RSSItem[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   const blogPosts = [
     {
@@ -75,7 +75,7 @@ export function generateBlogRSSItems(): RSSItem[] {
 
 // 가이드 RSS 아이템 생성
 export function generateGuideRSSItems(): RSSItem[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   const guides = [
     {
@@ -129,7 +129,7 @@ export function generateGuideRSSItems(): RSSItem[] {
 
 // 전체 RSS 채널 생성
 export function generateFullRSSChannel(): RSSChannel {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   const now = new Date().toISOString()
   
   const blogItems = generateBlogRSSItems()
@@ -186,7 +186,7 @@ ${rssClose}`
 
 // 블로그 전용 RSS 채널 생성
 export function generateBlogRSSChannel(): RSSChannel {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   const now = new Date().toISOString()
   const blogItems = generateBlogRSSItems()
 
@@ -203,7 +203,7 @@ export function generateBlogRSSChannel(): RSSChannel {
 
 // 가이드 전용 RSS 채널 생성
 export function generateGuideRSSChannel(): RSSChannel {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   const now = new Date().toISOString()
   const guideItems = generateGuideRSSItems()
 

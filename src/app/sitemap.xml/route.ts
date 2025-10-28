@@ -6,7 +6,7 @@ import { generateSitemapIndexXml } from '@/lib/sitemap'
 // 메인 사이트맵 인덱스
 export async function GET(request: NextRequest) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
     const now = new Date().toISOString()
 
     // 개별 사이트맵 목록

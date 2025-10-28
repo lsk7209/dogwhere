@@ -10,7 +10,7 @@ export interface SitemapUrl {
 
 // 정적 페이지 사이트맵 생성
 export function generateStaticSitemap(): SitemapUrl[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   const now = new Date().toISOString()
 
   return [
@@ -93,7 +93,7 @@ export function generateStaticSitemap(): SitemapUrl[] {
 
 // 블로그 포스트 사이트맵 생성
 export function generateBlogSitemap(): SitemapUrl[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   const blogPosts = [
     'jeju-dog-travel-guide',
@@ -114,7 +114,7 @@ export function generateBlogSitemap(): SitemapUrl[] {
 
 // 가이드 페이지 사이트맵 생성
 export function generateGuideSitemap(): SitemapUrl[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   const guides = [
     'dog-travel-transport-guide',
@@ -135,7 +135,7 @@ export function generateGuideSitemap(): SitemapUrl[] {
 
 // 이벤트 페이지 사이트맵 생성
 export function generateEventSitemap(): SitemapUrl[] {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   const events = [
     'dog-festival-2025'
@@ -151,7 +151,7 @@ export function generateEventSitemap(): SitemapUrl[] {
 
 // 장소 페이지 사이트맵 생성 (동적)
 export async function generatePlaceSitemap(): Promise<SitemapUrl[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://eoseo-o-gae.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   try {
     const places = await getAllPlaces()
