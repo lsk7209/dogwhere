@@ -19,8 +19,8 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    // 마크다운에서 헤딩 추출
-    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    // 마크다운에서 헤딩 추출 (h2만)
+    const headingRegex = /^(#{2})\s+(.+)$/gm;
     const headings: TOCItem[] = [];
     let match;
 
