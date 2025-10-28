@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple } from 'lucide-react'
+import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -127,6 +127,41 @@ export default function GuidePage() {
       description: '강아지 영양 및 사료 선택 방법',
       items: ['필수 영양소 이해', '사료 선택 및 구매', '급여 방법 및 관리', '지속적인 영양 관리'],
       slug: 'dog-nutrition-guide'
+    },
+    {
+      icon: <Baby className="w-8 h-8 text-pink-500" />,
+      title: '퍼피 케어',
+      description: '새끼 강아지 돌보기 완벽 가이드',
+      items: ['퍼피 기본 케어', '예방접종 일정', '사회화 훈련', '퍼피 사료 관리'],
+      slug: 'puppy-care-guide'
+    },
+    {
+      icon: <Stethoscope className="w-8 h-8 text-red-500" />,
+      title: '응급처치',
+      description: '강아지 응급상황 대처법',
+      items: ['응급처치 기본', '중독 대처법', '상처 치료', '응급 연락처'],
+      slug: 'dog-emergency-guide'
+    },
+    {
+      icon: <GraduationCap className="w-8 h-8 text-blue-600" />,
+      title: '고급 훈련',
+      description: '강아지 고급 훈련 기법',
+      items: ['고급 명령어', '문제 행동 교정', '사회화 훈련', '특수 훈련'],
+      slug: 'dog-advanced-training-guide'
+    },
+    {
+      icon: <Zap className="w-8 h-8 text-yellow-500" />,
+      title: '에너지 관리',
+      description: '강아지 에너지와 활동량 관리',
+      items: ['에너지 발산법', '실내 운동', '정신적 자극', '피로 관리'],
+      slug: 'dog-energy-management-guide'
+    },
+    {
+      icon: <Coffee className="w-8 h-8 text-amber-600" />,
+      title: '카페 문화',
+      description: '강아지와 함께하는 카페 문화',
+      items: ['펫프렌들리 카페', '카페 매너', '카페 선택법', '카페 활동'],
+      slug: 'dog-cafe-culture-guide'
     }
   ]
 
