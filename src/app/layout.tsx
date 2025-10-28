@@ -23,6 +23,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
   },
+  alternates: {
+    types: {
+      'application/rss+xml': [
+        { url: '/rss', title: '어서오개 전체 RSS' },
+        { url: '/rss/blog', title: '어서오개 블로그 RSS' },
+        { url: '/rss/guide', title: '어서오개 가이드 RSS' },
+      ],
+    },
+  },
 };
 
 export default function RootLayout({
@@ -32,6 +41,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <meta name="naver-site-verification" content="de812d24cc21601e61c8a2af4b42d13fc2b5097f" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -41,6 +41,7 @@ export default function PlacesManagement() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [isCollecting, setIsCollecting] = useState(false)
   const [collectionStatus, setCollectionStatus] = useState<any>(null)
   const router = useRouter()
 
@@ -97,7 +98,7 @@ export default function PlacesManagement() {
       if (data.success) {
         alert('데이터 수집이 완료되었습니다!')
         fetchPlaces()
-        fetchCollectionStatus()
+        fetchRealCollectionStatus()
       } else {
         alert('데이터 수집 중 오류가 발생했습니다.')
       }
@@ -112,7 +113,7 @@ export default function PlacesManagement() {
   useEffect(() => {
     checkAuth()
     fetchPlaces()
-    fetchCollectionStatus()
+    fetchRealCollectionStatus()
   }, [currentPage, searchQuery, filterCategory, filterStatus])
 
   const checkAuth = async () => {
@@ -124,6 +125,53 @@ export default function PlacesManagement() {
       }
     } catch {
       router.push('/admin/login')
+    }
+  }
+
+  // 실제 데이터 수집 함수
+  const collectRealData = async (region?: { sido: string; sigungu?: string }) => {
+    setIsCollecting(true)
+    try {
+      const response = await fetch('/api/jobs/collect-real-places', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_TOKEN || 'test-token'}`
+        },
+        body: JSON.stringify({
+          region,
+          sources: ['google', 'kakao']
+        })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`데이터 수집 완료!\n추가: ${result.data.summary.added}개\n업데이트: ${result.data.summary.updated}개\n건너뜀: ${result.data.summary.skipped}개`)
+        fetchPlaces() // 목록 새로고침
+        fetchRealCollectionStatus() // 상태 새로고침
+      } else {
+        alert(`데이터 수집 실패: ${result.error.message}`)
+      }
+    } catch (error) {
+      console.error('Data collection error:', error)
+      alert('데이터 수집 중 오류가 발생했습니다.')
+    } finally {
+      setIsCollecting(false)
+    }
+  }
+
+  // 수집 상태 조회 함수 (실제 API용)
+  const fetchRealCollectionStatus = async () => {
+    try {
+      const response = await fetch('/api/jobs/collect-real-places')
+      const result = await response.json()
+      
+      if (result.success) {
+        setCollectionStatus(result.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch collection status:', error)
     }
   }
 
