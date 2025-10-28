@@ -33,49 +33,56 @@ export default function BlogPage() {
                 title: '강아지와 함께하는 제주도 여행기',
                 excerpt: '제주도의 아름다운 자연 속에서 강아지와 함께한 특별한 여행 이야기',
                 category: '여행기',
-                date: '2024.10.28'
+                date: '2024.10.28',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-cafe-selection-guide',
                 title: '강아지 카페 선택하는 방법',
                 excerpt: '강아지와 함께 갈 수 있는 카페를 선택할 때 고려해야 할 사항들',
                 category: '가이드',
-                date: '2024.10.25'
+                date: '2024.10.25',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-camping-preparation-guide',
                 title: '반려견과 함께하는 캠핑 준비물',
                 excerpt: '강아지와 캠핑을 갈 때 꼭 챙겨야 할 준비물과 주의사항',
                 category: '캠핑',
-                date: '2024.10.22'
+                date: '2024.10.22',
+                image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'gangnam-dog-cafe-best5',
                 title: '서울 강남구 강아지 동반 카페 베스트 5',
                 excerpt: '강남구에서 강아지와 함께 갈 수 있는 최고의 카페들을 소개합니다',
                 category: '카페',
-                date: '2024.10.20'
+                date: '2024.10.20',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-health-travel-guide',
                 title: '강아지 여행 시 건강 관리법',
                 excerpt: '여행 중 강아지의 건강을 지키는 방법과 응급처치 가이드',
                 category: '건강',
-                date: '2024.10.18'
+                date: '2024.10.18',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-international-travel-guide',
                 title: '반려견과 함께하는 해외여행 준비',
                 excerpt: '강아지와 함께 해외여행을 갈 때 필요한 서류와 준비사항',
                 category: '해외여행',
-                date: '2024.10.15'
+                date: '2024.10.15',
+                image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-training-basic-guide',
                 title: '강아지 기본 훈련의 모든 것',
                 excerpt: '강아지와 함께 살아가기 위한 필수 기본 훈련 방법과 팁',
                 category: '훈련',
-                date: '2024.11.02'
+                date: '2024.11.02',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-food-nutrition-guide',
@@ -96,49 +103,55 @@ export default function BlogPage() {
                 title: '강아지 문제 행동 해결하기',
                 excerpt: '일상에서 겪는 강아지의 문제 행동을 해결하는 실용적인 방법',
                 category: '행동',
-                date: '2024.11.10'
+                date: '2024.11.10',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-senior-care-guide',
                 title: '시니어 강아지 케어 완벽 가이드 - 노령견 돌보기',
                 excerpt: '7세 이상 시니어 강아지를 위한 특별한 케어 방법과 건강 관리법을 상세히 알려드립니다.',
                 category: '케어',
-                date: '2024.11.28'
+                date: '2024.11.28',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-winter-care-guide',
                 title: '강아지 겨울 케어 완벽 가이드 - 추위 대비법',
                 excerpt: '추운 겨울철 강아지 건강 관리와 안전한 겨울 보내기 방법을 상세히 알려드립니다.',
                 category: '계절케어',
-                date: '2024.12.01'
+                date: '2024.12.01',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-summer-care-guide',
                 title: '강아지 여름 케어 완벽 가이드 - 더위 대비법',
                 excerpt: '더운 여름철 강아지 건강 관리와 안전한 여름 보내기 방법을 상세히 알려드립니다.',
                 category: '계절케어',
-                date: '2024.12.03'
+                date: '2024.12.03',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-first-time-owner-guide',
                 title: '강아지 첫 입양 완벽 가이드 - 초보 집사 필수 지식',
                 excerpt: '강아지를 처음 키우는 분들을 위한 완벽한 입양 가이드와 초기 케어 방법을 상세히 알려드립니다.',
                 category: '입양',
-                date: '2024.12.05'
+                date: '2024.12.05',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               },
               {
                 slug: 'dog-multi-pet-household-guide',
                 title: '다중 반려동물 가정 완벽 가이드 - 여러 강아지 키우기',
                 excerpt: '여러 마리의 강아지를 함께 키우는 방법과 다중 반려동물 가정의 관리법을 상세히 알려드립니다.',
                 category: '관리',
-                date: '2024.12.07'
+                date: '2024.12.07',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-video overflow-hidden">
                     <img 
-                      src={`https://images.unsplash.com/photo-${1601758228041 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80`}
+                      src={post.image || `https://images.unsplash.com/photo-${1601758228041 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80`}
                       alt={post.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
