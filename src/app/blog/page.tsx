@@ -69,6 +69,41 @@ export default function BlogPage() {
                 excerpt: '강아지와 함께 해외여행을 갈 때 필요한 서류와 준비사항',
                 category: '해외여행',
                 date: '2024.10.15'
+              },
+              {
+                slug: 'dog-training-basic-guide',
+                title: '강아지 기본 훈련의 모든 것',
+                excerpt: '강아지와 함께 살아가기 위한 필수 기본 훈련 방법과 팁',
+                category: '훈련',
+                date: '2024.11.02'
+              },
+              {
+                slug: 'dog-food-nutrition-guide',
+                title: '강아지 사료 선택과 영양 관리',
+                excerpt: '강아지의 건강한 성장을 위한 올바른 사료 선택과 영양 관리법',
+                category: '영양',
+                date: '2024.11.05'
+              },
+              {
+                slug: 'dog-grooming-home-guide',
+                title: '집에서 하는 강아지 그루밍',
+                excerpt: '집에서 강아지를 직접 그루밍하는 방법과 주의사항',
+                category: '그루밍',
+                date: '2024.11.08'
+              },
+              {
+                slug: 'dog-behavior-problem-solving',
+                title: '강아지 문제 행동 해결하기',
+                excerpt: '일상에서 겪는 강아지의 문제 행동을 해결하는 실용적인 방법',
+                category: '행동',
+                date: '2024.11.10'
+              },
+              {
+                slug: 'dog-exercise-indoor-activities',
+                title: '실내에서 할 수 있는 강아지 운동',
+                excerpt: '날씨가 좋지 않을 때 집에서 강아지와 함께할 수 있는 운동과 놀이',
+                category: '운동',
+                date: '2024.11.12'
               }
             ].map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
