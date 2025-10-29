@@ -288,6 +288,186 @@ export const utilitiesData: UtilityItem[] = [
     slug: 'birthday-planner',
     category: 'planner',
     status: 'completed'
+  },
+  {
+    id: 'sleep-pattern-tracker',
+    title: '수면 패턴 추적기',
+    description: '강아지의 수면 시간과 패턴을 기록하고 분석',
+    icon: 'Moon',
+    slug: 'sleep-pattern-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'behavior-logger',
+    title: '행동 일지 작성기',
+    description: '강아지의 일상 행동을 기록하고 패턴 분석',
+    icon: 'BookOpen',
+    slug: 'behavior-logger',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'mood-tracker',
+    title: '기분 상태 추적기',
+    description: '강아지의 기분과 감정 상태를 일일 기록',
+    icon: 'Smile',
+    slug: 'mood-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'water-intake-calculator',
+    title: '수분 섭취량 계산기',
+    description: '체중과 활동량에 따른 적정 수분 섭취량 계산',
+    icon: 'Droplets',
+    slug: 'water-intake-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'toy-rotation-planner',
+    title: '장난감 로테이션 플래너',
+    description: '장난감을 순환하며 사용하는 계획 수립',
+    icon: 'Gamepad2',
+    slug: 'toy-rotation-planner',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'grooming-schedule',
+    title: '미용 일정 관리자',
+    description: '털 관리, 목욕, 발톱 관리 일정을 체계적으로 관리',
+    icon: 'Scissors',
+    slug: 'grooming-schedule',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'temperature-monitor',
+    title: '체온 모니터링기',
+    description: '강아지의 체온을 정기적으로 측정하고 기록',
+    icon: 'Thermometer',
+    slug: 'temperature-monitor',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'playtime-calculator',
+    title: '놀이 시간 계산기',
+    description: '연령과 견종에 따른 적정 놀이 시간 계산',
+    icon: 'Play',
+    slug: 'playtime-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'safety-checklist',
+    title: '안전 체크리스트',
+    description: '집안 안전사항을 정기적으로 점검하고 관리',
+    icon: 'Shield',
+    slug: 'safety-checklist',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'noise-desensitization',
+    title: '소음 적응 훈련 가이드',
+    description: '소음 공포증 극복을 위한 단계별 훈련 방법',
+    icon: 'Volume2',
+    slug: 'noise-desensitization',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'separation-anxiety-guide',
+    title: '분리불안 극복 가이드',
+    description: '분리불안 증상 완화를 위한 훈련과 관리법',
+    icon: 'Heart',
+    slug: 'separation-anxiety-guide',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'senior-care-planner',
+    title: '노령견 케어 플래너',
+    description: '노령견을 위한 특별한 케어 계획 수립',
+    icon: 'Clock',
+    slug: 'senior-care-planner',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-milestone-tracker',
+    title: '강아지 성장 단계 추적기',
+    description: '강아지의 성장 단계별 발달 상황 추적',
+    icon: 'TrendingUp',
+    slug: 'puppy-milestone-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'weather-activity-planner',
+    title: '날씨별 활동 플래너',
+    description: '날씨에 따른 적절한 활동 계획 수립',
+    icon: 'Cloud',
+    slug: 'weather-activity-planner',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'multi-pet-scheduler',
+    title: '다중 반려동물 일정 관리',
+    description: '여러 마리 반려동물의 일정을 통합 관리',
+    icon: 'Users',
+    slug: 'multi-pet-scheduler',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'enrichment-activities',
+    title: '환경 풍부화 활동 가이드',
+    description: '강아지의 정신적 자극을 위한 다양한 활동 제안',
+    icon: 'Puzzle',
+    slug: 'enrichment-activities',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'emergency-contacts',
+    title: '응급 연락처 관리',
+    description: '응급상황 시 필요한 연락처를 체계적으로 관리',
+    icon: 'Phone',
+    slug: 'emergency-contacts',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'health-symptom-tracker',
+    title: '건강 증상 추적기',
+    description: '건강 관련 증상과 변화를 상세히 기록',
+    icon: 'Activity',
+    slug: 'health-symptom-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'training-progress-tracker',
+    title: '훈련 진도 추적기',
+    description: '각종 훈련의 진도와 성과를 체계적으로 추적',
+    icon: 'Target',
+    slug: 'training-progress-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'socialization-progress',
+    title: '사회화 진도 추적기',
+    description: '사회화 훈련의 단계별 진도와 성과 추적',
+    icon: 'UserPlus',
+    slug: 'socialization-progress',
+    category: 'planner',
+    status: 'completed'
   }
 ]
 
