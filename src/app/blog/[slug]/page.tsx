@@ -7609,17 +7609,27 @@ function getRelatedPosts(currentSlug: string) {
     'dog-hiking-preparation-guide',
     'dog-senior-exercise-guide',
     'dog-puppy-socialization-guide',
-    'dog-meditation-guide'
+    'dog-meditation-guide',
+    'dog-yoga-therapy-guide',
+    'dog-art-therapy-guide',
+    'dog-dance-therapy-guide',
+    'dog-garden-therapy-guide',
+    'dog-reading-therapy-guide',
+    'dog-cooking-therapy-guide',
+    'dog-writing-therapy-guide',
+    'dog-photography-therapy-guide',
+    'dog-music-creation-guide'
   ];
   
   // 현재 포스트를 제외한 나머지 포스트들 중에서 랜덤하게 3개 선택
-  const otherPosts = allPosts.filter(post => post !== currentSlug);
+  const otherPosts = allPosts.filter(post => post !== currentSlug && blogPosts[post]);
   const shuffled = otherPosts.sort(() => 0.5 - Math.random());
   const selectedPosts = shuffled.slice(0, 3);
   
   // 선택된 포스트들의 상세 정보 반환
   return selectedPosts.map(slug => {
     const post = blogPosts[slug];
+    if (!post) return null;
     return {
       slug,
       title: post.title,
@@ -7628,152 +7638,7 @@ function getRelatedPosts(currentSlug: string) {
       date: post.date,
       image: post.image
     };
-  });
-}
-
-export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const slug = use(params);
-  
-  const post = blogPosts[slug];
-  
-  if (!post) {
-    notFound();
-  }
-
-  return (
-    {
-      slug: 'dog-international-travel-guide',
-      title: '반려견과 함께하는 해외여행 준비',
-      excerpt: '강아지와 함께 해외여행을 갈 때 필요한 서류와 준비사항',
-      category: '해외여행',
-      date: '2024.10.15',
-      image: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-senior-care-guide',
-      title: '노령견 케어 - 건강한 노년을 위한 관리법',
-      excerpt: '노령견의 건강한 노년을 위한 올바른 케어 방법과 주의사항',
-      category: '노령견',
-      date: '2024.12.13',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-winter-care-guide',
-      title: '강아지 겨울 관리 - 추위와 건조함 대비',
-      excerpt: '강아지의 겨울철 건강 관리를 위한 체계적인 케어 방법',
-      category: '계절관리',
-      date: '2024.12.14',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-summer-care-guide',
-      title: '강아지 여름 관리 - 더위와 습도 대비',
-      excerpt: '강아지의 여름철 건강 관리를 위한 체계적인 케어 방법',
-      category: '계절관리',
-      date: '2024.12.15',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-first-time-owner-guide',
-      title: '강아지 첫 입양 - 초보 집사 가이드',
-      excerpt: '강아지를 처음 입양하는 분들을 위한 완벽한 가이드',
-      category: '입양',
-      date: '2024.12.16',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-multi-pet-household-guide',
-      title: '다중 반려동물 가정 - 조화로운 공존',
-      excerpt: '여러 마리의 반려동물이 함께 사는 가정의 관리법',
-      category: '다중반려',
-      date: '2024.12.17',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-photography-tips-guide',
-      title: '강아지 사진 촬영 - 완벽한 순간 포착',
-      excerpt: '강아지의 귀여운 모습을 완벽하게 담는 사진 촬영 팁',
-      category: '사진',
-      date: '2024.12.18',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-socialization-guide',
-      title: '강아지 사회화 - 건강한 관계 형성',
-      excerpt: '강아지의 사회화를 통한 건강한 성격 형성과 관계 구축',
-      category: '사회화',
-      date: '2024.12.19',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-anxiety-management-guide',
-      title: '강아지 불안감 관리 - 마음의 평안 찾기',
-      excerpt: '강아지의 불안감을 이해하고 효과적으로 관리하는 방법',
-      category: '심리',
-      date: '2024.12.20',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-dental-care-guide',
-      title: '강아지 치아 관리 - 구강 건강 지키기',
-      excerpt: '강아지의 치아와 잇몸 건강을 위한 올바른 구강 관리법과 예방법',
-      category: '구강관리',
-      date: '2024.12.21',
-      image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-exercise-routine-guide',
-      title: '강아지 운동 루틴 - 체력과 건강 관리',
-      excerpt: '강아지의 나이와 체력에 맞는 효과적인 운동 루틴과 운동량 조절법',
-      category: '운동',
-      date: '2024.12.22',
-      image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-toy-selection-guide',
-      title: '강아지 장난감 선택 - 안전하고 재미있는 놀이',
-      excerpt: '강아지의 나이와 성격에 맞는 안전한 장난감 선택법과 놀이 가이드',
-      category: '놀이',
-      date: '2024.12.23',
-      image: 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-emergency-first-aid-guide',
-      title: '강아지 응급처치 - 위급상황 대응법',
-      excerpt: '강아지의 응급상황에서 즉시 해야 할 응급처치법과 응급센터 이용법',
-      category: '응급처치',
-      date: '2024.12.24',
-      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-sleep-environment-guide',
-      title: '강아지 수면 환경 - 편안한 잠자리 만들기',
-      excerpt: '강아지의 건강한 수면을 위한 최적의 환경 조성법과 수면 패턴 관리',
-      category: '수면',
-      date: '2024.12.25',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-seasonal-allergy-guide',
-      title: '강아지 계절 알레르기 - 관리와 예방법',
-      excerpt: '강아지의 계절별 알레르기 증상과 관리법, 예방을 위한 환경 조성',
-      category: '알레르기',
-      date: '2024.12.26',
-      image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      slug: 'dog-communication-signals-guide',
-      title: '강아지 소통 신호 - 행동과 감정 이해하기',
-      excerpt: '강아지의 몸짓, 소리, 행동을 통해 나타내는 감정과 의사소통 신호 해석법',
-      category: '소통',
-      date: '2024.12.27',
-      image: 'https://images.unsplash.com/photo-1601758228041-4a72aa1c71c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'
-    }
-  ]
-
-  // 현재 포스트를 제외한 나머지 포스트 중 3개를 랜덤하게 선택
-  const otherPosts = allPosts.filter(post => post.slug !== currentSlug)
-  return otherPosts.slice(0, 3)
+  }).filter((post): post is NonNullable<typeof post> => post !== null);
 }
 
 // 정적 파라미터 생성

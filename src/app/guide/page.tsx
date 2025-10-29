@@ -1,20 +1,13 @@
-import { Metadata } from 'next'
+'use client'
+
 import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Clock, Compass, Map, Navigation, Puzzle } from 'lucide-react'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: '반려가이드 | 어서오개',
-  description: '강아지와 함께하는 여행을 위한 완벽한 가이드와 팁을 확인해보세요.',
-  keywords: '반려가이드, 강아지 여행 가이드, 반려견 동반 여행, 강아지 케어',
-  openGraph: {
-    title: '반려가이드 | 어서오개',
-    description: '강아지와 함께하는 여행을 위한 완벽한 가이드와 팁을 확인해보세요.',
-    type: 'website',
-    locale: 'ko_KR',
-  },
-}
+import { useState } from 'react'
 
 export default function GuidePage() {
+  const [currentPage, setCurrentPage] = useState(1)
+  const guidesPerPage = 9
+
   const guideCategories = [
     {
       icon: <Car className="w-8 h-8 text-blue-500" />,
@@ -424,6 +417,12 @@ export default function GuidePage() {
     }
   ]
 
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(guideCategories.length / guidesPerPage)
+  const startIndex = (currentPage - 1) * guidesPerPage
+  const endIndex = startIndex + guidesPerPage
+  const currentGuides = guideCategories.slice(startIndex, endIndex)
+
   return (
     <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
@@ -437,7 +436,7 @@ export default function GuidePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {guideCategories.map((category, index) => (
+            {currentGuides.map((category, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-center space-x-3 mb-4">
                   {category.icon}
@@ -458,6 +457,43 @@ export default function GuidePage() {
               </div>
             ))}
           </div>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-12">
+              <nav className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  이전
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-2 rounded-md ${
+                      currentPage === page
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  다음
+                </button>
+              </nav>
+            </div>
+          )}
 
           {/* 추가 정보 섹션 */}
           <div className="mt-16 bg-gray-50 rounded-lg p-8">

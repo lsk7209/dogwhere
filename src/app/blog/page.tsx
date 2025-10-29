@@ -1,33 +1,13 @@
-import { Metadata } from 'next'
-import Link from 'next/link'
+'use client'
 
-export const metadata: Metadata = {
-  title: '블로그 | 어서오개',
-  description: '강아지와 함께하는 여행 이야기와 유용한 정보를 확인해보세요.',
-  keywords: '강아지 블로그, 반려견 여행, 강아지 동반 여행 이야기',
-  openGraph: {
-    title: '블로그 | 어서오개',
-    description: '강아지와 함께하는 여행 이야기와 유용한 정보를 확인해보세요.',
-    type: 'website',
-    locale: 'ko_KR',
-  },
-}
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function BlogPage() {
-  return (
-    <div className="min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              블로그 📝
-            </h1>
-            <p className="text-xl text-gray-600">
-              강아지와 함께하는 특별한 여행 이야기와 유용한 정보
-            </p>
-          </div>
+  const [currentPage, setCurrentPage] = useState(1)
+  const postsPerPage = 9
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
+  const allPosts = [
               {
                 slug: 'jeju-dog-travel-guide',
                 title: '강아지와 함께하는 제주도 여행기',
@@ -387,8 +367,101 @@ export default function BlogPage() {
                 category: '명상',
                 date: '2025.01.17',
                 image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-yoga-therapy-guide',
+                title: '강아지 요가 테라피 - 몸과 마음의 조화',
+                excerpt: '강아지와 함께하는 요가를 통한 신체적, 정신적 건강 향상',
+                category: '요가테라피',
+                date: '2025.01.18',
+                image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-art-therapy-guide',
+                title: '강아지 아트 테라피 - 창작을 통한 치유',
+                excerpt: '강아지와 함께하는 미술 활동을 통한 창의성과 정서적 안정',
+                category: '아트테라피',
+                date: '2025.01.19',
+                image: 'https://images.unsplash.com/photo-1513473448272-20e3e2524a5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-dance-therapy-guide',
+                title: '강아지 댄스 테라피 - 리듬과 움직임의 힘',
+                excerpt: '강아지와 함께하는 댄스를 통한 체력 향상과 정서적 표현',
+                category: '댄스테라피',
+                date: '2025.01.20',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-garden-therapy-guide',
+                title: '강아지 가든 테라피 - 자연과 함께하는 치유',
+                excerpt: '강아지와 함께하는 정원 가꾸기를 통한 자연 치유법',
+                category: '가든테라피',
+                date: '2025.01.21',
+                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-reading-therapy-guide',
+                title: '강아지 리딩 테라피 - 책 읽기와 함께하는 평화',
+                excerpt: '강아지와 함께하는 독서를 통한 정서적 안정과 유대감 강화',
+                category: '리딩테라피',
+                date: '2025.01.22',
+                image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-cooking-therapy-guide',
+                title: '강아지 쿠킹 테라피 - 요리와 함께하는 즐거움',
+                excerpt: '강아지와 함께하는 요리를 통한 창의성과 만족감 향상',
+                category: '쿠킹테라피',
+                date: '2025.01.23',
+                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-writing-therapy-guide',
+                title: '강아지 라이팅 테라피 - 글쓰기로 마음 표현하기',
+                excerpt: '강아지와 함께하는 일기 쓰기를 통한 감정 표현과 치유',
+                category: '라이팅테라피',
+                date: '2025.01.24',
+                image: 'https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-photography-therapy-guide',
+                title: '강아지 포토 테라피 - 사진으로 추억 만들기',
+                excerpt: '강아지와 함께하는 사진 촬영을 통한 추억 만들기와 정서적 만족',
+                category: '포토테라피',
+                date: '2025.01.25',
+                image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
+              },
+              {
+                slug: 'dog-music-creation-guide',
+                title: '강아지 음악 창작 - 함께 만드는 멜로디',
+                excerpt: '강아지와 함께하는 음악 창작을 통한 창의성과 유대감 강화',
+                category: '음악창작',
+                date: '2025.01.26',
+                image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
               }
-            ].map((post, index) => (
+            ]
+
+  // 페이지네이션 계산
+  const totalPages = Math.ceil(allPosts.length / postsPerPage)
+  const startIndex = (currentPage - 1) * postsPerPage
+  const endIndex = startIndex + postsPerPage
+  const currentPosts = allPosts.slice(startIndex, endIndex)
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            블로그 📝
+          </h1>
+          <p className="text-xl text-gray-600">
+            강아지와 함께하는 특별한 여행 이야기와 유용한 정보
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentPosts.map((post, index) => (
               <Link key={index} href={`/blog/${post.slug}`} className="block">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="aspect-video overflow-hidden">
@@ -415,8 +488,45 @@ export default function BlogPage() {
                 </div>
               </Link>
             ))}
-          </div>
         </div>
+
+        {/* 페이지네이션 */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-12">
+            <nav className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                이전
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-2 rounded-md ${
+                    currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                다음
+              </button>
+            </nav>
+          </div>
+        )}
       </div>
+    </div>
   )
 }
