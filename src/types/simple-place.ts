@@ -14,6 +14,8 @@ export interface SimplePlace {
   website?: string
   rating: number
   reviewCount: number
+  imageUrl?: string | null
+  features?: string[]
   source: string
   sourceId: string
   isVerified: boolean

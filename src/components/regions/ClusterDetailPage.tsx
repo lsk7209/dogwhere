@@ -1,24 +1,91 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Star, Users, Clock, Car, Train, Filter, ChevronRight } from 'lucide-react'
 import { RegionClusterUtils, RegionKey } from '@/lib/regions/clusters'
+import type { SimplePlace } from '@/types/simple-place'
 
 interface ClusterDetailPageProps {
   region: RegionKey
   regionName: string
   clusterId: string
+  initialPlaces?: SimplePlace[]
 }
 
-export function ClusterDetailPage({ region, regionName, clusterId }: ClusterDetailPageProps) {
+export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces = [] }: ClusterDetailPageProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'popularity' | 'rating' | 'distance'>('popularity')
+  const [places, setPlaces] = useState<SimplePlace[]>(initialPlaces)
+  const [loading, setLoading] = useState(!initialPlaces.length)
 
   const clusters = RegionClusterUtils.getClustersByRegion(region)
   const cluster = clusters.find(c => c.id === clusterId)
   const regions = RegionClusterUtils.getRegionsByCluster(region, clusterId)
   const stats = RegionClusterUtils.getClusterStats(region, clusterId)
+
+  // 클러스터에 포함된 지역 목록에서 시군구 추출
+  const clusterSigunguList = regions.map(r => {
+    // '강남구' -> '강남구', 'gangnam-gu' -> '강남구'
+    const sig = r.sig || r.name
+    return sig.replace('-gu', '구').replace('-gun', '군').replace('-si', '시')
+  })
+
+  // 장소 데이터 가져오기
+  useEffect(() => {
+    if (initialPlaces.length > 0) {
+      setPlaces(initialPlaces)
+      setLoading(false)
+      return
+    }
+
+    async function fetchPlaces() {
+      try {
+        const response = await fetch('/api/simple-places')
+        if (!response.ok) throw new Error('Failed to fetch places')
+        
+        const data = await response.json()
+        if (data.success && data.data.places) {
+          // 클러스터에 포함된 지역의 장소만 필터링
+          const filteredPlaces = data.data.places.filter((place: SimplePlace) => {
+            if (!place.sigungu) return false
+            return clusterSigunguList.some(sig => place.sigungu?.includes(sig) || place.address?.includes(sig))
+          })
+          setPlaces(filteredPlaces)
+        }
+      } catch (error) {
+        console.error('Error fetching places:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPlaces()
+  }, [clusterId, initialPlaces, clusterSigunguList])
+
+  // 필터링 및 정렬
+  const filteredPlaces = places
+    .filter(place => {
+      if (selectedCategory === 'all') return true
+      // 카테고리 매핑
+      const categoryMap: Record<string, string[]> = {
+        'dog-cafe': ['cafe'],
+        'dog-park': ['outdoor'],
+        'dog-hotel': ['hotel'],
+        'restaurant': ['restaurant', 'cafe']
+      }
+      const categories = categoryMap[selectedCategory] || [selectedCategory]
+      return categories.includes(place.category)
+    })
+    .sort((a, b) => {
+      if (sortBy === 'rating') {
+        return (b.rating || 0) - (a.rating || 0)
+      } else if (sortBy === 'popularity') {
+        return (b.reviewCount || 0) - (a.reviewCount || 0)
+      }
+      return 0
+    })
+    .slice(0, 12) // 최대 12개
 
   if (!cluster) {
     return (
@@ -203,43 +270,84 @@ export function ClusterDetailPage({ region, regionName, clusterId }: ClusterDeta
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">{cluster.name} 추천 장소</h2>
-              <p className="text-gray-600">클러스터 내 인기 강아지 동반 장소들</p>
+              <p className="text-gray-600">
+                클러스터 내 인기 강아지 동반 장소들 ({filteredPlaces.length}개)
+              </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video overflow-hidden">
-                  <img 
-                    src={`https://images.unsplash.com/photo-${1601758228041 + item}?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80`}
-                    alt={`${cluster.name} 추천 장소 ${item}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    {cluster.name} 추천 장소 {item}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {cluster.description}에 위치한 강아지 동반 장소입니다.
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">
-                        O-Dog {85 + item * 2}
-                      </span>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
-                        {cluster.type === 'hotspot' ? '핫스팟' : '추천'}
-                      </span>
+          {loading ? (
+            <div className="text-center py-20">
+              <p className="text-gray-500">장소 정보를 불러오는 중...</p>
+            </div>
+          ) : filteredPlaces.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-500 mb-4">이 클러스터에는 등록된 장소가 없습니다.</p>
+              <p className="text-gray-400 text-sm">곧 추가될 예정입니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPlaces.map((place) => {
+                const oDogScore = Math.min(100, Math.max(80, Math.floor((place.rating || 0) * 20 + (place.reviewCount || 0) / 10)))
+                
+                return (
+                  <Link
+                    key={place.id}
+                    href={`/place/${place.slug}`}
+                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow block"
+                  >
+                    <div className="aspect-video overflow-hidden bg-gray-100">
+                      {place.imageUrl ? (
+                        <img 
+                          src={place.imageUrl}
+                          alt={place.name}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                          <span className="text-6xl">🐕</span>
+                        </div>
+                      )}
                     </div>
-                    <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                      자세히 보기 →
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2 text-gray-900">
+                        {place.name}
+                      </h3>
+                      {place.address && (
+                        <div className="flex items-center text-gray-600 text-sm mb-2">
+                          <MapPin className="w-3 h-3 mr-1" />
+                          <span className="truncate">{place.address}</span>
+                        </div>
+                      )}
+                      {place.description && (
+                        <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                          {place.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2 flex-wrap gap-2">
+                          {place.rating && (
+                            <span className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                              <Star className="w-3 h-3 mr-1 fill-current" />
+                              {place.rating.toFixed(1)}
+                            </span>
+                          )}
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                            O-Dog {oDogScore}
+                          </span>
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                            {cluster.type === 'hotspot' ? '핫스팟' : '추천'}
+                          </span>
+                        </div>
+                        <span className="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                          자세히 보기 →
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </section>
 
         {/* 접근성 정보 */}

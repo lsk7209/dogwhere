@@ -1,10 +1,12 @@
 import { Metadata } from 'next'
 import { ClusterDetailPage } from '@/components/regions/ClusterDetailPage'
+import { getPlacesByRegion } from '@/lib/database/simple-places'
+import { RegionClusterUtils } from '@/lib/regions/clusters'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     clusterId: string
-  }
+  }>
 }
 
 // 정적 파라미터 생성
@@ -21,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const clusterId = params.clusterId
+  const { clusterId } = await params
   
   // 실제 운영에서는 클러스터 정보를 가져와서 동적으로 생성
   const clusterNames: Record<string, string> = {
@@ -49,12 +51,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default function SeoulClusterPage({ params }: PageProps) {
+export default async function SeoulClusterPage({ params }: PageProps) {
+  const { clusterId } = await params
+  
+  // 클러스터에 포함된 지역 목록 가져오기
+  const regions = RegionClusterUtils.getRegionsByCluster('seoul', clusterId)
+  const clusterSigunguList = regions.map(r => {
+    const sig = r.sig || r.name
+    return sig.replace('-gu', '구').replace('-gun', '군').replace('-si', '시')
+  })
+
+  // 해당 지역의 장소 데이터 가져오기
+  const allPlaces = getPlacesByRegion('서울특별시')
+  const clusterPlaces = allPlaces.filter(place => {
+    if (!place.sigungu) return false
+    return clusterSigunguList.some(sig => place.sigungu?.includes(sig) || place.address?.includes(sig))
+  }).slice(0, 12) // 최대 12개
+
   return (
     <ClusterDetailPage 
       region="seoul" 
       regionName="서울" 
-      clusterId={params.clusterId} 
+      clusterId={clusterId}
+      initialPlaces={clusterPlaces}
     />
   )
 }
