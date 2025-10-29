@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, MapPin, Calendar, BookOpen, Heart } from 'lucide-react'
+import { Menu, X, MapPin, Calendar, BookOpen, Heart, Wrench } from 'lucide-react'
 
 interface HeaderProps {
   className?: string
@@ -36,7 +36,7 @@ export default function Header({ className = '' }: HeaderProps) {
     { href: '/', label: '홈', icon: Heart },
     { href: '/recommendations/today', label: '오늘의 추천', icon: Calendar },
     { href: '/seoul', label: '지역 탐색', icon: MapPin },
-    { href: '/events', label: '행사', icon: Calendar },
+    { href: '/utilities', label: '유틸리티', icon: Wrench },
     { href: '/blog', label: '블로그', icon: BookOpen },
     { href: '/guide', label: '반려가이드', icon: BookOpen }
   ]
