@@ -5,6 +5,12 @@ import Providers from "./providers";
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
+// 커스텀 스크립트 슬롯: 서버/빌드 환경에서 기본값(null)로 안전 선언
+const headCustomScripts: React.ReactNode = null;
+const bodyCustomScripts: React.ReactNode = null;
+const footerCustomScripts: React.ReactNode = null;
+const customBodyEndScripts: React.ReactNode = null;
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
