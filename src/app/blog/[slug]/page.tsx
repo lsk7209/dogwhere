@@ -2500,11 +2500,42 @@ const faqJsonLd = {
 
 // FAQ 섹션 컴포넌트 (빌드 시 참조 누락 방지)
 function FAQSection() {
+  const faqItems = [
+    {
+      question: '강아지 동반 장소는 어떻게 찾을 수 있나요?',
+      answer:
+        '어서오개에서는 다양한 필터(지역, 유형, 평가 등)를 통해 전국 강아지 동반 카페, 식당, 호텔, 공원 정보를 쉽게 탐색할 수 있습니다. 상단 메뉴나 홈에서 오늘의 추천·지역별 탐색 메뉴를 활용해 최적의 장소를 찾으세요.'
+    },
+    {
+      question: '강아지와 외출 시 꼭 지켜야 할 안전수칙은 무엇인가요?',
+      answer:
+        '리드줄 착용, 반려동물 동반허용 안내 확인, 주변 사람 배려(배변/짖음 관리), 예방접종·건강 상태 확인이 필수입니다. 상세 안전수칙은 <a href="/guide/dog-safety-travel-guide" className="text-blue-700 underline">[안전 가이드]</a>에서 심층 내용 확인이 가능합니다.'
+    },
+    {
+      question: '블로그/가이드 정보는 신뢰할 수 있나요?',
+      answer:
+        '어서오개는 농림축산검역본부 등 공신력 있는 기관 자료, 현장 제보, 자체 검증 절차를 거쳐 신뢰도 높은 콘텐츠만 제공합니다. 정보 출처와 최신성은 각 게시글 내 안내와 <a href="https://www.qia.go.kr" rel="nofollow noopener noreferrer" target="_blank" className="text-blue-700 underline">검역본부(공식사이트)</a>에서도 확인할 수 있습니다.'
+    }
+  ]
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer.replace(/<[^>]*>/g, '')
+      }
+    }))
+  }
+
   return (
     <section className="mt-16 mb-10">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">자주 묻는 질문 (FAQ)</h2>
       <div className="space-y-8">
-        {faqItems?.map((faq, i) => (
+        {faqItems.map((faq, i) => (
           <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
             <h3 className="text-lg font-semibold text-blue-800 mb-2">Q. {faq.question}</h3>
             <div className="text-gray-800 text-base" dangerouslySetInnerHTML={{ __html: faq.answer }} />
