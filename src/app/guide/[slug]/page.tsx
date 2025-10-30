@@ -2033,6 +2033,83 @@ const guideData: Record<string, {
   }
 }
 
+// 목록 페이지의 모든 가이드 슬러그(미구현 포함)
+const allGuideSlugs: string[] = [
+  'dog-travel-transport-guide','dog-accommodation-guide','dog-meal-travel-guide','dog-safety-travel-guide','dog-health-travel-guide','dog-international-travel-guide','dog-travel-photography-guide','dog-regional-travel-guide','dog-seasonal-travel-guide','dog-family-travel-guide','dog-special-experience-guide','dog-socialization-guide','dog-grooming-guide','dog-exercise-guide','dog-behavior-guide','dog-nutrition-guide','puppy-care-guide','dog-emergency-guide','dog-advanced-training-guide','dog-energy-management-guide','dog-cafe-culture-guide','dog-music-therapy-guide','dog-interactive-play-guide','dog-creative-activities-guide','dog-fitness-training-guide','dog-nature-activities-guide','dog-sunlight-therapy-guide','dog-sleep-management-guide','dog-respiratory-health-guide','dog-temperature-management-guide','dog-hydration-management-guide','dog-mental-health-guide','dog-goal-setting-guide','dog-reward-system-guide','dog-toys-gifts-guide','dog-daily-routine-guide','dog-direction-training-guide','dog-geography-learning-guide','dog-navigation-training-guide','dog-emotion-communication-guide','dog-immunity-boost-guide','dog-cardio-exercise-guide','dog-cognitive-enhancement-guide','dog-diet-therapy-guide','dog-preventive-medicine-guide','dog-multi-pet-management-guide','dog-professional-training-guide','dog-senior-care-guide'
+]
+
+// 미구현 슬러그용 기본 가이드 생성기
+function buildFallbackGuide(slug: string) {
+  const titleMap: Record<string, string> = {
+    'dog-health-travel-guide': '여행 중 건강 관리',
+    'dog-international-travel-guide': '해외여행 준비',
+    'dog-travel-photography-guide': '여행 사진 촬영',
+    'dog-regional-travel-guide': '지역별 여행지',
+    'dog-seasonal-travel-guide': '계절별 여행',
+    'dog-family-travel-guide': '가족 여행',
+    'dog-special-experience-guide': '특별한 경험',
+    'dog-socialization-guide': '사회화 훈련',
+    'dog-grooming-guide': '그루밍 관리',
+    'dog-exercise-guide': '운동 및 활동',
+    'dog-behavior-guide': '행동 이해 및 교정',
+    'dog-nutrition-guide': '영양 및 사료 선택',
+    'puppy-care-guide': '퍼피 케어',
+    'dog-emergency-guide': '응급처치',
+    'dog-advanced-training-guide': '고급 훈련',
+    'dog-energy-management-guide': '에너지 관리',
+    'dog-cafe-culture-guide': '카페 문화',
+    'dog-mental-health-guide': '정신 건강 관리',
+    'dog-goal-setting-guide': '목표 설정과 성취',
+    'dog-reward-system-guide': '보상 시스템',
+    'dog-toys-gifts-guide': '선물과 장난감',
+    'dog-daily-routine-guide': '일상 루틴 관리',
+    'dog-direction-training-guide': '방향 감각 훈련',
+    'dog-geography-learning-guide': '지리 학습',
+    'dog-navigation-training-guide': '내비게이션 훈련',
+    'dog-cardio-exercise-guide': '유산소 운동',
+    'dog-cognitive-enhancement-guide': '인지 능력 향상',
+    'dog-diet-therapy-guide': '식이 요법과 다이어트',
+    'dog-preventive-medicine-guide': '예방 의학',
+    'dog-multi-pet-management-guide': '다중 반려동물 관리',
+    'dog-professional-training-guide': '전문 훈련 기법',
+    'dog-senior-care-guide': '노령견 케어'
+  }
+  const prettyTitle = titleMap[slug] || slug.replace(/-/g, ' ').replace(/dog|puppy/gi,'').trim()
+  return {
+    title: prettyTitle,
+    description: '해당 주제의 기본 체크리스트와 안전 수칙을 우선 제공합니다. 상세 원고는 순차 업데이트됩니다.',
+    category: '가이드',
+    difficulty: '초급',
+    readTime: '6분',
+    author: '어서오개 팀',
+    date: new Date().toISOString().slice(0,10),
+    rating: 4.7,
+    icon: <BookOpen className="w-8 h-8 text-blue-600" />,
+    content: `# ${prettyTitle}
+
+본 가이드는 곧 더 풍부한 사례와 이미지로 업데이트될 예정입니다. 그 전까지 아래 핵심 내용을 참고하세요.
+
+## ✅ 핵심 체크리스트
+- 기본 준비물 점검 및 환경/안전 사전 확인
+- 스트레스 신호 관찰과 완화 전략 준비
+- 응급 연락처/근처 병원 파악, 기록 유지
+
+## 🛡️ 안전 수칙
+- 무리한 활동은 피하고 휴식 간격을 충분히 둡니다.
+- 날씨(온도/습도)와 공간(미끄럼, 날카로운 물체) 위험요소를 점검합니다.
+- 위생(물/식기/손)과 소음(소리 민감성)을 관리합니다.
+
+## 💡 실전 팁
+- 짧고 긍정적인 경험을 반복해 자신감을 키우세요.
+- 간식/칭찬으로 좋은 행동을 즉시 강화하세요.
+- 체크리스트를 기록해 개선 포인트를 찾으세요.
+
+## 📚 다음 업데이트 예고
+- 단계별 상세 가이드, 사진/도표, FAQ, 관련 유틸리티 연동을 순차 추가합니다.
+`
+  }
+}
+
 // 관련 가이드 가져오기 함수
 function getRelatedGuides(currentSlug: string) {
   const allGuides = [
@@ -2143,17 +2220,16 @@ function getRelatedGuides(currentSlug: string) {
 
 // 정적 파라미터 생성
 export async function generateStaticParams() {
-  return Object.keys(guideData).map(slug => ({ slug }))
+  const union = Array.from(new Set([...Object.keys(guideData), ...allGuideSlugs]))
+  return union.map(slug => ({ slug }))
 }
 
 export async function generateMetadata({ params }: GuideDetailPageProps): Promise<Metadata> {
   const { slug } = await params
-  const guide = guideData[slug]
+  const guide = guideData[slug] || buildFallbackGuide(slug)
   
   if (!guide) {
-    return {
-      title: '가이드를 찾을 수 없습니다 | 어서오개',
-    }
+    return { title: '가이드를 찾을 수 없습니다 | 어서오개' }
   }
 
   return {
@@ -2171,16 +2247,14 @@ export async function generateMetadata({ params }: GuideDetailPageProps): Promis
 
 export default async function GuideDetailPage({ params }: GuideDetailPageProps) {
   const { slug } = await params
-  const guide = guideData[slug]
+  const guide = guideData[slug] || buildFallbackGuide(slug)
 
   if (!guide) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">가이드를 찾을 수 없습니다</h1>
-          <Link href="/guide" className="text-blue-600 hover:text-blue-800">
-            ← 반려가이드로 돌아가기
-          </Link>
+          <Link href="/guide" className="text-blue-600 hover:text-blue-800">← 반려가이드로 돌아가기</Link>
         </div>
       </div>
     )
