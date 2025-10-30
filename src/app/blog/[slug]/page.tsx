@@ -8791,7 +8791,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   const keywords = post.seoKeywords?.join(', ') || post.tags.join(', ')
-  const canonicalUrl = `https://eoseo-ogae.com/blog/${slug}`
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
+  const canonicalUrl = `${baseUrl}/blog/${slug}`
 
   return {
     title: `${post.title} | 어서오개 블로그`,
@@ -8805,7 +8806,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       address: false,
       telephone: false,
     },
-    metadataBase: new URL('https://eoseo-ogae.com'),
+    metadataBase: new URL(baseUrl),
     alternates: {
       canonical: canonicalUrl,
     },
@@ -8849,11 +8850,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
         'max-snippet': -1,
       },
     },
-    verification: {
-      google: 'your-google-verification-code',
-      yandex: 'your-yandex-verification-code',
-      yahoo: 'your-yahoo-verification-code',
-    },
+    // site verification handled globally in root layout
     category: post.category,
     other: {
       'article:author': post.author,
@@ -9034,6 +9031,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 >
                   {post.content}
                 </ReactMarkdown>
+                {/* SEO/CTA 블록: 내부/외부 링크 */}
+                <div className="mt-8 border-t pt-6">
+                  <div className="bg-blue-50 rounded-lg p-5">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">더 알아보기</h3>
+                    <ul className="list-disc list-inside text-gray-700 space-y-1">
+                      <li>
+                        <Link href="/guide" className="text-blue-600 hover:text-blue-800">반려가이드 모아보기</Link>
+                      </li>
+                      <li>
+                        <Link href="/utilities" className="text-blue-600 hover:text-blue-800">유틸리티 도구로 계산/기록하기</Link>
+                      </li>
+                      <li>
+                        <a href="https://www.qia.go.kr" target="_blank" rel="noopener noreferrer nofollow" className="text-blue-600 hover:text-blue-800">농림축산검역본부(공식) 건강·검역 안내</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

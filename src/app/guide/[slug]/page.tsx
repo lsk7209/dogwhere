@@ -2227,6 +2227,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: GuideDetailPageProps): Promise<Metadata> {
   const { slug } = await params
   const guide = guideData[slug] || buildFallbackGuide(slug)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dogswhere.com'
   
   if (!guide) {
     return { title: '가이드를 찾을 수 없습니다 | 어서오개' }
@@ -2236,6 +2237,10 @@ export async function generateMetadata({ params }: GuideDetailPageProps): Promis
     title: `${guide.title} | 어서오개 반려가이드`,
     description: guide.description,
     keywords: `${guide.category}, 강아지 교통편, 반려견 여행, 강아지 동반`,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `${baseUrl}/guide/${slug}`,
+    },
     openGraph: {
       title: guide.title,
       description: guide.description,
