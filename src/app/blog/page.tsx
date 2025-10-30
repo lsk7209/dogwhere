@@ -445,11 +445,18 @@ export default function BlogPage() {
               }
             ]
 
+  // 상위 카테고리만 노출 (개수 축소)
   const categories = useMemo(() => {
-    const set = new Set<string>()
-    allPosts.forEach(p => set.add(p.category))
-    return ['all', ...Array.from(set)]
-  }, [])
+    const counts = new Map<string, number>()
+    for (const p of allPosts) {
+      counts.set(p.category, (counts.get(p.category) || 0) + 1)
+    }
+    const top = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6) // 상위 6개만 노출
+      .map(([name]) => name)
+    return ['all', ...top]
+  }, [allPosts])
 
   const filtered = useMemo(() => {
     let base = allPosts
@@ -504,7 +511,7 @@ export default function BlogPage() {
                 <option value="alpha">가나다순</option>
               </select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
               {categories.map((c)=> (
                 <button key={c}
                   onClick={()=>{ setCategory(c); setCurrentPage(1) }}
