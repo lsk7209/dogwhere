@@ -1,10 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 export default function BlogPage() {
   const [currentPage, setCurrentPage] = useState(1)
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<'recent' | 'alpha'>('recent')
+  const [category, setCategory] = useState<'all' | string>('all')
   const postsPerPage = 9
 
   const allPosts = [
@@ -442,22 +445,75 @@ export default function BlogPage() {
               }
             ]
 
+  const categories = useMemo(() => {
+    const set = new Set<string>()
+    allPosts.forEach(p => set.add(p.category))
+    return ['all', ...Array.from(set)]
+  }, [])
+
+  const filtered = useMemo(() => {
+    let base = allPosts
+    if (category !== 'all') base = base.filter(p => p.category === category)
+    const q = query.trim().toLowerCase()
+    if (q) base = base.filter(p => (
+      p.title.toLowerCase().includes(q) ||
+      p.excerpt.toLowerCase().includes(q) ||
+      p.slug.toLowerCase().includes(q)
+    ))
+    const sorted = [...base]
+    if (sort === 'alpha') sorted.sort((a,b)=>a.title.localeCompare(b.title))
+    else sorted.sort((a,b)=> (b.date || '').localeCompare(a.date || ''))
+    return sorted
+  }, [allPosts, category, query, sort])
+
   // 페이지네이션 계산
-  const totalPages = Math.ceil(allPosts.length / postsPerPage)
+  const totalPages = Math.ceil(filtered.length / postsPerPage)
   const startIndex = (currentPage - 1) * postsPerPage
   const endIndex = startIndex + postsPerPage
-  const currentPosts = allPosts.slice(startIndex, endIndex)
+  const currentPosts = filtered.slice(startIndex, endIndex)
 
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             블로그 📝
           </h1>
           <p className="text-xl text-gray-600">
             강아지와 함께하는 특별한 여행 이야기와 유용한 정보
           </p>
+        </div>
+
+        {/* 검색/정렬/카테고리 */}
+        <div className="max-w-4xl mx-auto mb-8">
+          <input
+            value={query}
+            onChange={(e)=>{ setQuery(e.target.value); setCurrentPage(1) }}
+            placeholder="검색 (예: 겨울, 사회화, 여행, 케어)"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="mt-3 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">정렬:</label>
+              <select
+                value={sort}
+                onChange={(e)=>{ setSort(e.target.value as any); setCurrentPage(1) }}
+                className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm"
+              >
+                <option value="recent">최신순</option>
+                <option value="alpha">가나다순</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              {categories.map((c)=> (
+                <button key={c}
+                  onClick={()=>{ setCategory(c); setCurrentPage(1) }}
+                  className={`px-3 py-2 rounded-lg text-sm border transition-colors ${category===c ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+                >{c}</button>
+              ))}
+            </div>
+            <span className="text-sm text-gray-500">총 {filtered.length}개</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
