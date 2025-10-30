@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { utilitiesData, getCompletedUtilities } from '@/lib/utilities/utilities-data'
 import * as LucideIcons from 'lucide-react'
@@ -8,13 +8,33 @@ import * as LucideIcons from 'lucide-react'
 export default function UtilitiesPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<'popular' | 'alpha'>('popular')
   const utilitiesPerPage = 9
 
   const completedUtilities = getCompletedUtilities()
   
-  const filteredUtilities = selectedCategory === 'all'
-    ? completedUtilities
-    : completedUtilities.filter(util => util.category === selectedCategory)
+  const filteredUtilities = useMemo(() => {
+    const base = selectedCategory === 'all'
+      ? completedUtilities
+      : completedUtilities.filter(util => util.category === selectedCategory)
+    const q = query.trim().toLowerCase()
+    const searched = q
+      ? base.filter(u =>
+          u.title.toLowerCase().includes(q) ||
+          u.description.toLowerCase().includes(q) ||
+          u.slug.toLowerCase().includes(q)
+        )
+      : base
+    const sorted = [...searched]
+    if (sort === 'alpha') {
+      sorted.sort((a, b) => a.title.localeCompare(b.title))
+    } else {
+      // 인기순(임시): 설명 길이와 제목 길이로 가중치 → 더 풍부한 카드 우선 노출
+      sorted.sort((a, b) => (b.description.length + b.title.length) - (a.description.length + a.title.length))
+    }
+    return sorted
+  }, [completedUtilities, selectedCategory, query, sort])
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredUtilities.length / utilitiesPerPage)
@@ -59,6 +79,30 @@ export default function UtilitiesPage() {
           <p className="text-xl text-gray-600">
             강아지와 함께하는 생활을 더욱 편리하게 만들어주는 다양한 도구들
           </p>
+        </div>
+
+        {/* 검색/정렬/카테고리 */}
+        <div className="mb-6 max-w-3xl mx-auto">
+          <input
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setCurrentPage(1) }}
+            placeholder="유틸리티 검색 (예: 급여, 체온, 산책, 스트레스)"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600">정렬:</label>
+              <select
+                value={sort}
+                onChange={(e) => { setSort(e.target.value as any); setCurrentPage(1) }}
+                className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm"
+              >
+                <option value="popular">인기순</option>
+                <option value="alpha">가나다순</option>
+              </select>
+            </div>
+            <span className="text-sm text-gray-500">총 {filteredUtilities.length}개</span>
+          </div>
         </div>
 
         {/* 카테고리 필터 */}
@@ -189,6 +233,9 @@ export default function UtilitiesPage() {
               <span>견종, 연령, 건강 상태에 따라 적정량이 달라질 수 있습니다.</span>
             </li>
           </ul>
+          <div className="mt-4 text-sm text-gray-600">
+            더 필요한 유틸리티가 있다면 <Link href="/report" className="text-blue-600 hover:underline font-medium">제보하기</Link>로 알려주세요.
+          </div>
         </div>
       </div>
     </div>
