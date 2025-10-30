@@ -1,3 +1,5 @@
+"use client"
+ 
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import { getCompletedUtilities } from '@/lib/utilities/utilities-data'
