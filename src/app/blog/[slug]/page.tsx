@@ -4,6 +4,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import TableOfContents from '@/components/blog/TableOfContents'
+import AdsenseSlot from '@/components/ads/AdsenseSlot'
 
 interface BlogPostPageProps {
   params: {
@@ -9053,9 +9054,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             }}
           />
 
-          {/* 포스트 내용 */}
-          <div className="max-w-4xl mx-auto">
-            <div className="prose prose-lg max-w-none">
+          {/* 본문/사이드 광고 레이아웃 */}
+          <div className="grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_300px] gap-6 max-w-7xl mx-auto">
+            {/* 좌측 광고 (xl 이상에서 노출) */}
+            <aside className="hidden xl:block">
+              <AdsenseSlot
+                slotId={process.env.NEXT_PUBLIC_ADS_SIDEBAR_SLOT}
+                className="w-[300px]"
+                style={{ display: 'block', width: 300, minHeight: 250 }}
+              />
+            </aside>
+
+            {/* 중앙 본문: 폭 축소(양옆 광고를 위해) */}
+            <div className="max-w-3xl w-full mx-auto">
+              <div className="prose prose-lg max-w-none">
               <div className="text-gray-800 leading-relaxed">
                 {/* 목차 */}
                 <TableOfContents content={post.content} />
@@ -9104,11 +9116,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
+
+            {/* 우측 광고 (xl 이상에서 노출) */}
+            <aside className="hidden xl:block">
+              <AdsenseSlot
+                slotId={process.env.NEXT_PUBLIC_ADS_SIDEBAR_SLOT}
+                className="w-[300px]"
+                style={{ display: 'block', width: 300, minHeight: 250 }}
+              />
+            </aside>
           </div>
 
           {/* 태그 */}
-          <div className="max-w-4xl mx-auto mt-12">
+          <div className="max-w-3xl mx-auto mt-12">
             <div className="flex items-center space-x-2 mb-4">
               <Tag className="w-5 h-5 text-gray-400" />
               <span className="text-gray-700 font-medium">태그</span>
@@ -9126,7 +9148,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
 
           {/* 관련 포스트 추천 */}
-          <div className="max-w-4xl mx-auto mt-16">
+          <div className="max-w-3xl mx-auto mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">관련 포스트</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {getRelatedPosts(slug).map((relatedPost, index) => (
