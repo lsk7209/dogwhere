@@ -2,10 +2,12 @@
 
 import { BookOpen, Heart, Shield, Car, Plane, Home, Utensils, PawPrint, Camera, MapPin, Calendar, Users, Star, Scissors, Activity, Brain, Apple, Baby, Stethoscope, GraduationCap, Zap, Coffee, Music, Gamepad2, Palette, Dumbbell, TreePine, Sun, Moon, Wind, Thermometer, Droplets, Sparkles, Target, Award, Gift, Clock, Compass, Map, Navigation, Puzzle } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 export default function GuidePage() {
   const [currentPage, setCurrentPage] = useState(1)
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<'alpha' | 'default'>('default')
   const guidesPerPage = 9
 
   const guideCategories = [
@@ -417,22 +419,62 @@ export default function GuidePage() {
     }
   ]
 
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    let base = guideCategories
+    if (q) {
+      base = base.filter(g =>
+        g.title.toLowerCase().includes(q) ||
+        g.description.toLowerCase().includes(q) ||
+        g.slug.toLowerCase().includes(q) ||
+        g.items.some((it: string) => it.toLowerCase().includes(q))
+      )
+    }
+    const sorted = [...base]
+    if (sort === 'alpha') sorted.sort((a: any, b: any) => a.title.localeCompare(b.title))
+    return sorted
+  }, [guideCategories, query, sort])
+
   // 페이지네이션 계산
-  const totalPages = Math.ceil(guideCategories.length / guidesPerPage)
+  const totalPages = Math.ceil(filtered.length / guidesPerPage)
   const startIndex = (currentPage - 1) * guidesPerPage
   const endIndex = startIndex + guidesPerPage
-  const currentGuides = guideCategories.slice(startIndex, endIndex)
+  const currentGuides = filtered.slice(startIndex, endIndex)
 
   return (
     <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4 py-12">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               반려가이드 📚
             </h1>
             <p className="text-xl text-gray-600">
               강아지와 함께하는 완벽한 여행을 위한 모든 가이드
             </p>
+          </div>
+
+          {/* 검색/정렬 */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <input
+              value={query}
+              onChange={(e)=>{ setQuery(e.target.value); setCurrentPage(1) }}
+              placeholder="가이드 검색 (예: 여행, 사회화, 응급, 영양, 수면)"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <div className="mt-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600">정렬:</label>
+                <select
+                  value={sort}
+                  onChange={(e)=>{ setSort(e.target.value as any); setCurrentPage(1) }}
+                  className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm"
+                >
+                  <option value="default">추천순</option>
+                  <option value="alpha">가나다순</option>
+                </select>
+              </div>
+              <span className="text-sm text-gray-500">총 {filtered.length}개</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
