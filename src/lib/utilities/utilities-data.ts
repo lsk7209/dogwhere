@@ -468,6 +468,267 @@ export const utilitiesData: UtilityItem[] = [
     slug: 'socialization-progress',
     category: 'planner',
     status: 'completed'
+  },
+  {
+    id: 'puppy-potty-training',
+    title: '강아지 배변 훈련 가이드',
+    description: '강아지 배변 훈련 단계별 방법과 팁 제공',
+    icon: 'Home',
+    slug: 'puppy-potty-training',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-nutrition-planner',
+    title: '영양 관리 플래너',
+    description: '견종과 연령에 맞는 영양 균형 식단 계획',
+    icon: 'Apple',
+    slug: 'dog-nutrition-planner',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'behavior-problem-solver',
+    title: '문제 행동 해결 가이드',
+    description: '짖음, 물기, 파괴 행동 등 문제 행동 해결 방법',
+    icon: 'AlertTriangle',
+    slug: 'behavior-problem-solver',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-photo-organizer',
+    title: '반려견 사진 정리 도구',
+    description: '반려견 사진을 날짜별, 이벤트별로 자동 분류',
+    icon: 'Camera',
+    slug: 'dog-photo-organizer',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'seasonal-care-guide',
+    title: '계절별 케어 가이드',
+    description: '봄, 여름, 가을, 겨울별 반려견 케어 방법',
+    icon: 'Sun',
+    slug: 'seasonal-care-guide',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-toy-recommender',
+    title: '장난감 추천 시스템',
+    description: '견종과 연령에 맞는 장난감 추천',
+    icon: 'Gamepad2',
+    slug: 'dog-toy-recommender',
+    category: 'finder',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-socialization-schedule',
+    title: '강아지 사회화 일정표',
+    description: '강아지 사회화 단계별 일정과 체크리스트',
+    icon: 'Calendar',
+    slug: 'puppy-socialization-schedule',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-emergency-kit',
+    title: '응급 키트 체크리스트',
+    description: '반려견 응급상황 대비 필수품 체크리스트',
+    icon: 'FirstAid',
+    slug: 'dog-emergency-kit',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-walking-safety',
+    title: '산책 안전 가이드',
+    description: '산책 시 안전사항과 주의점 가이드',
+    icon: 'Shield',
+    slug: 'dog-walking-safety',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-feeding-schedule',
+    title: '강아지 급여 일정표',
+    description: '강아지 연령별 급여 횟수와 양 관리',
+    icon: 'Clock',
+    slug: 'puppy-feeding-schedule',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-sleep-environment',
+    title: '수면 환경 최적화',
+    description: '강아지 수면 환경 조성과 개선 방법',
+    icon: 'Moon',
+    slug: 'dog-sleep-environment',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-communication-guide',
+    title: '반려견 소통 가이드',
+    description: '강아지의 몸짓과 소리로 의사소통하는 방법',
+    icon: 'MessageCircle',
+    slug: 'dog-communication-guide',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-exercise-routine',
+    title: '운동 루틴 플래너',
+    description: '견종별 맞춤 운동 루틴 계획',
+    icon: 'Activity',
+    slug: 'dog-exercise-routine',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-grooming-tools',
+    title: '미용 도구 가이드',
+    description: '견종별 필요한 미용 도구와 사용법',
+    icon: 'Scissors',
+    slug: 'dog-grooming-tools',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-vaccination-tracker',
+    title: '강아지 예방접종 추적기',
+    description: '강아지 예방접종 일정과 기록 관리',
+    icon: 'Syringe',
+    slug: 'puppy-vaccination-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-travel-checklist',
+    title: '여행 준비 체크리스트',
+    description: '반려견과 함께하는 여행 준비사항',
+    icon: 'Luggage',
+    slug: 'dog-travel-checklist',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-behavior-calendar',
+    title: '행동 패턴 캘린더',
+    description: '강아지 행동 패턴을 캘린더로 시각화',
+    icon: 'Calendar',
+    slug: 'dog-behavior-calendar',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'senior-dog-exercise',
+    title: '노령견 운동 가이드',
+    description: '노령견을 위한 안전한 운동 방법',
+    icon: 'Activity',
+    slug: 'senior-dog-exercise',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-nail-trimming',
+    title: '발톱 관리 가이드',
+    description: '강아지 발톱 자르기 방법과 주기',
+    icon: 'Scissors',
+    slug: 'dog-nail-trimming',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-crate-training',
+    title: '켄넬 훈련 가이드',
+    description: '강아지 켄넬 적응 훈련 방법',
+    icon: 'Home',
+    slug: 'puppy-crate-training',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-weather-adaptation',
+    title: '날씨 적응 가이드',
+    description: '다양한 날씨 조건에서의 반려견 관리',
+    icon: 'Cloud',
+    slug: 'dog-weather-adaptation',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-social-skills',
+    title: '사회성 기술 훈련',
+    description: '다른 강아지와 사람과의 사회성 향상',
+    icon: 'Users',
+    slug: 'dog-social-skills',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-sleep-training',
+    title: '강아지 수면 훈련',
+    description: '강아지의 규칙적인 수면 패턴 형성',
+    icon: 'Moon',
+    slug: 'puppy-sleep-training',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-medication-tracker',
+    title: '투약 관리 추적기',
+    description: '약물 투여 일정과 기록 관리',
+    icon: 'Pill',
+    slug: 'dog-medication-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-hygiene-routine',
+    title: '위생 관리 루틴',
+    description: '일상적인 위생 관리 방법과 주기',
+    icon: 'Droplets',
+    slug: 'dog-hygiene-routine',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-biting-guide',
+    title: '강아지 물기 훈련',
+    description: '강아지의 물기 습관 교정 방법',
+    icon: 'AlertTriangle',
+    slug: 'puppy-biting-guide',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-stress-relief',
+    title: '스트레스 해소 방법',
+    description: '반려견 스트레스 완화와 휴식 방법',
+    icon: 'Heart',
+    slug: 'dog-stress-relief',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'dog-aging-care',
+    title: '노화 관리 가이드',
+    description: '노령견의 노화 과정과 케어 방법',
+    icon: 'Clock',
+    slug: 'dog-aging-care',
+    category: 'guide',
+    status: 'completed'
+  },
+  {
+    id: 'puppy-development-milestones',
+    title: '강아지 발달 단계',
+    description: '강아지 성장 단계별 발달 특징과 주의사항',
+    icon: 'TrendingUp',
+    slug: 'puppy-development-milestones',
+    category: 'guide',
+    status: 'completed'
   }
 ]
 
