@@ -1,208 +1,96 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { Search, Calendar, Users, MapPin, Star, Heart, ChevronRight, Filter } from 'lucide-react'
 
 export default function HomePage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedDates, setSelectedDates] = useState('11.11 - 11.12 (1박)')
-  const [guestCount, setGuestCount] = useState('2인 1마리')
-
   return (
     <div className="min-h-screen bg-white">
-      {/* 히어로 섹션 */}
-      <section className="relative h-[600px] bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
-        {/* 배경 이미지 */}
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center opacity-30"></div>
-        
-        {/* 오버레이 텍스트 */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-          <h1 className="text-5xl font-bold mb-4">
-            반려동물과 함께하는 여행
-          </h1>
-          <p className="text-xl mb-8">
-            강아지 동반 장소는 어서오개에서
-          </p>
-          
-          {/* 검색바 */}
-          <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="여행지나 장소를 검색해보세요"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-4 py-3">
-                <Calendar className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-700">{selectedDates}</span>
-              </div>
-              
-              <div className="flex items-center space-x-2 bg-gray-50 rounded-lg px-4 py-3">
-                <Users className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-700">{guestCount}</span>
-              </div>
-              
-              <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-medium transition-colors">
-                검색
-              </button>
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="flex min-h-[480px] items-center justify-center bg-cover bg-center px-6 text-center" style={{
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1600&q=80')"
+        }}>
+          <div className="max-w-2xl">
+            <h1 className="text-white text-4xl md:text-5xl font-extrabold tracking-tight">오늘 강아지와 어디 갈까?</h1>
+            <p className="mt-3 text-gray-200">반려견과 함께할 수 있는 장소를 손쉽게 찾아보세요. 오늘의 추천과 지역별 명소를 탐색할 수 있어요.</p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/recommendations/today" className="h-11 px-5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700">오늘의 추천</Link>
+              <Link href="/seoul" className="h-11 px-5 rounded-lg bg-white/90 text-gray-900 font-semibold hover:bg-white">지역별 탐색</Link>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12">
-        {/* 인기 여행지 */}
-        <section className="mb-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* 오늘의 추천 */}
+        <section className="py-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">인기 여행지</h2>
-              <p className="text-gray-600">고객분들이 가장 많이 찾는 강아지 동반 여행지를 알아보세요</p>
-            </div>
+            <h2 className="text-[22px] font-bold text-gray-900">오늘의 추천</h2>
+            <Link href="/recommendations/today" className="text-emerald-700 text-sm font-medium hover:underline">더 보기 →</Link>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[
-              { name: '강남구', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/seoul/cluster/gangnam-cluster' },
-              { name: '마포구', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/seoul/cluster/hongdae-cluster' },
-              { name: '제주도', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/jeju' },
-              { name: '가평군', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/gyeonggi/cluster/gapyeong-cluster' },
-              { name: '강릉시', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/gangwon' },
-              { name: '부산시', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80', href: '/busan' }
-            ].map((destination) => (
-              <Link key={destination.name} href={destination.href} className="group">
-                <div className="aspect-square rounded-lg overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-                  <img 
-                    src={destination.image} 
-                    alt={destination.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+              { title: "애견동반 카페 '멍스'", sub: '⭐ 4.8 (124) | O-Dog 9.2', img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80' },
+              { title: '댕댕이 수영장', sub: '⭐ 4.9 (210) | O-Dog 9.5', img: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80' },
+              { title: '달려라멍멍 운동장', sub: '⭐ 4.7 (88) | O-Dog 9.0', img: 'https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=800&q=80' }
+            ].map((c) => (
+              <div key={c.title} className="flex flex-col gap-3">
+                <div className="aspect-video rounded-lg bg-cover bg-center shadow" style={{ backgroundImage: `url(${c.img})` }} />
+                <div>
+                  <p className="text-gray-900 font-medium">{c.title}</p>
+                  <p className="text-emerald-700 text-sm">{c.sub}</p>
                 </div>
-                <h3 className="text-center mt-3 font-medium text-gray-900">{destination.name}</h3>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 지역 탐색 */}
+        <section className="py-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-[22px] font-bold text-gray-900">지역 탐색</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: '서울', href: '/seoul', img: 'https://images.unsplash.com/photo-1544989164-31dc3c645987?auto=format&fit=crop&w=1200&q=80' },
+              { name: '경기', href: '/seoul/cluster/gangnam-cluster', img: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80' },
+              { name: '부산', href: '/seoul/cluster/hongdae-cluster', img: 'https://images.unsplash.com/photo-1513623954575-263b061498b5?auto=format&fit=crop&w=1200&q=80' },
+              { name: '제주', href: '/seoul/cluster/myeongdong-cluster', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80' }
+            ].map((r) => (
+              <Link key={r.name} href={r.href} className="relative group rounded-lg overflow-hidden">
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url(${r.img})` }} />
+                <div className="relative aspect-[4/3]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-0 left-0 p-5 text-white">
+                  <h3 className="text-2xl font-bold">{r.name}</h3>
+                  <span className="text-sm font-semibold">탐색하기 →</span>
+                </div>
               </Link>
             ))}
           </div>
         </section>
 
-        {/* 어서오개 추천 장소 */}
-        <section className="mb-16">
+        {/* 이번 주 행사 */}
+        <section className="py-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">어서오개 추천 장소</h2>
-              <p className="text-gray-600">어서오개에서 엄선한 프리미엄 강아지 동반 장소</p>
-            </div>
+            <h2 className="text-[22px] font-bold text-gray-900">이번 주 행사</h2>
+            <Link href="/events" className="text-emerald-700 text-sm font-medium hover:underline">행사 전체 보기 →</Link>
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: '멍멍카페', image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '펫파크', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '강아지호텔', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '펫샵', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '강아지식당', image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '펜션', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '글램핑', image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' },
-              { name: '공원', image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80' }
-            ].map((place) => (
-              <div key={place.name} className="group cursor-pointer">
-                <div className="aspect-square rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-                  <img 
-                    src={place.image} 
-                    alt={place.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <h3 className="text-center mt-3 font-medium text-gray-900">{place.name}</h3>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 갓성비 장소 */}
-        <section className="mb-16">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">✨ 갓성비 강아지 동반 장소</h2>
-              <p className="text-gray-600">합리적인 가격에 강아지와 함께 즐길 수 있는 곳들</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                name: '홍천 강아지놀이터',
-                location: '강원 홍천',
-                rating: 4.8,
-                reviews: 127,
-                price: '30,000원',
-                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                amenities: ['Wi-Fi', '주차장', '강아지 놀이터']
-              },
-              {
-                name: '태안 바다펜션',
-                location: '충남 태안',
-                rating: 4.6,
-                reviews: 89,
-                price: '50,000원',
-                image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                amenities: ['바다전망', '바베큐', '강아지 동반']
-              },
-              {
-                name: '제주 힐링하우스',
-                location: '제주 서귀포',
-                rating: 4.9,
-                reviews: 203,
-                price: '40,000원',
-                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                amenities: ['전용 마당', '주방', '펫샤워']
-              },
-              {
-                name: '양평 글램핑장',
-                location: '경기 양평',
-                rating: 4.7,
-                reviews: 156,
-                price: '80,000원',
-                image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                amenities: ['글램핑', '캠프파이어', '강아지 동반']
-              }
-            ].map((place) => (
-              <div key={place.name} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video overflow-hidden">
-                  <img 
-                    src={place.image} 
-                    alt={place.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+              { title: '서울 펫 페스티벌', date: '~ 11.26 (일) | 서울숲', badge: '반려견 가능', img: 'https://images.unsplash.com/photo-1525253013412-55c1a69a5738?auto=format&fit=crop&w=1200&q=80' },
+              { title: '유기견 입양 캠페인', date: '11.25 (토) | 댕댕이 운동장', badge: '반려견 가능', img: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&w=1200&q=80' }
+            ].map((e) => (
+              <div key={e.title} className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${e.img})` }} />
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2">{place.name}</h3>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-600 text-sm">{place.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium">{place.rating}</span>
-                    <span className="text-gray-400 text-sm">({place.reviews})</span>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {place.amenities.map((amenity) => (
-                      <span key={amenity} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                        {amenity}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-orange-600">{place.price}</span>
-                    <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                      자세히 보기 →
-                    </button>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500">{e.date}</p>
+                      <h3 className="mt-1 text-lg font-bold text-gray-900">{e.title}</h3>
+                    </div>
+                    <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full px-2 py-1">{e.badge}</span>
                   </div>
                 </div>
               </div>
@@ -210,59 +98,49 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 주말엔 뭐하지? */}
-        <section className="mb-16">
+        {/* 블로그 / 가이드 */}
+        <section className="py-8">
           <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">주말엔 뭐하지?</h2>
-              <p className="text-gray-600">강아지와 함께하는 특별한 주말 활동</p>
-            </div>
-            <Link href="/events" className="text-blue-600 hover:text-blue-800 font-medium">
-              더보기 →
-            </Link>
+            <h2 className="text-[22px] font-bold text-gray-900">블로그 / 가이드</h2>
+            <Link href="/blog" className="text-emerald-700 text-sm font-medium hover:underline">더 보기 →</Link>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              {
-                title: '숲속에서의 힐링',
-                description: '힐링과 견생샷을 한 번에! 홍천 신상 감성숙소',
-                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                location: '홍천 숲온스테이'
-              },
-              {
-                title: '신규 특채 풀빌라',
-                description: '댕댕이랑 힐링 여행 양평 스테이라라온',
-                image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                location: '양평 스테이라라온'
-              },
-              {
-                title: '반짝반짝 아름답게',
-                description: '댕댕이와 함께 할 수 있는 야경 명소 TOP5',
-                image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-                location: '전국 야경 명소'
-              }
-            ].map((activity) => (
-              <div key={activity.title} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="aspect-video overflow-hidden">
-                  <img 
-                    src={activity.image} 
-                    alt={activity.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-2">{activity.title}</h3>
-                  <p className="text-gray-600 mb-3">{activity.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">{activity.location}</span>
-                    <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
-                      자세히 보기 →
-                    </button>
-                  </div>
+              { title: '초보 견주를 위한 필수 준비물 5가지', img: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1200&q=80', desc: '새로운 가족을 맞이하기 전 꼭 확인해야 할 체크리스트.' },
+              { title: '강아지와 첫 여행, 이것만은!', img: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80', desc: '안전하고 즐거운 반려견 동반 여행을 위한 팁.' },
+              { title: '반려견 분리불안, 이렇게 대처해요', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80', desc: '원인과 해결 방법을 전문가의 조언과 함께.' }
+            ].map((b) => (
+              <div key={b.title} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
+                <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${b.img})` }} />
+                <div className="p-4 flex-grow">
+                  <h3 className="text-lg font-bold text-gray-900">{b.title}</h3>
+                  <p className="mt-2 text-sm text-gray-600">{b.desc}</p>
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* 서비스 안내 */}
+        <section className="py-8">
+          <div className="bg-gray-100 p-8 rounded-lg">
+            <h2 className="text-lg font-bold text-gray-900 mb-4">어서오개 | DogsWhere 서비스 안내</h2>
+            <div className="text-sm text-gray-700 space-y-3 leading-relaxed">
+              <p>어서오개는 전국의 반려견 동반 가능 장소(카페, 식당, 숙소, 관광지 등) 정보를 제공하여 반려인들의 즐거운 외출을 돕는 서비스입니다. 공공데이터, 사용자 제보, 제휴사의 정보를 바탕으로 수집하며 정기적으로 업데이트합니다.</p>
+              <p>장소 정책은 예고 없이 변경될 수 있으니 방문 전 반드시 직접 확인해주세요. 제공 정보의 정확성을 100% 보증하지 않습니다.</p>
+              <p>잘못된 정보 제보는 <Link href="/report" className="text-emerald-700 font-semibold hover:underline">정보 수정/제보하기</Link>에서 요청해 주세요.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="py-8">
+          <div className="bg-emerald-100 p-8 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">우리 동네 반려견 명소를 제보해주세요!</h2>
+              <p className="mt-2 text-gray-700">아직 등록되지 않은 멋진 장소를 알고 계신가요? 함께 만들어가는 어서오개!</p>
+            </div>
+            <Link href="/report" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg">제보하기</Link>
           </div>
         </section>
       </div>
