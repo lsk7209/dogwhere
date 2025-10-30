@@ -1,4 +1,4 @@
-'use client'
+ㅇㅇ'use client'
 
 import Link from 'next/link'
 
@@ -143,7 +143,7 @@ export default function HomePage() {
             <Link href="/report" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg">제보하기</Link>
           </div>
         </section>
-      </div>
+        </div>
     </div>
   )
 }

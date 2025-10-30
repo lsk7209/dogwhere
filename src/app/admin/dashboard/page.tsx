@@ -181,7 +181,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* 통계 카드 */}
+        {/* === 통계 카드를 한 행에 강조 표시 === */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
@@ -240,7 +240,8 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* === 상세 통계/리스트/차트 등 분리 === */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* 최근 활동 */}
           <div className="bg-white rounded-lg shadow">
             <div className="p-6 border-b">
@@ -293,6 +294,29 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ===== [NEW] Custom Script inset: HEAD, BODY, FOOTER ===== */}
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">커스텀 스크립트 삽입</h2>
+          <p className="text-sm text-gray-600 mb-2">(웹사이트 head, body, footer 등에 삽입할 코드를 입력하세요. 예: GA, 애드센스, GTM 등)</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">HEAD</label>
+              <textarea className="w-full min-h-[100px] border rounded-lg p-2 font-mono text-xs mb-2" placeholder="<script>...</script>" />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">BODY</label>
+              <textarea className="w-full min-h-[100px] border rounded-lg p-2 font-mono text-xs mb-2" placeholder="<script>...</script>" />
+            </div>
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">FOOTER</label>
+              <textarea className="w-full min-h-[100px] border rounded-lg p-2 font-mono text-xs mb-2" placeholder="<script>...</script>" />
+            </div>
+          </div>
+          <div className="text-right mt-3">
+            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-blue-700">저장</button>
           </div>
         </div>
 

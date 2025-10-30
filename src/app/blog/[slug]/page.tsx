@@ -491,9 +491,7 @@ const blogPosts: Record<string, {
 - **버스**: 현지 버스 강아지 동반 정책
 - **택시**: 현지 택시 강아지 동반 정책
 - **기타**: 현지 기타 교통편 강아지 동반 정책
-
 ## 🏥 현지 동물병원 정보
-
 ### 응급 동물병원
 - **위치**: 목적지 주요 동물병원 위치
 - **연락처**: 24시간 응급실 연락처
@@ -986,10 +984,8 @@ const blogPosts: Record<string, {
 4. 점진적으로 산책 시간과 거리 늘리기
 
 ## 🍽️ 식사 관련 훈련
-
 ### 1. 식사 예절 훈련
 **목적**: 식사 시간의 예절 익히기
-
 **훈련 방법**:
 1. 식사 시간을 정해두기
 2. 식사 전 "기다려" 명령 연습
@@ -1476,14 +1472,12 @@ const blogPosts: Record<string, {
 - **배변 문제**: 잘못된 곳에 배변하기
 
 ## 🚨 공격성 문제 해결
-
 ### 공격성의 원인 파악
 - **공포**: 무서워서 공격적으로 반응
 - **영역 보호**: 자신의 영역을 지키려는 행동
 - **자원 보호**: 먹이나 장난감을 지키려는 행동
 - **통증**: 아파서 공격적으로 반응
 - **사회적 지위**: 지배적 지위를 확립하려는 행동
-
 ### 공격성 해결 방법
 1. **원인 제거**: 공격성의 근본 원인 제거
 2. **점진적 노출**: 무서운 것에 점진적으로 노출
@@ -1975,13 +1969,11 @@ const blogPosts: Record<string, {
 - 소화기 건강 지원
 - 항산화 성분 함유
 - 연령별 맞춤 영양소
-
 **선택 기준**:
 - 강아지의 나이와 건강 상태 고려
 - 수의사와 상담 후 선택
 - 천연 성분 위주
 - 품질 인증 제품
-
 ### 급여 방법
 **급여 횟수**:
 - 하루 2-3회로 나누어 급여
@@ -2473,7 +2465,6 @@ const blogPosts: Record<string, {
 - 결과: 안전한 겨울 보내기
 
 ## 📋 겨울 케어 체크리스트
-
 ### 일일 체크리스트
 - [ ] 강아지의 전반적인 상태 확인
 - [ ] 식욕과 수분 섭취 확인
@@ -2481,6 +2472,50 @@ const blogPosts: Record<string, {
 - [ ] 강아지의 활동량 관찰
 - [ ] 피부와 털 상태 점검
 
+// FAQ 데이터 예시 및 FAQ 섹션 렌더 추가 (SEO, GEO, AEO 최적화)
+const faqItems = [
+  {
+    question: '강아지 동반 장소는 어떻게 찾을 수 있나요?',
+    answer: '어서오개에서는 다양한 필터(지역, 유형, 평가 등)를 통해 전국 강아지 동반 카페, 식당, 호텔, 공원 정보를 쉽게 탐색할 수 있습니다. 상단 메뉴나 홈에서 오늘의 추천·지역별 탐색 메뉴를 활용해 최적의 장소를 찾으세요.'
+  },
+  {
+    question: '강아지와 외출 시 꼭 지켜야 할 안전수칙은 무엇인가요?',
+    answer: '리드줄 착용, 반려동물 동반허용 안내 확인, 주변 사람 배려(배변/짖음 관리), 예방접종·건강 상태 확인이 필수입니다. 상세 안전수칙은 <a href="/guide/dog-safety-travel-guide" className="text-blue-700 underline">[안전 가이드]</a>에서 심층 내용 확인이 가능합니다.'
+  },
+  {
+    question: '블로그/가이드 정보는 신뢰할 수 있나요?',
+    answer: '어서오개는 농림축산검역본부 등 공신력 있는 기관 자료, 현장 제보, 자체 검증 절차를 거쳐 신뢰도 높은 콘텐츠만 제공합니다. 정보 출처와 최신성은 각 게시글 내 안내와 <a href="https://www.qia.go.kr" rel="nofollow noopener noreferrer" target="_blank" className="text-blue-700 underline">검역본부(공식사이트)</a>에서도 확인할 수 있습니다.'
+  }
+]
+
+// JSON-LD FAQ 스키마 (SEO/AEO)
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '') // 태그는 순수 텍스트로 변환
+    }
+  }))
+};
+
+// ...컴포넌트 본문 내, 최하단 영역에 FAQ Section 추가...
+<section className="mt-16 mb-10">
+  <h2 className="text-2xl font-bold text-gray-900 mb-4">자주 묻는 질문 (FAQ)</h2>
+  <div className="space-y-8">
+    {faqItems.map((faq, i) => (
+      <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">Q. {faq.question}</h3>
+        <div className="text-gray-800 text-base" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+      </div>
+    ))}
+  </div>
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+</section>
+// ...
 ### 주간 체크리스트
 - [ ] 체중 측정
 - [ ] 털 브러싱
@@ -2929,7 +2964,6 @@ const blogPosts: Record<string, {
 - 목줄과 가슴줄
 - 배변 패드
 - 장난감
-
 **케어 용품**:
 - 브러시와 빗
 - 강아지 전용 샴푸
@@ -2977,7 +3011,6 @@ const blogPosts: Record<string, {
 - 배변 패드 사용
 - 긍정적 강화
 - 인내심을 가지고 훈련
-
 **훈련 팁**:
 - 강아지의 패턴 파악
 - 성공 시 즉시 보상
@@ -3428,7 +3461,6 @@ const blogPosts: Record<string, {
 - 공정한 대우
 - 개별 특성 인정
 - 질투 상황 즉시 해결
-
 ### 리소스 경쟁
 **충분한 리소스**:
 - 충분한 사료와 물
@@ -3468,7 +3500,6 @@ const blogPosts: Record<string, {
 - 관계 관리
 - 환경 관리
 - 지속적인 학습
-
 다중 반려동물 가정은 특별한 기쁨과 도전이 함께하는 경험입니다. 올바른 관리와 사랑으로 모든 강아지들이 행복하게 살 수 있도록 도와주세요.`,
     author: '다중반려전문가',
     date: '2024.12.07',
@@ -3928,7 +3959,6 @@ const blogPosts: Record<string, {
     title: '강아지 장난감 선택 - 안전하고 재미있는 놀이',
     excerpt: '강아지의 나이와 성격에 맞는 안전한 장난감 선택법과 놀이 가이드',
     content: `# 강아지 장난감 선택
-
 강아지의 안전과 즐거움을 위한 올바른 장난감 선택법을 알아보세요.
 
 ## 🧸 장난감의 역할
@@ -3963,7 +3993,6 @@ const blogPosts: Record<string, {
 - **난이도**: 강아지 수준에 맞춤
 - **재료**: 안전한 플라스틱
 - **주의**: 복잡하지 않게
-
 ### 줄다리기 장난감
 - **재질**: 내구성 있는 천
 - **크기**: 적당한 길이
@@ -4425,7 +4454,6 @@ const blogPosts: Record<string, {
 - **콧소리**: 관심, 탐색
 
 ## 🎭 감정 표현
-
 ### 기쁨과 흥분
 - **몸 전체 흔들기**: 극도의 기쁨
 - **점프**: 흥분과 환영
@@ -4459,7 +4487,6 @@ const blogPosts: Record<string, {
 - **시간 관찰**: 지속적인 관찰
 
 ## ⚠️ 주의 신호
-
 ### 위험 신호
 - **공격적 자세**: 몸 앞으로, 털 세우기
 - **경고 소리**: 낮은 으르렁거림
@@ -4925,7 +4952,6 @@ const blogPosts: Record<string, {
 강아지의 생명을 지키는 예방접종의 중요성과 올바른 스케줄을 알아보세요.
 
 ## 💉 예방접종의 중요성
-
 ### 예방접종의 효과
 - **질병 예방**: 치명적인 질병으로부터 보호
 - **면역력 향상**: 자연 면역력 강화
@@ -4958,7 +4984,6 @@ const blogPosts: Record<string, {
 - **연 1회**: 선택 백신 (필요시)
 
 ## 🏥 백신 종류별 설명
-
 ### DHPP 종합백신
 - **D**: 디스템퍼 (홍역)
 - **H**: 간염
@@ -5425,7 +5450,6 @@ const blogPosts: Record<string, {
 - **환기**: 정기적인 환기
 - **그늘**: 주차 시 그늘 찾기
 - **체온 확인**: 강아지 체온 확인
-
 ### 안전 수칙
 - **창문**: 창문 완전히 열지 않기
 - **도어**: 도어 잠금 확인
@@ -5453,7 +5477,6 @@ const blogPosts: Record<string, {
 - **응급센터**: 24시간 응급센터
 - **보험사**: 펫보험 연락처
 - **가족**: 가족 연락처
-
 ### 응급 처치
 - **기본 지식**: 기본 응급처치 지식
 - **응급 키트**: 응급 키트 사용법
@@ -5926,7 +5949,6 @@ const blogPosts: Record<string, {
 - **교육 투자**: 교육에 대한 투자
 - **환경 투자**: 환경에 대한 투자
 - **관계 투자**: 관계에 대한 투자
-
 ### 가치 창출
 - **행복**: 행복한 시간
 - **건강**: 건강한 반려견
@@ -5946,7 +5968,6 @@ const blogPosts: Record<string, {
 - **필요**: 필요와 욕구의 균형
 - **현재**: 현재와 미래의 균형
 - **개인**: 개인과 반려견의 균형
-
 경제적이면서도 품질 좋은 반려생활을 위한 올바른 비용 관리로 더욱 만족스러운 반려생활을 만들어보세요.`,
     author: '어서오개 팀',
     date: '2025.01.05',
@@ -6424,7 +6445,6 @@ const blogPosts: Record<string, {
 - **과민 반응**: 과민 반응 시 압력 조절
 - **불안감**: 불안감 시 환경 조성
 - **피로**: 피로 시 시간 단축
-
 강아지와 함께하는 마사지 테라피로 더욱 건강하고 행복한 반려견을 만들어보세요.`,
     author: '어서오개 팀',
     date: '2025.01.10',
@@ -6442,7 +6462,6 @@ const blogPosts: Record<string, {
 강아지에게 안전한 아로마테라피와 자연 치료법을 알아보세요.
 
 ## 🌿 아로마테라피란?
-
 ### 아로마테라피의 정의
 - **에센셜 오일**: 식물에서 추출한 정유
 - **향기 치료**: 향기를 통한 치료법
@@ -6922,7 +6941,6 @@ const blogPosts: Record<string, {
 강아지와 함께하는 안전하고 즐거운 등산 준비와 주의사항을 알아보세요.
 
 ## 🏔️ 등산 전 준비사항
-
 ### 건강 상태 확인
 - **수의사 검진**: 등산 전 수의사 검진
 - **체력 평가**: 체력 상태 평가
@@ -6942,7 +6960,6 @@ const blogPosts: Record<string, {
 - **목줄**: 목줄
 - **식수**: 충분한 식수
 - **사료**: 사료와 간식
-
 ### 안전 장비
 - **구명조끼**: 구명조끼 (필요시)
 - **응급키트**: 응급처치 키트
@@ -7420,7 +7437,6 @@ const blogPosts: Record<string, {
 - **수면 개선**: 수면 질 향상
 
 ## 🐕 강아지와 명상
-
 ### 강아지의 특성
 - **민감한 감각**: 민감한 감각
 - **에너지 감지**: 사람의 에너지 감지
@@ -7440,7 +7456,6 @@ const blogPosts: Record<string, {
 - **적절한 온도**: 적절한 실내 온도
 - **부드러운 조명**: 부드러운 조명
 - **편안한 바닥**: 편안한 바닥
-
 ### 분위기 조성
 - **평온함**: 평온한 분위기
 - **안전감**: 안전감 있는 환경
@@ -7916,7 +7931,6 @@ const blogPosts: Record<string, {
 - **즐거움**: 즐거운 활동
 
 ## 💡 댄스 성공 팁
-
 ### 효과적인 댄스법
 - **일관성**: 일관된 댄스 연습
 - **인내심**: 충분한 인내심
@@ -7928,7 +7942,6 @@ const blogPosts: Record<string, {
 - **방해**: 방해 요소 대처
 - **불편함**: 불편함 해결
 - **지속성**: 지속성 유지
-
 강아지와 함께하는 댄스 테라피로 더욱 활기차고 행복한 반려견을 만들어보세요.`,
     author: '어서오개 팀',
     date: '2025.01.20',
@@ -8412,7 +8425,6 @@ const blogPosts: Record<string, {
 - **자세**: 올바른 자세 형성
 - **휴식**: 충분한 휴식
 - **스트레스**: 스트레스 해소
-
 ### 정신 건강
 - **표현력**: 감정 표현력 향상
 - **집중력**: 집중력 향상
@@ -8426,7 +8438,6 @@ const blogPosts: Record<string, {
 - **인내심**: 충분한 인내심
 - **관찰**: 강아지 반응 관찰
 - **적응**: 강아지에 맞게 적응
-
 ### 문제 해결
 - **집중력**: 집중력 향상
 - **방해**: 방해 요소 대처
@@ -8861,7 +8872,6 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
   }
 }
-
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
   const post = blogPosts[slug]
@@ -9102,6 +9112,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               ))}
             </div>
           </div>
+
+          {/* FAQ 섹션 추가 */}
+          <FAQSection />
         </div>
       </div>
   )

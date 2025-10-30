@@ -82,10 +82,14 @@ export default function RootLayout({
           rel="stylesheet" 
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" 
         />
+        {/* 커스텀 스크립트 삽입용 영역 (admin에서 동적으로 채워짐) */}
+        {headCustomScripts && <>{headCustomScripts}</>}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* BODY 영역용 커스텀 스크립트*/}
+        {bodyCustomScripts && <>{bodyCustomScripts}</>}
         <Providers>
           <div className="min-h-screen flex flex-col">
             <Header />
@@ -93,8 +97,13 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            {/* FOOTER 영역용 커스텀 스크립트 */}
+            {footerCustomScripts && <>{footerCustomScripts}</>}
+            {/* body 실제 끝 JS 삽입 slot */}
+            {customBodyEndScripts && <>{customBodyEndScripts}</>}
           </div>
         </Providers>
+        {/* (참고) Strict mode/react portal, 등 추가 영역 구분 가능 */}
       </body>
     </html>
   );
