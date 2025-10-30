@@ -729,6 +729,186 @@ export const utilitiesData: UtilityItem[] = [
     slug: 'puppy-development-milestones',
     category: 'guide',
     status: 'completed'
+  },
+  {
+    id: 'dog-anxiety-tracker',
+    title: '불안 증상 추적기',
+    description: '강아지의 불안 증상과 패턴을 기록하고 분석',
+    icon: 'AlertCircle',
+    slug: 'dog-anxiety-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-allergy-tracker',
+    title: '알레르기 증상 추적기',
+    description: '음식, 환경 알레르기 증상을 상세히 기록하고 관리',
+    icon: 'Zap',
+    slug: 'dog-allergy-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-sleep-quality-tracker',
+    title: '수면 품질 추적기',
+    description: '강아지의 수면 품질과 패턴을 분석하여 건강 상태 파악',
+    icon: 'Moon',
+    slug: 'dog-sleep-quality-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-appetite-tracker',
+    title: '식욕 변화 추적기',
+    description: '강아지의 식욕 변화를 기록하여 건강 상태 모니터링',
+    icon: 'Utensils',
+    slug: 'dog-appetite-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-energy-level-tracker',
+    title: '활력 수준 추적기',
+    description: '강아지의 에너지 레벨과 활동량을 일일 기록',
+    icon: 'Battery',
+    slug: 'dog-energy-level-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-social-interaction-tracker',
+    title: '사회적 상호작용 추적기',
+    description: '다른 강아지, 사람과의 상호작용을 기록하고 분석',
+    icon: 'Users',
+    slug: 'dog-social-interaction-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-training-session-tracker',
+    title: '훈련 세션 추적기',
+    description: '각종 훈련 세션의 진행 상황과 성과를 상세히 기록',
+    icon: 'Target',
+    slug: 'dog-training-session-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-grooming-session-tracker',
+    title: '미용 세션 추적기',
+    description: '목욕, 빗질, 발톱 관리 등 미용 세션을 기록하고 관리',
+    icon: 'Scissors',
+    slug: 'dog-grooming-session-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-vet-visit-tracker',
+    title: '병원 방문 추적기',
+    description: '동물병원 방문 기록과 진료 내용을 체계적으로 관리',
+    icon: 'Stethoscope',
+    slug: 'dog-vet-visit-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-medication-schedule',
+    title: '투약 일정 관리',
+    description: '약물 투여 일정과 복용 기록을 체계적으로 관리',
+    icon: 'Pill',
+    slug: 'dog-medication-schedule',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-exercise-intensity-tracker',
+    title: '운동 강도 추적기',
+    description: '산책, 놀이 등 운동의 강도와 지속 시간을 기록',
+    icon: 'Activity',
+    slug: 'dog-exercise-intensity-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-weather-adaptation-tracker',
+    title: '날씨 적응 추적기',
+    description: '다양한 날씨 조건에서의 강아지 반응과 적응도를 기록',
+    icon: 'Cloud',
+    slug: 'dog-weather-adaptation-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-toy-preference-tracker',
+    title: '장난감 선호도 추적기',
+    description: '강아지가 선호하는 장난감과 놀이 방식을 분석',
+    icon: 'Gamepad2',
+    slug: 'dog-toy-preference-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-sleep-environment-tracker',
+    title: '수면 환경 추적기',
+    description: '수면 환경의 변화와 강아지 반응을 기록하고 분석',
+    icon: 'Home',
+    slug: 'dog-sleep-environment-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-feeding-behavior-tracker',
+    title: '급식 행동 추적기',
+    description: '급식 시간, 양, 행동 패턴을 기록하여 건강 상태 파악',
+    icon: 'Utensils',
+    slug: 'dog-feeding-behavior-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-stress-level-tracker',
+    title: '스트레스 레벨 추적기',
+    description: '일일 스트레스 지수와 원인을 기록하여 관리',
+    icon: 'Heart',
+    slug: 'dog-stress-level-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-socialization-milestone-tracker',
+    title: '사회화 마일스톤 추적기',
+    description: '사회화 훈련의 단계별 성취도를 기록하고 관리',
+    icon: 'UserPlus',
+    slug: 'dog-socialization-milestone-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-health-vital-signs-tracker',
+    title: '건강 바이탈 사인 추적기',
+    description: '체온, 심박수, 호흡수 등 기본 생체 신호를 기록',
+    icon: 'HeartPulse',
+    slug: 'dog-health-vital-signs-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-behavioral-change-tracker',
+    title: '행동 변화 추적기',
+    description: '강아지의 행동 변화와 패턴을 상세히 기록하고 분석',
+    icon: 'TrendingUp',
+    slug: 'dog-behavioral-change-tracker',
+    category: 'planner',
+    status: 'completed'
+  },
+  {
+    id: 'dog-environmental-enrichment-tracker',
+    title: '환경 풍부화 추적기',
+    description: '환경 풍부화 활동의 효과와 강아지 반응을 기록',
+    icon: 'Puzzle',
+    slug: 'dog-environmental-enrichment-tracker',
+    category: 'planner',
+    status: 'completed'
   }
 ]
 
