@@ -497,7 +497,6 @@ const blogPosts: Record<string, {
 - **연락처**: 24시간 응급실 연락처
 - **서비스**: 제공하는 의료 서비스
 - **언어**: 의료진 언어 지원 여부
-
 ### 일반 동물병원
 - **위치**: 목적지 일반 동물병원 위치
 - **진료시간**: 진료 시간 및 휴무일
@@ -994,7 +993,6 @@ const blogPosts: Record<string, {
 
 ### 2. 간식 훈련
 **목적**: 간식을 적절히 활용한 훈련
-
 **훈련 방법**:
 1. 작은 간식을 준비하기
 2. 훈련 성공 시 즉시 간식 주기
@@ -1492,7 +1490,6 @@ const blogPosts: Record<string, {
 - **정기 검진**: 건강 상태 정기 확인
 
 ## 😰 분리 불안 해결
-
 ### 분리 불안의 증상
 - **과도한 짖기**: 주인이 없을 때 계속 짖기
 - **파괴 행동**: 물건을 물어뜯거나 파괴
@@ -1991,7 +1988,6 @@ const blogPosts: Record<string, {
 - 치아 건강 간식
 - 저칼로리 간식
 - 소화기 건강 간식
-
 ## 🏃‍♀️ 운동과 활동
 
 ### 적절한 운동
@@ -2488,6 +2484,42 @@ const faqItems = [
   }
 ]
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqItems.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '') // 태그는 순수 텍스트로 변환
+    }
+  }))
+};
+
+// FAQ 섹션 컴포넌트 (빌드 시 참조 누락 방지)
+function FAQSection() {
+  return (
+    <section className="mt-16 mb-10">
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">자주 묻는 질문 (FAQ)</h2>
+      <div className="space-y-8">
+        {faqItems?.map((faq, i) => (
+          <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <h3 className="text-lg font-semibold text-blue-800 mb-2">Q. {faq.question}</h3>
+            <div className="text-gray-800 text-base" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+          </div>
+        ))}
+      </div>
+      {typeof window === 'undefined' ? (
+        <script
+          type="application/ld+json"
+          // 태그 제거된 텍스트로 FAQ 구조화 데이터 제공
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      ) : null}
+    </section>
+  )
+}
 // JSON-LD FAQ 스키마 (SEO/AEO)
 const faqJsonLd = {
   "@context": "https://schema.org",
@@ -2983,7 +3015,6 @@ const faqJsonLd = {
 - 전기 코드 보호
 - 독성 식물 제거
 - 미끄러지지 않는 바닥
-
 **편안한 공간**:
 - 조용한 휴식 공간
 - 적절한 온도 유지
@@ -3482,7 +3513,6 @@ const faqJsonLd = {
 - 환경 조성
 - 경제적 준비
 - 시간적 준비
-
 ### 전문가 도움
 - 수의사와의 정기 상담
 - 행동 전문가 상담
@@ -3981,7 +4011,6 @@ const faqJsonLd = {
 - **크기**: 강아지 크기에 맞춤
 - **기능**: 치아 청결, 스트레스 해소
 - **주의**: 너무 딱딱하거나 부드럽지 않게
-
 ### 공놀이 장난감
 - **종류**: 테니스공, 고무공, 천공
 - **크기**: 삼킬 수 없는 크기
@@ -4479,7 +4508,6 @@ const faqJsonLd = {
 - **일관된 명령어**: 명확한 소통
 - **긍정적 강화**: 좋은 행동 칭찬
 - **인내심**: 이해할 시간 주기
-
 ### 신호 해석 팁
 - **전체적 맥락**: 여러 신호 종합
 - **개체차**: 강아지마다 다름
@@ -4977,7 +5005,6 @@ const faqJsonLd = {
 - **레프토스피라**: 세균성 질병 예방
 - **라이메병**: 진드기 매개 질병 예방
 - **인플루엔자**: 독감 예방
-
 ### 성견 유지 접종
 - **연 1회**: 종합백신 (DHPP)
 - **1-3년**: 광견병 백신 (지역별 규정)
@@ -5471,7 +5498,6 @@ const faqJsonLd = {
 - **인내**: 인내심을 가지고 대응
 
 ## 🚨 응급 상황 대비
-
 ### 응급 연락처
 - **수의사**: 경로상 수의사 연락처
 - **응급센터**: 24시간 응급센터
@@ -5962,7 +5988,6 @@ const faqJsonLd = {
 - **기록**: 정확한 기록
 - **비교**: 지속적인 비교
 - **개선**: 지속적인 개선
-
 ### 균형 잡기
 - **품질**: 품질과 가격의 균형
 - **필요**: 필요와 욕구의 균형
@@ -6460,7 +6485,6 @@ const faqJsonLd = {
     content: `# 강아지 아로마테라피
 
 강아지에게 안전한 아로마테라피와 자연 치료법을 알아보세요.
-
 ## 🌿 아로마테라피란?
 ### 아로마테라피의 정의
 - **에센셜 오일**: 식물에서 추출한 정유
@@ -6954,7 +6978,6 @@ const faqJsonLd = {
 - **사회화**: 다른 강아지와의 사회화
 
 ## 🎒 필수 준비물
-
 ### 기본 장비
 - **리드**: 안전한 리드
 - **목줄**: 목줄
@@ -7450,7 +7473,6 @@ const faqJsonLd = {
 - **평화**: 마음의 평화
 
 ## 🏠 명상 환경 조성
-
 ### 물리적 환경
 - **조용한 공간**: 조용하고 편안한 공간
 - **적절한 온도**: 적절한 실내 온도
@@ -7936,7 +7958,6 @@ const faqJsonLd = {
 - **인내심**: 충분한 인내심
 - **관찰**: 강아지 반응 관찰
 - **적응**: 강아지에 맞게 적응
-
 ### 문제 해결
 - **집중력**: 집중력 향상
 - **방해**: 방해 요소 대처
@@ -8432,12 +8453,12 @@ const faqJsonLd = {
 - **치유**: 감정적 치유
 
 ## 💡 라이팅 성공 팁
-
 ### 효과적인 라이팅법
 - **일관성**: 일관된 라이팅 활동
 - **인내심**: 충분한 인내심
 - **관찰**: 강아지 반응 관찰
 - **적응**: 강아지에 맞게 적응
+
 ### 문제 해결
 - **집중력**: 집중력 향상
 - **방해**: 방해 요소 대처
