@@ -8926,29 +8926,6 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 }
 
-// FAQ 섹션 컴포넌트 (빌드 시 참조 누락 방지)
-function FAQSection() {
-  return (
-    <section className="mt-16 mb-10">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">자주 묻는 질문 (FAQ)</h2>
-      <div className="space-y-8">
-        {faqItems?.map((faq, i) => (
-          <div key={i} className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-            <h3 className="text-lg font-semibold text-blue-800 mb-2">Q. {faq.question}</h3>
-            <div className="text-gray-800 text-base" dangerouslySetInnerHTML={{ __html: faq.answer }} />
-          </div>
-        ))}
-      </div>
-      {typeof window === 'undefined' ? (
-        <script
-          type="application/ld+json"
-          // 태그 제거된 텍스트로 FAQ 구조화 데이터 제공
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-        />
-      ) : null}
-    </section>
-  )
-}
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params
   const post = blogPosts[slug]
