@@ -9188,8 +9188,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </div>
           </div>
 
-          {/* FAQ 섹션 추가 */}
-          <FAQSection />
+          {/* FAQ 섹션은 추후 별도 페이지/컴포넌트로 연결 예정 */}
         </div>
       </div>
   )
