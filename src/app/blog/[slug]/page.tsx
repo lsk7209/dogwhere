@@ -7,9 +7,9 @@ import TableOfContents from '@/components/blog/TableOfContents'
 import AdsenseSlot from '@/components/ads/AdsenseSlot'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // 샘플 블로그 포스트 데이터

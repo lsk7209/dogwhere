@@ -8,9 +8,9 @@ import { notFound } from 'next/navigation'
 import { PostRepository } from '@/lib/database/d1-repository'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 /**
@@ -29,8 +29,9 @@ export async function generateStaticParams() {
  * 동적 메타데이터 생성
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
   const repository = new PostRepository()
-  const post = await repository.findBySlug(params.slug)
+  const post = await repository.findBySlug(slug)
 
   if (!post) {
     return {
@@ -59,8 +60,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export const revalidate = 3600 // 1시간
 
 export default async function BlogPostPage({ params }: PageProps) {
+  const { slug } = await params
   const repository = new PostRepository()
-  const post = await repository.findBySlug(params.slug)
+  const post = await repository.findBySlug(slug)
 
   if (!post) {
     notFound()

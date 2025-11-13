@@ -2,9 +2,9 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // 장소 데이터 (실제로는 데이터베이스에서 가져옴)
@@ -81,7 +81,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const place = places[params.slug]
+  const { slug } = await params
+  const place = places[slug]
   
   if (!place) {
     return {
@@ -101,8 +102,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default function PlaceDetailPage({ params }: PageProps) {
-  const place = places[params.slug]
+export default async function PlaceDetailPage({ params }: PageProps) {
+  const { slug } = await params
+  const place = places[slug]
   
   if (!place) {
     notFound()

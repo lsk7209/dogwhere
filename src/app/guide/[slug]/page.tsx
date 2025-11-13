@@ -4,9 +4,9 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
 interface GuideDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 // 샘플 가이드 데이터
