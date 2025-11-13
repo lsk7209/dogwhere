@@ -46,11 +46,11 @@ export async function getFromCache<T>(
 
   try {
     const cached = await kv.get(key, {
-      type: 'json',
+      type: 'json' as const,
       cacheTtl: options?.ttl || 300
-    })
+    }) as T | null
 
-    return cached as T | null
+    return cached
   } catch (error) {
     console.error('Cache get error:', error)
     return null
