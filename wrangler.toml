@@ -1,6 +1,7 @@
 # Cloudflare Pages 설정
 name = "dogwhere"
 compatibility_date = "2024-10-28"
+compatibility_flags = ["nodejs_compat"]
 
 # Pages 빌드 설정
 pages_build_output_dir = "out"

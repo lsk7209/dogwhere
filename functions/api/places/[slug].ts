@@ -1,10 +1,22 @@
 /**
  * Cloudflare Pages Functions - 장소 상세 API
+ * 독립적으로 실행 가능한 최소한의 코드
  */
 
-import { PlaceRepository } from '../../../src/lib/database/d1-repository'
+interface Env {
+  DB: D1Database
+}
 
-export async function onRequest(context: EventContext<{ slug: string }>): Promise<Response> {
+interface D1Database {
+  prepare(query: string): D1PreparedStatement
+}
+
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement
+  first<T = unknown>(): Promise<T | null>
+}
+
+export async function onRequest(context: { request: Request; env: Env; params: { slug: string } }): Promise<Response> {
   const { request, env, params } = context
 
   try {
@@ -27,7 +39,7 @@ export async function onRequest(context: EventContext<{ slug: string }>): Promis
     }
 
     // D1 데이터베이스 가져오기
-    const db = env.DB as D1Database
+    const db = env.DB
     
     if (!db) {
       return new Response(
@@ -45,10 +57,13 @@ export async function onRequest(context: EventContext<{ slug: string }>): Promis
       )
     }
 
-    const repository = new PlaceRepository(db)
-    const place = await repository.findBySlug(slug)
+    // 슬러그로 장소 조회
+    const result = await db
+      .prepare('SELECT * FROM places WHERE slug = ?')
+      .bind(slug)
+      .first()
 
-    if (!place) {
+    if (!result) {
       return new Response(
         JSON.stringify({
           success: false,
@@ -67,7 +82,7 @@ export async function onRequest(context: EventContext<{ slug: string }>): Promis
     return new Response(
       JSON.stringify({
         success: true,
-        data: place,
+        data: result,
         meta: {
           timestamp: new Date().toISOString(),
           version: '2.0'
@@ -101,4 +116,3 @@ export async function onRequest(context: EventContext<{ slug: string }>): Promis
     )
   }
 }
-

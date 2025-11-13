@@ -1,32 +1,39 @@
 /**
  * Cloudflare Pages Functions - 장소 API
- * Cloudflare 환경에서 직접 실행되는 함수
+ * 독립적으로 실행 가능한 최소한의 코드
  */
 
-import { PlaceRepository } from '../../src/lib/database/d1-repository'
+interface Env {
+  DB: D1Database
+}
 
-export async function onRequest(context: EventContext): Promise<Response> {
+interface D1Database {
+  prepare(query: string): D1PreparedStatement
+}
+
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement
+  first<T = unknown>(): Promise<T | null>
+  all<T = unknown>(): Promise<D1Result<T>>
+}
+
+interface D1Result<T = unknown> {
+  results: T[]
+  success: boolean
+  meta: {
+    duration: number
+    rows_read: number
+    rows_written: number
+  }
+}
+
+export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context
   const { searchParams } = new URL(request.url)
 
   try {
-    // 쿼리 파라미터 파싱
-    const page = parseInt(searchParams.get('page') || '1', 10)
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
-    const sido = searchParams.get('sido') || undefined
-    const sigungu = searchParams.get('sigungu') || undefined
-    const category = searchParams.get('category') || undefined
-    const search = searchParams.get('search') || undefined
-    const verified = searchParams.get('verified') === 'true' ? true : undefined
-    const featured = searchParams.get('featured') === 'true' ? true : undefined
-    const minRating = searchParams.get('minRating') 
-      ? parseFloat(searchParams.get('minRating')!) 
-      : undefined
-    const sortBy = searchParams.get('sortBy') || 'created_at'
-    const sortOrder = (searchParams.get('sortOrder') || 'DESC') as 'ASC' | 'DESC'
-
     // D1 데이터베이스 가져오기
-    const db = env.DB as D1Database
+    const db = env.DB
     
     if (!db) {
       return new Response(
@@ -44,37 +51,83 @@ export async function onRequest(context: EventContext): Promise<Response> {
       )
     }
 
-    const filters = {
-      sido,
-      sigungu,
-      category,
-      verified,
-      featured,
-      minRating,
-      search
+    // 쿼리 파라미터 파싱
+    const page = parseInt(searchParams.get('page') || '1', 10)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
+    const offset = (page - 1) * limit
+    
+    const sido = searchParams.get('sido')
+    const sigungu = searchParams.get('sigungu')
+    const category = searchParams.get('category')
+    const search = searchParams.get('search')
+    const sortBy = searchParams.get('sortBy') || 'created_at'
+    const sortOrder = searchParams.get('sortOrder') || 'DESC'
+
+    // WHERE 조건 구성
+    const conditions: string[] = []
+    const params: any[] = []
+
+    if (sido) {
+      conditions.push('sido = ?')
+      params.push(sido)
     }
 
-    const repository = new PlaceRepository(db)
-    
-    // 검색 쿼리인 경우
-    let result
-    if (search) {
-      result = await repository.search(search, { page, limit })
-    } else {
-      // 일반 목록 조회
-      result = await repository.findAll(
-        filters,
-        { field: sortBy, order: sortOrder },
-        { page, limit }
-      )
+    if (sigungu) {
+      conditions.push('sigungu = ?')
+      params.push(sigungu)
     }
+
+    if (category) {
+      conditions.push('category = ?')
+      params.push(category)
+    }
+
+    if (search) {
+      conditions.push('(name LIKE ? OR description LIKE ? OR address LIKE ?)')
+      const searchTerm = `%${search}%`
+      params.push(searchTerm, searchTerm, searchTerm)
+    }
+
+    const whereClause = conditions.length > 0 
+      ? `WHERE ${conditions.join(' AND ')}`
+      : ''
+
+    // 정렬 필드 검증 (SQL injection 방지)
+    const allowedSortFields = ['created_at', 'updated_at', 'overall_rating', 'review_count', 'name']
+    const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at'
+    const sortOrderSafe = sortOrder === 'ASC' ? 'ASC' : 'DESC'
+
+    // 전체 개수 조회
+    const countQuery = `SELECT COUNT(*) as total FROM places ${whereClause}`
+    const countResult = await db.prepare(countQuery).bind(...params).first() as any
+    const total = countResult?.total as number || 0
+
+    // 데이터 조회
+    const dataQuery = `
+      SELECT * FROM places 
+      ${whereClause}
+      ORDER BY ${sortField} ${sortOrderSafe}
+      LIMIT ? OFFSET ?
+    `
+    const dataResult = await db
+      .prepare(dataQuery)
+      .bind(...params, limit, offset)
+      .all()
+
+    const data = dataResult.results || []
+    const totalPages = Math.ceil(total / limit)
 
     return new Response(
       JSON.stringify({
         success: true,
-        data: result.data,
-        pagination: result.pagination,
-        filters,
+        data,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasMore: page < totalPages
+        },
         meta: {
           timestamp: new Date().toISOString(),
           version: '2.0'
@@ -86,7 +139,6 @@ export async function onRequest(context: EventContext): Promise<Response> {
           'Content-Type': 'application/json',
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60',
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
         }
       }
     )
@@ -99,10 +151,7 @@ export async function onRequest(context: EventContext): Promise<Response> {
         success: false,
         error: {
           message: '장소 정보를 가져오는 중 오류가 발생했습니다.',
-          code: 'PLACES_FETCH_ERROR',
-          details: process.env.NODE_ENV === 'development' 
-            ? (error instanceof Error ? error.message : 'Unknown error')
-            : undefined
+          code: 'PLACES_FETCH_ERROR'
         }
       }),
       { 
@@ -125,4 +174,3 @@ export async function onRequestOptions(): Promise<Response> {
     }
   })
 }
-

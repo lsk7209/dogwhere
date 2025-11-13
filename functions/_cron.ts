@@ -7,21 +7,33 @@
  * crons = ["0 */6 * * *"]  # 6시간마다 실행
  */
 
-import { PlaceRepository } from '../src/lib/database/d1-repository'
-import { collectFromGoogle, collectFromKakao, ingestPlaces } from '../src/lib/data-collection/simple-collector'
+interface Env {
+  DB: D1Database
+}
+
+interface D1Database {
+  prepare(query: string): D1PreparedStatement
+}
+
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement
+  first<T = unknown>(): Promise<T | null>
+}
+
+interface ScheduledEvent {
+  scheduledTime: number
+  cron: string
+}
 
 export async function onScheduled(event: ScheduledEvent, env: Env): Promise<void> {
-  const db = env.DB as D1Database
+  const db = env.DB
 
   try {
     console.log(`[Cron] Scheduled event triggered at ${event.scheduledTime}`)
     console.log(`[Cron] Cron: ${event.cron}`)
 
-    // 작업 타입에 따라 다른 작업 수행
-    // event.cron을 통해 어떤 작업인지 구분 가능
-    
-    // 예시: 데이터 수집 작업
-    await collectAndIngestPlaces(db)
+    // 간단한 통계 업데이트 작업 예시
+    await updateStatistics(db)
 
     console.log('[Cron] Scheduled task completed successfully')
   } catch (error) {
@@ -31,59 +43,27 @@ export async function onScheduled(event: ScheduledEvent, env: Env): Promise<void
 }
 
 /**
- * 장소 데이터 수집 및 저장
+ * 통계 업데이트 (예시)
  */
-async function collectAndIngestPlaces(db: D1Database): Promise<void> {
+async function updateStatistics(db: D1Database): Promise<void> {
   try {
-    console.log('[Cron] Starting places collection...')
+    console.log('[Cron] Updating statistics...')
 
-    const defaultKeywords = [
-      '강아지 동반 카페',
-      '펫프렌들리 카페',
-      '강아지 동반 식당',
-      '펫프렌들리 레스토랑',
-    ]
+    // 장소 개수 조회
+    const countResult = await db
+      .prepare('SELECT COUNT(*) as total FROM places')
+      .first() as any
 
-    let allCollectedPlaces: any[] = []
+    const total = countResult?.total as number || 0
 
-    // 각 키워드로 검색
-    for (const keyword of defaultKeywords.slice(0, 3)) { // 처음 3개만 (API 제한 고려)
-      const query = `서울 ${keyword}`
-      
-      // Google Places API에서 데이터 수집
-      const googlePlaces = await collectFromGoogle(query)
-      allCollectedPlaces = [...allCollectedPlaces, ...googlePlaces]
+    console.log(`[Cron] Total places: ${total}`)
 
-      // 카카오맵 API에서 데이터 수집
-      const kakaoPlaces = await collectFromKakao(query)
-      allCollectedPlaces = [...allCollectedPlaces, ...kakaoPlaces]
+    // 여기에 추가 통계 작업을 구현할 수 있습니다
+    // 예: 인기 장소 업데이트, 검색 인덱스 갱신 등
 
-      // API 호출 제한을 위한 대기
-      await new Promise(resolve => setTimeout(resolve, 200))
-    }
-
-    // 데이터 통합 및 저장
-    console.log(`[Cron] Collected ${allCollectedPlaces.length} places`)
-    
-    const repository = new PlaceRepository(db)
-    
-    // 중복 확인 및 저장
-    for (const place of allCollectedPlaces) {
-      try {
-        const existing = await repository.findBySlug(place.slug)
-        if (!existing) {
-          // 새 장소 추가 로직 (실제 구현 필요)
-          console.log(`[Cron] Adding new place: ${place.name}`)
-        }
-      } catch (error) {
-        console.error(`[Cron] Error processing place ${place.name}:`, error)
-      }
-    }
-
-    console.log('[Cron] Places collection completed')
+    console.log('[Cron] Statistics update completed')
   } catch (error) {
-    console.error('[Cron] Places collection failed:', error)
+    console.error('[Cron] Statistics update failed:', error)
     throw error
   }
 }
-
