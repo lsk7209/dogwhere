@@ -16,7 +16,12 @@ export async function generateStaticParams() {
     'hongdae-cluster': '홍대권',
     'myeongdong-cluster': '명동권',
     'jamsil-cluster': '잠실권',
-    'itaewon-cluster': '이태원권'
+    'itaewon-cluster': '이태원권',
+    'gangbuk-cluster': '강북권',
+    'han-river-cluster': '한강권',
+    'northeast-cluster': '동북권',
+    'southwest-cluster': '서남권',
+    'southeast-cluster': '동남권'
   }
   
   return Object.keys(clusterNames).map(clusterId => ({ clusterId }))

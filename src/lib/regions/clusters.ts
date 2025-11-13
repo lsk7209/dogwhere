@@ -211,13 +211,50 @@ export const jejuClusters: RegionCluster[] = [
 ]
 
 /**
+ * 강원도 지역 클러스터 정의
+ */
+export const gangwonClusters: RegionCluster[] = [
+  {
+    id: 'gangneung-cluster',
+    name: '강릉권',
+    type: 'hotspot',
+    priority: 1,
+    sigList: ['gangneung-si', 'sokcho-si'],
+    description: '동해안의 대표 관광지, 강아지 동반 해변 휴양지',
+    icon: '🌊',
+    color: 'bg-blue-100 text-blue-800'
+  },
+  {
+    id: 'wonju-cluster',
+    name: '원주권',
+    type: 'cluster',
+    priority: 2,
+    sigList: ['wonju-si', 'chuncheon-si'],
+    description: '강원도 내륙의 중심, 다양한 강아지 동반 시설',
+    icon: '🏔️',
+    color: 'bg-teal-100 text-teal-800'
+  },
+  {
+    id: 'pyeongchang-cluster',
+    name: '평창/정선권',
+    type: 'special',
+    priority: 3,
+    sigList: ['pyeongchang-gun', 'jeongseon-gun'],
+    description: '산과 계곡이 있는 자연 속 강아지 동반 여행지',
+    icon: '⛰️',
+    color: 'bg-emerald-100 text-emerald-800'
+  }
+]
+
+/**
  * 모든 지역 클러스터 맵
  */
 export const regionClusters = {
   seoul: seoulClusters,
   gyeonggi: gyeonggiClusters,
   busan: busanClusters,
-  jeju: jejuClusters
+  jeju: jejuClusters,
+  gangwon: gangwonClusters
 } as const
 
 export type RegionKey = keyof typeof regionClusters
