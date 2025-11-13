@@ -68,6 +68,27 @@ const nextConfig: NextConfig = {
         destination: '/admin/dashboard',
         permanent: true,
       },
+      // 법적 페이지 trailing slash 통일
+      {
+        source: '/terms',
+        destination: '/terms/',
+        permanent: true,
+      },
+      {
+        source: '/privacy',
+        destination: '/privacy/',
+        permanent: true,
+      },
+      {
+        source: '/about',
+        destination: '/about/',
+        permanent: true,
+      },
+      {
+        source: '/data-source',
+        destination: '/data-source/',
+        permanent: true,
+      },
     ];
   },
 };
