@@ -9,11 +9,11 @@ pages_build_output_dir = "out"
 [vars]
 NODE_ENV = "production"
 
-# D1 데이터베이스 바인딩 (나중에 설정)
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "dogwhere-db"
-# database_id = "your-database-id"
+# D1 데이터베이스 바인딩
+[[d1_databases]]
+binding = "DB"
+database_name = "dogwhere-db"
+database_id = "7284cd81-bb1c-4d09-a7b0-4cbdd257b7d5"
 
 # KV 네임스페이스 바인딩 (나중에 설정)
 # [[kv_namespaces]]

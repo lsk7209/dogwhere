@@ -156,32 +156,49 @@ NEXT_PUBLIC_API_URL=https://your-domain.pages.dev
 
 ## 🌐 배포
 
-### 클라우드플레어 Pages 배포
+### 자동 배포 (GitHub + Cloudflare Pages)
 
-1. **클라우드플레어 계정 설정**
-   ```bash
-   npm install -g wrangler
-   wrangler login
-   ```
+이 프로젝트는 GitHub에 푸시하면 자동으로 Cloudflare Pages에 배포됩니다.
 
-2. **D1 데이터베이스 생성**
-   ```bash
-   wrangler d1 create dogwhere-db
-   ```
+#### 1. GitHub 저장소 설정
 
-3. **데이터베이스 스키마 적용**
-   ```bash
-   npm run db:migrate
-   npm run db:seed
-   ```
+```bash
+# 저장소 초기화 (아직 안 했다면)
+git init
+git add .
+git commit -m "Initial commit"
 
-4. **GitHub 연동 및 자동 배포**
-   - GitHub 저장소 생성
-   - 클라우드플레어 Pages 프로젝트 생성
-   - GitHub 저장소 연결
-   - 자동 배포 설정
+# GitHub에 저장소 생성 후
+git remote add origin https://github.com/your-username/dogwhere.git
+git branch -M main
+git push -u origin main
+```
 
-자세한 배포 가이드는 [CLOUDFLARE_DEPLOYMENT.md](CLOUDFLARE_DEPLOYMENT.md)를 참조하세요.
+#### 2. Cloudflare Pages 설정
+
+1. [Cloudflare Dashboard](https://dash.cloudflare.com) → Pages → Create a project
+2. **Connect to Git** → GitHub 계정 인증
+3. `dogwhere` 저장소 선택
+4. **프로젝트 설정**:
+   - Project name: `dogwhere`
+   - Production branch: `main`
+   - Build command: `npm run build`
+   - Build output directory: `out`
+5. **환경변수 설정** (Settings → Environment variables)
+6. **D1 바인딩 설정** (Settings → Functions → D1 Database bindings)
+
+#### 3. 자동 배포
+
+```bash
+# 코드 변경 후
+git add .
+git commit -m "Your changes"
+git push origin main
+
+# 자동으로 배포 시작! 🚀
+```
+
+자세한 배포 가이드는 [DEPLOYMENT.md](DEPLOYMENT.md)를 참조하세요.
 
 ## 📊 주요 기능 상세
 

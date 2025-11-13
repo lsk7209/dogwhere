@@ -10,7 +10,13 @@
     "export": "next build && next export",
     "deploy": "npm run build && wrangler pages deploy out",
     "db:migrate": "wrangler d1 migrations apply dogwhere-db",
-    "db:seed": "wrangler d1 execute dogwhere-db --file=./schema.sql"
+    "db:seed": "wrangler d1 execute dogwhere-db --file=./schema.sql",
+    "db:setup": "bash scripts/setup-d1.sh",
+    "db:setup:local": "wrangler d1 execute dogwhere-db --local --file=./schema.sql",
+    "db:setup:prod": "wrangler d1 execute dogwhere-db --file=./schema.sql",
+    "db:check": "npx tsx scripts/check-d1.ts",
+    "db:check:local": "npx tsx scripts/check-d1.ts --local",
+    "db:info": "wrangler d1 info dogwhere-db"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
