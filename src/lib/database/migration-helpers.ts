@@ -13,7 +13,7 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, any> 
     name: place.name,
     slug: place.slug,
     category: place.category,
-    subcategory: place.subcategory || null,
+    subcategory: (place as any).subcategory || null,
     description: place.description || null,
     short_description: place.description?.substring(0, 200) || null,
     

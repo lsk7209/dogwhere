@@ -909,6 +909,393 @@ export const utilitiesData: UtilityItem[] = [
     slug: 'dog-environmental-enrichment-tracker',
     category: 'planner',
     status: 'completed'
+  },
+  {
+    id: 'bmi-calculator',
+    title: '반려견 체질량지수(BMI) 계산기',
+    description: '체중과 신장을 입력하여 BMI를 계산하고 건강 상태를 확인',
+    icon: 'Scale',
+    slug: 'bmi-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'daily-calorie-burn-calculator',
+    title: '일일 칼로리 소모량 계산기',
+    description: '활동량과 체중 기반 일일 칼로리 소모량 계산',
+    icon: 'Flame',
+    slug: 'daily-calorie-burn-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'protein-requirement-calculator',
+    title: '단백질 필요량 계산기',
+    description: '견종과 체중에 따른 일일 단백질 필요량 계산',
+    icon: 'Beef',
+    slug: 'protein-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'fat-intake-calculator',
+    title: '지방 섭취량 계산기',
+    description: '건강 상태에 따른 적정 지방 섭취량 계산',
+    icon: 'Droplet',
+    slug: 'fat-intake-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'carbohydrate-requirement-calculator',
+    title: '탄수화물 필요량 계산기',
+    description: '활동량 기반 탄수화물 필요량 계산',
+    icon: 'Wheat',
+    slug: 'carbohydrate-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'fiber-requirement-calculator',
+    title: '식이섬유 권장량 계산기',
+    description: '소화 건강을 위한 식이섬유 권장량 계산',
+    icon: 'Leaf',
+    slug: 'fiber-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'calcium-requirement-calculator',
+    title: '칼슘 필요량 계산기',
+    description: '성장 단계별 칼슘 필요량 계산',
+    icon: 'Bone',
+    slug: 'calcium-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'phosphorus-requirement-calculator',
+    title: '인 필요량 계산기',
+    description: '골격 건강을 위한 인 필요량 계산',
+    icon: 'Atom',
+    slug: 'phosphorus-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'omega3-requirement-calculator',
+    title: '오메가-3 필요량 계산기',
+    description: '피부 건강을 위한 오메가-3 필요량 계산',
+    icon: 'Fish',
+    slug: 'omega3-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'treat-calorie-calculator',
+    title: '간식 칼로리 계산기',
+    description: '간식의 칼로리를 계산하여 일일 칼로리에 포함',
+    icon: 'Cookie',
+    slug: 'treat-calorie-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'food-transition-calculator',
+    title: '사료 전환 계산기',
+    description: '사료 변경 시 점진적 전환 비율 계산',
+    icon: 'RefreshCw',
+    slug: 'food-transition-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'meal-frequency-calculator',
+    title: '식사 횟수 계산기',
+    description: '연령과 건강 상태에 따른 적정 식사 횟수 계산',
+    icon: 'Clock',
+    slug: 'meal-frequency-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'feeding-adjustment-calculator',
+    title: '급여량 조정 계산기',
+    description: '체중 변화에 따른 급여량 조정 계산',
+    icon: 'TrendingUp',
+    slug: 'feeding-adjustment-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'vaccination-schedule-calculator',
+    title: '예방접종 일정 계산기',
+    description: '다음 예방접종일과 일정 계산',
+    icon: 'Syringe',
+    slug: 'vaccination-schedule-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'deworming-schedule-calculator',
+    title: '구충제 투여 주기 계산기',
+    description: '구충제 투여 주기와 다음 투여일 계산',
+    icon: 'Pill',
+    slug: 'deworming-schedule-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'nail-trimming-schedule-calculator',
+    title: '발톱 자르기 주기 계산기',
+    description: '발톱 자르기 주기와 다음 시기 계산',
+    icon: 'Scissors',
+    slug: 'nail-trimming-schedule-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'daily-exercise-calculator',
+    title: '일일 운동량 계산기',
+    description: '견종과 연령에 따른 일일 운동량 계산',
+    icon: 'Activity',
+    slug: 'daily-exercise-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'walking-distance-calculator',
+    title: '산책 거리 계산기',
+    description: '적정 산책 거리와 시간 계산',
+    icon: 'MapPin',
+    slug: 'walking-distance-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'exercise-intensity-calculator',
+    title: '운동 강도 계산기',
+    description: '현재 운동 강도와 적정 강도 계산',
+    icon: 'Gauge',
+    slug: 'exercise-intensity-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'recovery-time-calculator',
+    title: '회복 시간 계산기',
+    description: '운동 후 필요한 회복 시간 계산',
+    icon: 'Clock',
+    slug: 'recovery-time-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'growth-rate-calculator',
+    title: '성장 속도 계산기',
+    description: '강아지의 성장 속도와 예상 성체 크기 계산',
+    icon: 'TrendingUp',
+    slug: 'growth-rate-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'expected-adult-weight-calculator',
+    title: '예상 성체 체중 계산기',
+    description: '현재 체중과 나이로 성체 체중 예측',
+    icon: 'Scale',
+    slug: 'expected-adult-weight-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'food-cost-calculator',
+    title: '사료 비용 계산기',
+    description: '사료 종류별 월간 비용 계산',
+    icon: 'DollarSign',
+    slug: 'food-cost-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'vet-cost-calculator',
+    title: '병원비 계산기',
+    description: '예방접종, 검진 등 병원비 예상 계산',
+    icon: 'Stethoscope',
+    slug: 'vet-cost-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'grooming-cost-calculator',
+    title: '미용비 계산기',
+    description: '미용 주기별 연간 비용 계산',
+    icon: 'Scissors',
+    slug: 'grooming-cost-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'pet-insurance-calculator',
+    title: '보험료 계산기',
+    description: '반려동물 보험료 계산',
+    icon: 'Shield',
+    slug: 'pet-insurance-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'travel-cost-calculator',
+    title: '여행 비용 계산기',
+    description: '강아지 동반 여행 비용 계산',
+    icon: 'Plane',
+    slug: 'travel-cost-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'lifetime-cost-calculator',
+    title: '생애 총 비용 계산기',
+    description: '강아지 생애 전체 예상 비용 계산',
+    icon: 'DollarSign',
+    slug: 'lifetime-cost-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'training-progress-calculator',
+    title: '훈련 진도 계산기',
+    description: '훈련 진도와 다음 단계 계산',
+    icon: 'Target',
+    slug: 'training-progress-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'socialization-progress-calculator',
+    title: '사회화 진도 계산기',
+    description: '사회화 훈련 진도 평가',
+    icon: 'Users',
+    slug: 'socialization-progress-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'behavior-severity-calculator',
+    title: '문제 행동 심각도 계산기',
+    description: '문제 행동의 심각도 평가',
+    icon: 'AlertTriangle',
+    slug: 'behavior-severity-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'training-effect-calculator',
+    title: '훈련 효과 계산기',
+    description: '훈련의 효과와 개선도 계산',
+    icon: 'TrendingUp',
+    slug: 'training-effect-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'learning-ability-calculator',
+    title: '학습 능력 계산기',
+    description: '강아지의 학습 능력과 속도 평가',
+    icon: 'Brain',
+    slug: 'learning-ability-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'water-intake-calculator',
+    title: '물 섭취량 계산기',
+    description: '일일 물 섭취량 계산',
+    icon: 'Droplet',
+    slug: 'water-intake-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'rest-time-calculator',
+    title: '수면 시간 계산기',
+    description: '적정 수면 시간 계산',
+    icon: 'Moon',
+    slug: 'rest-time-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'playtime-duration-calculator',
+    title: '놀이 시간 계산기',
+    description: '적정 놀이 시간 계산',
+    icon: 'Gamepad2',
+    slug: 'playtime-duration-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'toy-rotation-calculator',
+    title: '장난감 교체 주기 계산기',
+    description: '장난감 교체 주기와 일정 계산',
+    icon: 'ToyBrick',
+    slug: 'toy-rotation-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'enrichment-activity-calculator',
+    title: '환경 풍부화 활동 계산기',
+    description: '정신 자극 활동 계획 계산',
+    icon: 'Sparkles',
+    slug: 'enrichment-activity-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'emergency-supply-calculator',
+    title: '비상용품 계산기',
+    description: '비상 상황 대비 용품 계산',
+    icon: 'AlertCircle',
+    slug: 'emergency-supply-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'space-requirement-calculator',
+    title: '생활 공간 계산기',
+    description: '필요한 생활 공간 계산',
+    icon: 'Home',
+    slug: 'space-requirement-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'temperature-comfort-calculator',
+    title: '온도 적정성 계산기',
+    description: '현재 온도의 적정성 평가',
+    icon: 'Thermometer',
+    slug: 'temperature-comfort-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'breed-compatibility-calculator',
+    title: '견종 적합도 계산기',
+    description: '생활 방식에 맞는 견종 추천',
+    icon: 'Heart',
+    slug: 'breed-compatibility-calculator',
+    category: 'calculator',
+    status: 'completed'
+  },
+  {
+    id: 'adoption-readiness-calculator',
+    title: '입양 준비도 계산기',
+    description: '반려견 입양 준비 상태 평가',
+    icon: 'CheckCircle',
+    slug: 'adoption-readiness-calculator',
+    category: 'calculator',
+    status: 'completed'
   }
 ]
 

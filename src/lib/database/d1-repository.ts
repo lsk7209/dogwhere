@@ -37,6 +37,36 @@ export interface SortParams {
 
 import { getD1Database, isD1Available } from './d1-client'
 
+// Cloudflare D1 Database 타입 정의
+interface D1Database {
+  prepare(query: string): D1PreparedStatement
+  exec(query: string): Promise<D1ExecResult>
+  batch<T = unknown>(statements: D1PreparedStatement[]): Promise<D1Result<T>[]>
+}
+
+interface D1PreparedStatement {
+  bind(...values: unknown[]): D1PreparedStatement
+  first<T = unknown>(colName?: string): Promise<T | null>
+  run<T = unknown>(): Promise<D1Result<T>>
+  all<T = unknown>(): Promise<D1Result<T>>
+}
+
+interface D1Result<T = unknown> {
+  success: boolean
+  meta: {
+    duration: number
+    size_after: number
+    rows_read: number
+    rows_written: number
+  }
+  results?: T[]
+}
+
+interface D1ExecResult {
+  count: number
+  duration: number
+}
+
 /**
  * D1 데이터베이스 연결 가져오기
  */
@@ -51,7 +81,7 @@ function getDB(): D1Database {
     )
   }
   
-  return db
+  return db as D1Database
 }
 
 /**
@@ -150,8 +180,8 @@ export class PlaceRepository {
 
     // 전체 개수 조회
     const countQuery = `SELECT COUNT(*) as total FROM places ${whereClause}`
-    const countResult = await this.db.prepare(countQuery).bind(...params).first()
-    const total = (countResult as any)?.total as number || 0
+    const countResult = await this.db.prepare(countQuery).bind(...params).first() as { total?: number } | null
+    const total = countResult?.total as number || 0
 
     // 데이터 조회
     const dataQuery = `
@@ -184,6 +214,10 @@ export class PlaceRepository {
    * 슬러그로 장소 조회
    */
   async findBySlug(slug: string): Promise<any | null> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare('SELECT * FROM places WHERE slug = ?')
       .bind(slug)
@@ -196,6 +230,10 @@ export class PlaceRepository {
    * ID로 장소 조회
    */
   async findById(id: string): Promise<any | null> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare('SELECT * FROM places WHERE id = ?')
       .bind(id)
@@ -208,6 +246,10 @@ export class PlaceRepository {
    * 지역별 장소 개수 조회 (통계용)
    */
   async countByRegion(sido?: string, sigungu?: string): Promise<number> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     let query = 'SELECT COUNT(*) as total FROM places'
     const params: any[] = []
 
@@ -219,7 +261,7 @@ export class PlaceRepository {
       params.push(sido)
     }
 
-    const result = await this.db.prepare(query).bind(...params).first()
+    const result = await this.db.prepare(query).bind(...params).first() as { total?: number } | null
     return result?.total as number || 0
   }
 
@@ -227,10 +269,14 @@ export class PlaceRepository {
    * 카테고리별 장소 개수 조회
    */
   async countByCategory(category: string): Promise<number> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare('SELECT COUNT(*) as total FROM places WHERE category = ?')
       .bind(category)
-      .first()
+      .first() as { total?: number } | null
 
     return result?.total as number || 0
   }
@@ -242,6 +288,10 @@ export class PlaceRepository {
     query: string,
     pagination: PaginationParams = { page: 1, limit: 20 }
   ): Promise<PaginationResult<any>> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const { page, limit } = pagination
     const offset = (page - 1) * limit
     const searchTerm = `%${query}%`
@@ -253,7 +303,7 @@ export class PlaceRepository {
         WHERE name LIKE ? OR description LIKE ? OR address LIKE ?
       `)
       .bind(searchTerm, searchTerm, searchTerm)
-      .first()
+      .first() as { total?: number } | null
 
     const total = countResult?.total as number || 0
 
@@ -354,11 +404,15 @@ export class PostRepository {
       : 'date'
     const sortOrder = sort.order === 'ASC' ? 'ASC' : 'DESC'
 
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     // 전체 개수
     const countResult = await this.db
       .prepare(`SELECT COUNT(*) as total FROM posts ${whereClause}`)
       .bind(...params)
-      .first()
+      .first() as { total?: number } | null
 
     const total = countResult?.total as number || 0
 
@@ -393,6 +447,10 @@ export class PostRepository {
    * 슬러그로 포스트 조회
    */
   async findBySlug(slug: string): Promise<any | null> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare('SELECT * FROM posts WHERE slug = ?')
       .bind(slug)
@@ -405,6 +463,10 @@ export class PostRepository {
    * 모든 슬러그 조회 (generateStaticParams용)
    */
   async findAllSlugs(): Promise<string[]> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare('SELECT slug FROM posts ORDER BY date DESC')
       .all()
@@ -416,6 +478,10 @@ export class PostRepository {
    * 카테고리별 포스트 개수
    */
   async countByCategory(): Promise<Record<string, number>> {
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     const result = await this.db
       .prepare(`
         SELECT category, COUNT(*) as count 
@@ -496,7 +562,7 @@ export class EventRepository {
     const countResult = await this.db
       .prepare(`SELECT COUNT(*) as total FROM events ${whereClause}`)
       .bind(...params)
-      .first()
+      .first() as { total?: number } | null
 
     const total = countResult?.total as number || 0
 
