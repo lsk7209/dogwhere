@@ -2,9 +2,9 @@
  * Cloudflare Pages Cron Triggers
  * 정기적으로 실행되는 배치 작업
  * 
- * wrangler.toml에 cron 설정 필요:
- * [triggers]
- * crons = ["0 */6 * * *"]  # 6시간마다 실행
+ * 참고: 크론 작업은 Cloudflare Pages 대시보드에서 설정해야 합니다
+ * Pages → Settings → Functions → Cron Triggers
+ * Cron expression 예시: "0 */6 * * *" (6시간마다 실행)
  */
 
 interface Env {
