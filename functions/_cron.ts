@@ -4,7 +4,7 @@
  * 
  * 참고: 크론 작업은 Cloudflare Pages 대시보드에서 설정해야 합니다
  * Pages → Settings → Functions → Cron Triggers
- * Cron expression 예시: "0 */6 * * *" (6시간마다 실행)
+ * Cron expression 예시: "0 0,6,12,18 * * *" (6시간마다 실행)
  */
 
 interface Env {
