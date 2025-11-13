@@ -144,10 +144,14 @@ export class PlaceRepository {
       : 'created_at'
     const sortOrder = sort.order === 'ASC' ? 'ASC' : 'DESC'
 
+    if (!this.db) {
+      throw new Error('D1 database is not available')
+    }
+
     // 전체 개수 조회
     const countQuery = `SELECT COUNT(*) as total FROM places ${whereClause}`
     const countResult = await this.db.prepare(countQuery).bind(...params).first()
-    const total = countResult?.total as number || 0
+    const total = (countResult as any)?.total as number || 0
 
     // 데이터 조회
     const dataQuery = `
@@ -290,10 +294,24 @@ export class PlaceRepository {
  * 블로그 포스트 Repository
  */
 export class PostRepository {
-  private db: D1Database
+  private db: D1Database | null
 
   constructor(db?: D1Database) {
-    this.db = db || getDB()
+    try {
+      this.db = db || getDB()
+    } catch (error) {
+      this.db = null
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('D1 database not available for PostRepository, using fallback')
+      }
+    }
+  }
+
+  /**
+   * D1 사용 가능 여부 확인
+   */
+  isAvailable(): boolean {
+    return this.db !== null
   }
 
   /**

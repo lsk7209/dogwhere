@@ -1,13 +1,17 @@
 /**
  * 최적화된 장소 API 라우트
  * 대규모 컨텐츠를 위한 페이지네이션 및 캐싱 지원
+ * 
+ * 주의: Cloudflare Pages의 output: 'export' 모드에서는 API Routes가 작동하지 않습니다.
+ * 대신 functions/api/places.ts를 사용하세요.
  */
 
-export const dynamic = 'force-dynamic' // 동적 라우트로 변경
+export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { PlaceRepository } from '@/lib/database/d1-repository'
 import { PlaceCacheKeys, cachedFetch } from '@/lib/cache/kv-cache'
+import { getAllPlaces, getPlacesByRegion, getPlacesByCategory } from '@/lib/database/simple-places'
 
 // 캐시 TTL 설정 (초 단위)
 const CACHE_TTL = {
@@ -49,32 +53,63 @@ export async function GET(request: NextRequest) {
       search
     }
 
-    // 캐시 키 생성
-    const cacheKey = PlaceCacheKeys.list(filters, page, limit)
+    // Cloudflare Pages에서는 functions/api/places.ts를 사용
+    // 여기서는 개발 환경용 폴백 제공
+    
+    // 인메모리 DB 사용 (개발 환경)
+    let places: any[] = []
+    
+    if (sido && sigungu) {
+      places = getPlacesByRegion(sido, sigungu)
+    } else if (sido) {
+      places = getPlacesByRegion(sido)
+    } else if (category) {
+      places = getPlacesByCategory(category)
+    } else {
+      places = getAllPlaces()
+    }
 
-    // 캐시된 데이터 가져오기 또는 DB 조회
-    const result = await cachedFetch(
-      cacheKey,
-      async () => {
-        const repository = new PlaceRepository()
-        
-        // 검색 쿼리인 경우
-        if (search) {
-          return await repository.search(search, { page, limit })
-        }
-        
-        // 일반 목록 조회
-        return await repository.findAll(
-          filters,
-          { field: sortBy, order: sortOrder },
-          { page, limit }
-        )
-      },
-      {
-        ttl: search ? CACHE_TTL.SEARCH : CACHE_TTL.LIST,
-        tags: ['places', category || 'all']
+    // 검색 필터링
+    if (search) {
+      const searchLower = search.toLowerCase()
+      places = places.filter(p => 
+        p.name?.toLowerCase().includes(searchLower) ||
+        p.description?.toLowerCase().includes(searchLower) ||
+        p.address?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // 정렬
+    if (sortBy === 'rating') {
+      places.sort((a, b) => {
+        const ratingA = a.rating || 0
+        const ratingB = b.rating || 0
+        return sortOrder === 'DESC' ? ratingB - ratingA : ratingA - ratingB
+      })
+    } else {
+      places.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime()
+        const dateB = new Date(b.createdAt || 0).getTime()
+        return sortOrder === 'DESC' ? dateB - dateA : dateA - dateB
+      })
+    }
+
+    // 페이지네이션
+    const total = places.length
+    const totalPages = Math.ceil(total / limit)
+    const startIndex = (page - 1) * limit
+    const paginatedPlaces = places.slice(startIndex, startIndex + limit)
+
+    const result = {
+      data: paginatedPlaces,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasMore: page < totalPages
       }
-    )
+    }
 
     return NextResponse.json({
       success: true,

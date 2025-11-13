@@ -15,6 +15,10 @@ binding = "DB"
 database_name = "dogwhere-db"
 database_id = "7284cd81-bb1c-4d09-a7b0-4cbdd257b7d5"
 
+# 크론 트리거 설정 (6시간마다 실행)
+[triggers]
+crons = ["0 */6 * * *"]
+
 # KV 네임스페이스 바인딩 (나중에 설정)
 # [[kv_namespaces]]
 # binding = "KV"
