@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 클라우드플레어 Pages 최적화 - 정적 배포용
-  output: 'export',
+  // 클라우드플레어 Pages 최적화
+  // output: 'export' 제거 - API 라우트를 사용하기 위해 필요
+  // Cloudflare Pages는 자동으로 정적/동적 라우트를 처리합니다
   trailingSlash: true,
   images: {
     unoptimized: true,

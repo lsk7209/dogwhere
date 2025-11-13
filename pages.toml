@@ -1,5 +1,16 @@
 # 클라우드플레어 Pages 설정
-# pages.toml 파일
+# 
+# ⚠️ 주의: Cloudflare Pages는 이 파일을 사용하지 않습니다.
+# 대신 Cloudflare Dashboard에서 설정하거나 wrangler.toml을 사용합니다.
+# 
+# 이 파일은 참고용으로만 남겨두었습니다.
+# 실제 설정은 Cloudflare Dashboard에서 해야 합니다:
+# - Build command: npm run build
+# - Build output directory: .next (또는 자동 감지)
+# - Framework preset: Next.js
+#
+# 리다이렉트와 헤더는 next.config.ts에서 설정하거나
+# Cloudflare Dashboard → Pages → Settings → Custom domains에서 설정합니다.
 
 [build]
 command = "npm run build"

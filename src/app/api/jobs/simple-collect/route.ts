@@ -1,4 +1,4 @@
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { collectFromGoogle, collectFromKakao, ingestPlaces } from '@/lib/data-collection/simple-collector'
