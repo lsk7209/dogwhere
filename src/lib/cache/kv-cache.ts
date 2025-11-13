@@ -3,6 +3,17 @@
  * 대규모 컨텐츠 조회 성능 최적화
  */
 
+// KV 타입 정의 (로컬 타입)
+interface KVNamespaceLocal {
+  get(key: string, options?: { type?: 'text' }): Promise<string | null>
+  get(key: string, options: { type: 'json'; cacheTtl?: number }): Promise<any>
+  get(key: string, options: { type: 'arrayBuffer' }): Promise<ArrayBuffer | null>
+  get(key: string, options: { type: 'stream' }): Promise<ReadableStream | null>
+  put(key: string, value: string | ArrayBuffer | ArrayBufferView | ReadableStream, options?: { expirationTtl?: number; expiration?: number }): Promise<void>
+  delete(key: string): Promise<void>
+  list(options?: { prefix?: string; limit?: number; cursor?: string }): Promise<{ keys: Array<{ name: string; expiration?: number; metadata?: unknown }>; list_complete: boolean; cursor?: string }>
+}
+
 export interface CacheOptions {
   ttl?: number // Time to live in seconds (default: 300 = 5 minutes)
   tags?: string[] // Cache tags for invalidation
@@ -11,7 +22,7 @@ export interface CacheOptions {
 /**
  * KV 네임스페이스 가져오기
  */
-function getKV(): KVNamespace | null {
+function getKV(): KVNamespaceLocal | null {
   if (typeof process !== 'undefined' && process.env) {
     // 개발 환경
     return null
