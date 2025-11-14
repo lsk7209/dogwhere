@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { collectFromGoogle, collectFromKakao, ingestPlaces } from '@/lib/data-collection/simple-collector'

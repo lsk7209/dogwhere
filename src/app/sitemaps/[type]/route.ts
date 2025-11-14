@@ -1,4 +1,5 @@
 export const dynamic = 'force-static'
+export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 // 정적 파라미터 생성

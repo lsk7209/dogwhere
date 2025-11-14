@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getAllPlaces, getPlacesByRegion, getPlacesByCategory, getPlaceBySlug } from '@/lib/database/simple-places'
