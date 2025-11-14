@@ -10,6 +10,7 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { env } from '@/lib/env'
 import { PlaceRepository } from '@/lib/database/d1-repository'
 import { PlaceCacheKeys, cachedFetch } from '@/lib/cache/kv-cache'
 import { getAllPlaces, getPlacesByRegion, getPlacesByCategory } from '@/lib/database/simple-places'
@@ -137,7 +138,7 @@ export async function GET(request: NextRequest) {
       error: {
         message: '장소 정보를 가져오는 중 오류가 발생했습니다.',
         code: 'PLACES_FETCH_ERROR',
-        details: process.env.NODE_ENV === 'development' 
+        details: env.NODE_ENV === 'development' 
           ? (error instanceof Error ? error.message : 'Unknown error')
           : undefined
       }

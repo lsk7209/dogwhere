@@ -4,8 +4,8 @@ export const runtime = 'edge'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
-import { generateToken } from '@/lib/auth/jwt'
-import { verifyPassword, hashPassword } from '@/lib/auth/password'
+import { generateToken, verifyToken } from '@/lib/auth/jwt-edge'
+import { verifyPassword, hashPassword } from '@/lib/auth/password-edge'
 
 // 관리자 인증 정보 (환경변수에서 읽음)
 // 실제 운영에서는 데이터베이스에 해시된 비밀번호를 저장해야 합니다
@@ -57,8 +57,8 @@ export async function POST(request: Request) {
       }, { status: 401 })
     }
 
-    // JWT 토큰 생성
-    const token = generateToken(username, '24h')
+    // JWT 토큰 생성 (24시간 = 86400초)
+    const token = await generateToken(username, env.JWT_SECRET, 86400)
     
     // 쿠키에 토큰 저장
     const cookieStore = await cookies()
@@ -94,8 +94,7 @@ export async function GET(request: Request) {
     }
 
     // JWT 토큰 검증
-    const { verifyToken } = await import('@/lib/auth/jwt')
-    const payload = verifyToken(token.value)
+    const payload = await verifyToken(token.value, env.JWT_SECRET)
 
     if (!payload) {
       return NextResponse.json({

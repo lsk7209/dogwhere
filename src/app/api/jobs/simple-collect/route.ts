@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { env } from '@/lib/env'
 import { collectFromGoogle, collectFromKakao, ingestPlaces } from '@/lib/data-collection/simple-collector'
 import { getAllPlaces, getStats } from '@/lib/database/simple-places'
 
@@ -134,9 +135,9 @@ export async function GET(request: NextRequest) {
 
     // API 키 상태 확인
     const apiKeysStatus = {
-      google: !!process.env.GOOGLE_PLACES_KEY,
-      kakao: !!process.env.KAKAO_API_KEY,
-      openai: !!process.env.OPENAI_API_KEY
+      google: !!env.GOOGLE_PLACES_KEY,
+      kakao: !!env.KAKAO_API_KEY,
+      openai: !!env.OPENAI_API_KEY
     }
 
     return NextResponse.json({

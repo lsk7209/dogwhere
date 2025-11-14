@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { env } from '@/lib/env'
 
 // 정적 파라미터 생성
 export async function generateStaticParams() {
@@ -24,7 +25,7 @@ export async function POST(
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
     
-    if (!token || token !== process.env.INTERNAL_TOKEN) {
+    if (!token || !env.INTERNAL_TOKEN || token !== env.INTERNAL_TOKEN) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }

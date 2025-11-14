@@ -2,12 +2,14 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { env } from '@/lib/env'
+import { verifyToken } from '@/lib/auth/jwt-edge'
 import { TemplateRenderer, createRenderer } from '@/lib/templates/renderer'
 import { templates, TemplateType } from '@/lib/templates/templates'
 import { ContentLinter, createLinter } from '@/lib/templates/validators/linter'
 
 /**
- * 관리자 인증 확인
+ * 관리자 인증 확인 (Edge Runtime 호환)
  */
 async function checkAdminAuth(): Promise<boolean> {
   try {
@@ -16,15 +18,13 @@ async function checkAdminAuth(): Promise<boolean> {
 
     if (!token) return false
 
-    // 토큰 검증 로직 (실제 운영에서는 JWT 검증)
-    const decoded = Buffer.from(token.value, 'base64').toString('utf-8')
-    const [username, timestamp] = decoded.split(':')
+    // JWT 토큰 검증
+    const payload = await verifyToken(token.value, env.JWT_SECRET)
     
-    const tokenTime = parseInt(timestamp)
-    const now = Date.now()
-    const isExpired = (now - tokenTime) > (60 * 60 * 24 * 1000) // 24시간
+    if (!payload) return false
 
-    return !isExpired && username === process.env.ADMIN_USERNAME
+    // 사용자명 확인
+    return payload.username === env.ADMIN_USERNAME
   } catch {
     return false
   }
@@ -102,11 +102,11 @@ export async function POST(request: Request) {
       }
 
       // 실제 발행 API 호출
-      const publishResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/publish`, {
+      const publishResponse = await fetch(`${env.NEXT_PUBLIC_API_URL || ''}/api/publish`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.INTERNAL_TOKEN}`,
+          'Authorization': `Bearer ${env.INTERNAL_TOKEN || ''}`,
           'Idempotency-Key': `${templateType}-${variables.slug}-${variables.updated_at}`
         },
         body: JSON.stringify({
