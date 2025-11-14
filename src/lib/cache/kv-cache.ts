@@ -20,16 +20,30 @@ export interface CacheOptions {
 }
 
 /**
- * KV 네임스페이스 가져오기
+ * KV 네임스페이스 가져오기 (Edge Runtime 호환)
  */
 function getKV(): KVNamespaceLocal | null {
-  if (typeof process !== 'undefined' && process.env) {
-    // 개발 환경
-    return null
+  // Edge Runtime에서는 process가 제한적으로 사용 가능
+  // Cloudflare 환경 감지
+  if (typeof globalThis !== 'undefined') {
+    // @ts-expect-error - Cloudflare Workers global binding
+    const env = globalThis.env || globalThis.process?.env
+    
+    // Pages Functions에서 env.KV로 접근
+    if (env?.KV) {
+      return env.KV as KVNamespaceLocal
+    }
+    
+    // 직접 바인딩 확인
+    // @ts-expect-error
+    if (globalThis.KV) {
+      // @ts-expect-error
+      return globalThis.KV as KVNamespaceLocal
+    }
   }
   
-  // @ts-expect-error - Cloudflare Workers global binding
-  return globalThis.KV || globalThis.env?.KV || null
+  // 개발 환경 또는 KV가 설정되지 않은 경우
+  return null
 }
 
 /**

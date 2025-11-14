@@ -10,6 +10,9 @@
 
 interface Env {
   DB: D1Database
+  INTERNAL_TOKEN?: string
+  GOOGLE_PLACES_KEY?: string
+  KAKAO_API_KEY?: string
 }
 
 interface D1Database {
@@ -33,8 +36,13 @@ export async function onScheduled(event: ScheduledEvent, env: Env): Promise<void
     console.log(`[Cron] Scheduled event triggered at ${event.scheduledTime}`)
     console.log(`[Cron] Cron: ${event.cron}`)
 
-    // 간단한 통계 업데이트 작업 예시
+    // 1. 통계 업데이트
     await updateStatistics(db)
+
+    // 2. 데이터 수집 작업 (선택적 - API 키가 있는 경우에만)
+    if (env.GOOGLE_PLACES_KEY || env.KAKAO_API_KEY) {
+      await collectData(db, env)
+    }
 
     console.log('[Cron] Scheduled task completed successfully')
   } catch (error) {
@@ -44,27 +52,66 @@ export async function onScheduled(event: ScheduledEvent, env: Env): Promise<void
 }
 
 /**
- * 통계 업데이트 (예시)
+ * 통계 업데이트
  */
 async function updateStatistics(db: D1Database): Promise<void> {
   try {
     console.log('[Cron] Updating statistics...')
 
     // 장소 개수 조회
-    const countResult = await db
+    const placesCountResult = await db
       .prepare('SELECT COUNT(*) as total FROM places')
       .first() as any
 
-    const total = countResult?.total as number || 0
+    const placesTotal = placesCountResult?.total as number || 0
 
-    console.log(`[Cron] Total places: ${total}`)
+    // 이벤트 개수 조회
+    const eventsCountResult = await db
+      .prepare('SELECT COUNT(*) as total FROM events')
+      .first() as any
 
-    // 여기에 추가 통계 작업을 구현할 수 있습니다
-    // 예: 인기 장소 업데이트, 검색 인덱스 갱신 등
+    const eventsTotal = eventsCountResult?.total as number || 0
+
+    // 포스트 개수 조회
+    const postsCountResult = await db
+      .prepare('SELECT COUNT(*) as total FROM posts')
+      .first() as any
+
+    const postsTotal = postsCountResult?.total as number || 0
+
+    console.log(`[Cron] Statistics:`)
+    console.log(`  - Places: ${placesTotal}`)
+    console.log(`  - Events: ${eventsTotal}`)
+    console.log(`  - Posts: ${postsTotal}`)
 
     console.log('[Cron] Statistics update completed')
   } catch (error) {
     console.error('[Cron] Statistics update failed:', error)
-    throw error
+    // 통계 업데이트 실패는 치명적이지 않으므로 throw하지 않음
+  }
+}
+
+/**
+ * 데이터 수집 작업 (선택적)
+ */
+async function collectData(db: D1Database, env: Env): Promise<void> {
+  try {
+    console.log('[Cron] Starting data collection...')
+
+    // 내부 API 호출을 통한 데이터 수집
+    // 실제 구현은 API 엔드포인트를 호출하거나 직접 수집 로직 실행
+    const siteUrl = env.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.pages.dev'
+    
+    // 간단한 데이터 수집 트리거 (실제로는 더 복잡한 로직 필요)
+    console.log('[Cron] Data collection triggered')
+    console.log(`[Cron] Site URL: ${siteUrl}`)
+
+    // 여기에 실제 데이터 수집 로직을 추가할 수 있습니다
+    // 예: Google Places API, Kakao Map API 호출 등
+
+    console.log('[Cron] Data collection completed')
+  } catch (error) {
+    console.error('[Cron] Data collection failed:', error)
+    // 데이터 수집 실패는 치명적이지 않으므로 throw하지 않음
   }
 }
