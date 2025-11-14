@@ -36,6 +36,7 @@ export interface SortParams {
 }
 
 import { getD1Database, isD1Available } from './d1-client'
+import { env } from '@/lib/env'
 
 // Cloudflare D1 Database 타입 정의
 interface D1Database {
@@ -96,7 +97,7 @@ export class PlaceRepository {
     } catch (error) {
       // D1이 사용 불가능한 환경 (로컬 개발 등)
       this.db = null
-      if (process.env.NODE_ENV === 'development') {
+      if (env.NODE_ENV === 'development') {
         console.warn('D1 database not available, using fallback')
       }
     }

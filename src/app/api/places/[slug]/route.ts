@@ -35,8 +35,18 @@ export async function GET(
     const place = await cachedFetch(
       cacheKey,
       async () => {
-        const repository = new PlaceRepository()
-        return await repository.findBySlug(slug)
+        try {
+          const repository = new PlaceRepository()
+          if (repository.isAvailable()) {
+            return await repository.findBySlug(slug)
+          }
+        } catch (error) {
+          console.warn('D1 access failed, using fallback:', error)
+        }
+        
+        // D1 사용 불가능 시 폴백: simple-places 사용
+        const { getPlaceBySlug } = await import('@/lib/database/simple-places')
+        return getPlaceBySlug(slug) || null
       },
       {
         ttl: CACHE_TTL,

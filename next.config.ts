@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
   
   // 컴파일러 최적화
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
   
   // 헤더 설정

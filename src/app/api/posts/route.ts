@@ -42,12 +42,30 @@ export async function GET(request: NextRequest) {
     const result = await cachedFetch(
       cacheKey,
       async () => {
-        const repository = new PostRepository()
-        return await repository.findAll(
-          filters,
-          { field: sortBy, order: sortOrder },
-          { page, limit }
-        )
+        try {
+          const repository = new PostRepository()
+          if (repository.isAvailable()) {
+            return await repository.findAll(
+              filters,
+              { field: sortBy, order: sortOrder },
+              { page, limit }
+            )
+          }
+        } catch (error) {
+          console.warn('D1 access failed for posts:', error)
+        }
+        
+        // D1 사용 불가능 시 빈 결과 반환
+        return {
+          data: [],
+          pagination: {
+            page,
+            limit,
+            total: 0,
+            totalPages: 0,
+            hasMore: false
+          }
+        }
       },
       {
         ttl: search ? CACHE_TTL.SEARCH : CACHE_TTL.LIST,
