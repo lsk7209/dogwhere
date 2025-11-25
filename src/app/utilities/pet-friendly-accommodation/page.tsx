@@ -126,12 +126,16 @@ export default function PetFriendlyAccommodationPage() {
                       <MapPin className="w-4 h-4" />
                       <span>{item.address}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Phone className="w-4 h-4" />
-                      <span>{item.phone}</span>
-                    </div>
+                    {item.phone && (
+                      <div className="flex items-center space-x-2">
+                        <Phone className="w-4 h-4" />
+                        <span>{item.phone}</span>
+                      </div>
+                    )}
                   </div>
-                  <p className="mt-3 text-gray-700">{item.description}</p>
+                  {item.description && (
+                    <p className="mt-3 text-gray-700">{item.description}</p>
+                  )}
                 </div>
               ))}
             </div>

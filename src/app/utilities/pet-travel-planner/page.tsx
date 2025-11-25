@@ -9,7 +9,7 @@ interface TravelPlanResult {
   distance: number
   duration: string
   accommodations: Array<{ name: string; address: string; type: string }>
-  experiences: Array<{ name: string; type: string }>
+  experiences: Array<{ name: string; type?: string; description?: string }>
   tips: string[]
 }
 
@@ -46,6 +46,11 @@ export default function PetTravelPlannerPage() {
           { name: '강아지 공원', description: '목적지 인근 반려견 공원' },
           { name: '반려견 카페', description: '동반 가능 카페' },
           { name: '산책로 코스', description: '전용 산책로' }
+        ],
+        tips: [
+          '반려견 건강진단서를 미리 준비하세요',
+          '여행 중 충분한 휴식 시간을 확보하세요',
+          '비상 연락처를 미리 확인하세요'
         ]
       }
       setPlan(samplePlan)

@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { Heart, CheckSquare, Calendar, Save } from 'lucide-react'
-import type { HealthRecord } from '@/types/utilities'
 
 interface HealthCheckItem {
   id: string
@@ -13,6 +12,13 @@ interface HealthCheckItem {
     label: string
     checked: boolean
   }[]
+}
+
+interface HealthCheckRecord {
+  id?: string
+  date: string
+  checklist: HealthCheckItem[]
+  score: number
 }
 
 const defaultChecklist: HealthCheckItem[] = [
@@ -63,7 +69,7 @@ const defaultChecklist: HealthCheckItem[] = [
 export default function HealthChecklistPage() {
   const [checklist, setChecklist] = useState<HealthCheckItem[]>(defaultChecklist)
   const [checkDate, setCheckDate] = useState<string>(new Date().toISOString().split('T')[0])
-  const [savedRecords, setSavedRecords] = useState<HealthRecord[]>([])
+  const [savedRecords, setSavedRecords] = useState<HealthCheckRecord[]>([])
 
   useEffect(() => {
     const saved = localStorage.getItem('healthCheckRecords')
@@ -88,7 +94,8 @@ export default function HealthChecklistPage() {
   }
 
   const saveRecord = () => {
-    const record = {
+    const record: HealthCheckRecord = {
+      id: `${Date.now()}`,
       date: checkDate,
       checklist: checklist,
       score: calculateScore()

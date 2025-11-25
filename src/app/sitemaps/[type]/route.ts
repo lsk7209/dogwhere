@@ -1,20 +1,7 @@
-export const dynamic = 'force-static'
+export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
-// 정적 파라미터 생성
-export async function generateStaticParams() {
-  return [
-    { type: 'hub-sido' },
-    { type: 'hub-sig-seoul' },
-    { type: 'hub-sig-gyeonggi' },
-    { type: 'hub-sig-busan' },
-    { type: 'hub-sig-jeju' },
-    { type: 'cluster-seoul-dog-cafe-1' },
-    { type: 'cluster-seoul-dog-park-1' },
-    { type: 'posts' }
-  ]
-}
 
 export async function GET(
   request: NextRequest,

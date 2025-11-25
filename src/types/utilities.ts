@@ -26,6 +26,8 @@ export interface Accommodation {
   features: string[]
   distance: number
   mapLink: string
+  phone?: string
+  description?: string
 }
 
 export interface HealthRecord {

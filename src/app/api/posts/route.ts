@@ -18,19 +18,24 @@ const CACHE_TTL = {
 }
 
 export async function GET(request: NextRequest) {
+  // 쿼리 파라미터 파싱 (catch 블록에서도 접근 가능하도록 try 밖에서 선언)
+  let page = 1
+  let limit = 12
+  let filters: { category?: string; featured?: boolean; search?: string } = {}
+
   try {
     const { searchParams } = new URL(request.url)
 
     // 쿼리 파라미터 파싱
-    const page = parseInt(searchParams.get('page') || '1', 10)
-    const limit = Math.min(parseInt(searchParams.get('limit') || '12', 10), 50)
+    page = parseInt(searchParams.get('page') || '1', 10)
+    limit = Math.min(parseInt(searchParams.get('limit') || '12', 10), 50)
     const category = searchParams.get('category') || undefined
     const search = searchParams.get('search') || undefined
     const featured = searchParams.get('featured') === 'true' ? true : undefined
     const sortBy = searchParams.get('sortBy') || 'date'
     const sortOrder = (searchParams.get('sortOrder') || 'DESC') as 'ASC' | 'DESC'
 
-    const filters = {
+    filters = {
       category,
       featured,
       search

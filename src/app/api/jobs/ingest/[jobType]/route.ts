@@ -4,15 +4,6 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 
-// 정적 파라미터 생성
-export async function generateStaticParams() {
-  return [
-    { jobType: 'places' },
-    { jobType: 'events' },
-    { jobType: 'weather' }
-  ]
-}
-
 // 배치 작업 API (크론에서 호출)
 export async function POST(
   request: NextRequest,
