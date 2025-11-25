@@ -9,6 +9,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { PostRepository } from '@/lib/database/d1-repository'
 import { PostCacheKeys, cachedFetch } from '@/lib/cache/kv-cache'
+import { log } from '@/lib/logger'
 
 const CACHE_TTL = {
   LIST: 300,      // 5분
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
             )
           }
         } catch (error) {
-          console.warn('D1 access failed for posts:', error)
+          log.warn('D1 access failed for posts', { error })
         }
         
         // D1 사용 불가능 시 빈 결과 반환
@@ -91,7 +92,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Posts API Error:', error)
+    log.error('Posts API Error', error, { filters, page, limit })
 
     return NextResponse.json({
       success: false,

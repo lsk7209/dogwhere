@@ -1,22 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { Stethoscope, MapPin, Phone, AlertCircle, Navigation } from 'lucide-react'
+import type { Veterinary } from '@/types/utilities'
 
 export default function FindVeterinaryPage() {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [results, setResults] = useState<Veterinary[]>([])
 
-  useEffect(() => {
-    getLocation()
-  }, [])
-
-  const getLocation = () => {
+  const getLocation = useCallback(() => {
     setLoading(true)
+    setError(null)
+    
     if (!navigator.geolocation) {
-      alert('위치 서비스를 지원하지 않습니다.')
+      setError('위치 서비스를 지원하지 않습니다.')
       setLoading(false)
       return
     }
@@ -28,17 +28,26 @@ export default function FindVeterinaryPage() {
         await searchVeterinary(latitude, longitude)
       },
       (err) => {
-        alert('위치 정보를 가져올 수 없습니다.')
+        setError('위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.')
         setLoading(false)
       }
     )
-  }
+  }, [])
 
-  const searchVeterinary = async (lat: number, lon: number) => {
-    // TODO: Kakao Map API 또는 Google Places API 연동
-    // 현재는 샘플 데이터
-    setTimeout(() => {
-      const sampleData = [
+  useEffect(() => {
+    getLocation()
+  }, [getLocation])
+
+  const searchVeterinary = useCallback(async (lat: number, lon: number) => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // 향후: Kakao Map API 또는 Google Places API 연동
+      // 현재는 샘플 데이터 사용
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const sampleData: Veterinary[] = [
         {
           name: '24시 동물병원',
           address: '서울 강남구 테헤란로 123',
@@ -55,9 +64,12 @@ export default function FindVeterinaryPage() {
         }
       ]
       setResults(sampleData)
+    } catch (err) {
+      setError('동물병원을 검색하는 중 오류가 발생했습니다.')
+    } finally {
       setLoading(false)
-    }, 1000)
-  }
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -76,7 +88,13 @@ export default function FindVeterinaryPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          {!location && !loading && (
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
+
+          {!location && !loading && !error && (
             <div className="text-center py-12">
               <button
                 onClick={getLocation}
@@ -93,7 +111,7 @@ export default function FindVeterinaryPage() {
             </div>
           )}
 
-          {!loading && results.length > 0 && (
+          {!loading && !error && results.length > 0 && (
             <div className="space-y-4">
               {results.map((item, idx) => (
                 <div key={idx} className="border-2 border-gray-200 rounded-lg p-6 hover:border-red-400 transition-colors">

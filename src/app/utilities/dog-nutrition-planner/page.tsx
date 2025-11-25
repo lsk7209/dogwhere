@@ -105,7 +105,7 @@ export default function DogNutritionPlannerPage() {
     setNewPlan({ name: '', breed: '', age: '', weight: 0, activityLevel: 'medium' })
   }
 
-  const updateMeal = (planId: string, mealId: string, field: string, value: any) => {
+  const updateMeal = (planId: string, mealId: string, field: string, value: string | number) => {
     setPlans(plans.map(plan => 
       plan.id === planId 
         ? {

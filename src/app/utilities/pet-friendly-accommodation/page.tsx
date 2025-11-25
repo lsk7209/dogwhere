@@ -1,40 +1,53 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Home, MapPin, Phone, Search } from 'lucide-react'
+import type { Accommodation } from '@/types/utilities'
 
 export default function PetFriendlyAccommodationPage() {
   const [region, setRegion] = useState<string>('seoul')
   const [accommodationType, setAccommodationType] = useState<string>('all')
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [results, setResults] = useState<Accommodation[]>([])
 
-  const searchAccommodation = async () => {
+  const searchAccommodation = useCallback(async () => {
     setLoading(true)
-    // TODO: 한국관광공사 반려동물 여행 API 연동
-    // 현재는 샘플 데이터 표시
-    setTimeout(() => {
-      const sampleData = [
+    setError(null)
+    
+    try {
+      // 향후: 한국관광공사 반려동물 여행 API 연동
+      // 현재는 샘플 데이터 사용
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const sampleData: Accommodation[] = [
         {
           name: '펫 호텔 그랜드',
           address: '서울 강남구 테헤란로 123',
-          phone: '02-1234-5678',
-          type: 'hotel',
-          description: '강아지 동반 가능한 프리미엄 호텔'
+          price: 150000,
+          petFriendly: true,
+          features: ['강아지 동반 가능', '펫 케어 서비스', '펫 전용 시설'],
+          distance: 0.5,
+          mapLink: 'https://map.kakao.com/link/map/37.5665,126.9780'
         },
         {
           name: '반려견 펜션',
           address: '경기 가평군 가평읍 가평로 456',
-          phone: '031-9876-5432',
-          type: 'pension',
-          description: '넓은 마당과 실내 수영장이 있는 펜션'
+          price: 120000,
+          petFriendly: true,
+          features: ['넓은 마당', '실내 수영장', '펫 전용 공간'],
+          distance: 1.2,
+          mapLink: 'https://map.kakao.com/link/map/37.8314,127.5105'
         }
       ]
       setResults(sampleData)
+    } catch (err) {
+      setError('숙박시설을 검색하는 중 오류가 발생했습니다.')
+    } finally {
       setLoading(false)
-    }, 1000)
-  }
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">

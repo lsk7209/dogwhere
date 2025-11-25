@@ -7,6 +7,7 @@ import { verifyToken } from '@/lib/auth/jwt-edge'
 import { TemplateRenderer, createRenderer } from '@/lib/templates/renderer'
 import { templates, TemplateType } from '@/lib/templates/templates'
 import { ContentLinter, createLinter } from '@/lib/templates/validators/linter'
+import { log } from '@/lib/logger'
 
 /**
  * 관리자 인증 확인 (Edge Runtime 호환)
@@ -34,6 +35,9 @@ async function checkAdminAuth(): Promise<boolean> {
  * 템플릿 렌더링 및 발행
  */
 export async function POST(request: Request) {
+  let templateType: string | undefined
+  let variables: Record<string, unknown> | undefined
+  
   try {
     // 관리자 인증 확인
     const isAuthenticated = await checkAdminAuth()
@@ -45,15 +49,18 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const {
-      templateType,
-      variables,
-      options = {},
-      publish = false
-    } = body
+    const parsed = {
+      templateType: body.templateType,
+      variables: body.variables,
+      options: body.options || {},
+      publish: body.publish || false
+    }
+    
+    templateType = parsed.templateType
+    variables = parsed.variables
 
     // 필수 필드 검증
-    if (!templateType || !variables) {
+    if (!parsed.templateType || !parsed.variables) {
       return NextResponse.json({
         success: false,
         message: '템플릿 타입과 변수가 필요합니다.'
@@ -61,7 +68,7 @@ export async function POST(request: Request) {
     }
 
     // 템플릿 존재 확인
-    const template = templates[templateType as TemplateType]
+    const template = templates[parsed.templateType as TemplateType]
     if (!template) {
       return NextResponse.json({
         success: false,
@@ -70,28 +77,28 @@ export async function POST(request: Request) {
     }
 
     // 렌더러 및 린터 생성
-    const renderer = createRenderer(options.seed)
+    const renderer = createRenderer(parsed.options.seed)
     const linter = createLinter()
 
     // MDX 렌더링
-    const mdxContent = renderer.renderMDX(template.mdx, variables, {
+    const mdxContent = renderer.renderMDX(template.mdx, parsed.variables, {
       enableJosa: true,
       enablePatterns: true,
       enableValidation: true
     })
 
     // JSON-LD 렌더링
-    const jsonldContent = renderer.renderJSONLD(template.jsonld, variables, {
+    const jsonldContent = renderer.renderJSONLD(template.jsonld, parsed.variables, {
       enableJosa: true,
       enablePatterns: true,
       enableValidation: true
     })
 
     // 린팅 및 검증
-    const lintResult = linter.lint(mdxContent, templateType, variables)
+    const lintResult = linter.lint(mdxContent, parsed.templateType, parsed.variables)
 
     // 발행 여부 확인
-    if (publish) {
+    if (parsed.publish) {
       if (!lintResult.isValid) {
         return NextResponse.json({
           success: false,
@@ -107,14 +114,14 @@ export async function POST(request: Request) {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${env.INTERNAL_TOKEN || ''}`,
-          'Idempotency-Key': `${templateType}-${variables.slug}-${variables.updated_at}`
+          'Idempotency-Key': `${parsed.templateType}-${(parsed.variables as any).slug}-${(parsed.variables as any).updated_at}`
         },
         body: JSON.stringify({
-          type: templateType,
-          slug: variables.slug,
+          type: parsed.templateType,
+          slug: parsed.variables.slug,
           content: mdxContent,
           jsonld: jsonldContent,
-          variables: variables,
+          variables: parsed.variables,
           metadata: {
             template_version: '3.0',
             rendered_at: new Date().toISOString(),
@@ -163,7 +170,10 @@ export async function POST(request: Request) {
     })
 
   } catch (error) {
-    console.error('Template rendering error:', error)
+    log.error('Template rendering error', error, { 
+      templateType: templateType || 'unknown', 
+      hasVariables: !!variables 
+    })
     return NextResponse.json({
       success: false,
       message: '템플릿 렌더링 중 오류가 발생했습니다.',
@@ -204,7 +214,7 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error('Template list error:', error)
+    log.error('Template list error', error)
     return NextResponse.json({
       success: false,
       message: '템플릿 목록 조회 중 오류가 발생했습니다.'

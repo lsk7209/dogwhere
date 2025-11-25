@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { createSafeHTMLProps } from '@/lib/sanitize'
 
 interface PageProps {
   params: Promise<{
@@ -202,7 +203,7 @@ export default async function PlaceDetailPage({ params }: PageProps) {
                   장소 소개
                 </h2>
                 <div className="prose prose-lg max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: place.description }} />
+                  <div {...createSafeHTMLProps(place.description)} />
                 </div>
               </section>
 

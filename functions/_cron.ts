@@ -13,6 +13,7 @@ interface Env {
   INTERNAL_TOKEN?: string
   GOOGLE_PLACES_KEY?: string
   KAKAO_API_KEY?: string
+  NEXT_PUBLIC_SITE_URL?: string
 }
 
 interface D1Database {

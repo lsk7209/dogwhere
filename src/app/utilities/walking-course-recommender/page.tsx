@@ -1,24 +1,25 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { MapPin, Navigation, Map as MapIcon } from 'lucide-react'
+import type { WalkingCourse } from '@/types/utilities'
 
 export default function WalkingCourseRecommenderPage() {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null)
   const [radius, setRadius] = useState<number>(5)
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<any[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [results, setResults] = useState<WalkingCourse[]>([])
 
-  useEffect(() => {
-    getLocation()
-  }, [])
-
-  const getLocation = () => {
+  const getLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      alert('위치 서비스를 지원하지 않습니다.')
+      setError('위치 서비스를 지원하지 않습니다.')
       return
     }
+
+    setLoading(true)
+    setError(null)
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -27,16 +28,26 @@ export default function WalkingCourseRecommenderPage() {
         searchCourses(latitude, longitude)
       },
       (err) => {
-        alert('위치 정보를 가져올 수 없습니다.')
+        setError('위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.')
+        setLoading(false)
       }
     )
-  }
+  }, [])
 
-  const searchCourses = async (lat: number, lon: number) => {
+  useEffect(() => {
+    getLocation()
+  }, [getLocation])
+
+  const searchCourses = useCallback(async (lat: number, lon: number) => {
     setLoading(true)
-    // TODO: 한국관광공사 반려동물 서비스 API 연동
-    setTimeout(() => {
-      const sampleData = [
+    setError(null)
+    
+    try {
+      // 향후: 한국관광공사 반려동물 서비스 API 연동
+      // 현재는 샘플 데이터 사용
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const sampleData: WalkingCourse[] = [
         {
           name: '한강공원 강아지 운동장',
           address: '서울 영등포구 여의도로',
@@ -53,9 +64,23 @@ export default function WalkingCourseRecommenderPage() {
         }
       ]
       setResults(sampleData)
+    } catch (err) {
+      setError('산책 코스를 검색하는 중 오류가 발생했습니다.')
+    } finally {
       setLoading(false)
-    }, 1000)
-  }
+    }
+  }, [])
+
+  const handleRadiusChange = useCallback((newRadius: number) => {
+    setRadius(newRadius)
+    if (location) {
+      searchCourses(location.lat, location.lon)
+    }
+  }, [location, searchCourses])
+
+  const filteredResults = useMemo(() => {
+    return results.filter(course => course.distance <= radius)
+  }, [results, radius])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -80,12 +105,7 @@ export default function WalkingCourseRecommenderPage() {
             </label>
             <select
               value={radius}
-              onChange={(e) => {
-                setRadius(parseInt(e.target.value))
-                if (location) {
-                  searchCourses(location.lat, location.lon)
-                }
-              }}
+              onChange={(e) => handleRadiusChange(parseInt(e.target.value))}
               className="px-4 py-2 border border-gray-300 rounded-lg"
             >
               <option value={5}>5km</option>
@@ -94,15 +114,21 @@ export default function WalkingCourseRecommenderPage() {
             </select>
           </div>
 
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <p className="text-red-800">{error}</p>
+            </div>
+          )}
+
           {loading && (
             <div className="text-center py-12">
               <p className="text-gray-600">코스를 검색하는 중...</p>
             </div>
           )}
 
-          {!loading && results.length > 0 && (
+          {!loading && !error && filteredResults.length > 0 && (
             <div className="space-y-4">
-              {results.map((item, idx) => (
+              {filteredResults.map((item, idx) => (
                 <div key={idx} className="border-2 border-gray-200 rounded-lg p-6 hover:border-blue-400 transition-colors">
                   <div className="flex items-start justify-between mb-3">
                     <div>

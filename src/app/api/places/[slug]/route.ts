@@ -9,6 +9,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { PlaceRepository } from '@/lib/database/d1-repository'
 import { PlaceCacheKeys, cachedFetch } from '@/lib/cache/kv-cache'
+import { log } from '@/lib/logger'
 
 const CACHE_TTL = 3600 // 1시간
 
@@ -16,8 +17,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  let slug: string | undefined
+  
   try {
-    const { slug } = await params
+    const resolvedParams = await params
+    slug = resolvedParams.slug
 
     if (!slug) {
       return NextResponse.json({
@@ -35,13 +39,15 @@ export async function GET(
     const place = await cachedFetch(
       cacheKey,
       async () => {
+        if (!slug) return null
+        
         try {
           const repository = new PlaceRepository()
           if (repository.isAvailable()) {
             return await repository.findBySlug(slug)
           }
         } catch (error) {
-          console.warn('D1 access failed, using fallback:', error)
+          log.warn('D1 access failed, using fallback', { error, slug })
         }
         
         // D1 사용 불가능 시 폴백: simple-places 사용
@@ -80,7 +86,7 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Place Detail API Error:', error)
+    log.error('Place Detail API Error', error, { slug: slug || 'unknown' })
 
     return NextResponse.json({
       success: false,

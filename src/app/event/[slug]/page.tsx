@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { createSafeHTMLProps } from '@/lib/sanitize'
 
 interface PageProps {
   params: Promise<{
@@ -186,7 +187,7 @@ export default async function EventDetailPage({ params }: PageProps) {
                   행사 소개
                 </h2>
                 <div className="prose prose-lg max-w-none">
-                  <div dangerouslySetInnerHTML={{ __html: event.description }} />
+                  <div {...createSafeHTMLProps(event.description)} />
                 </div>
               </section>
 

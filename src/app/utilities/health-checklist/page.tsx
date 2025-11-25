@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { Heart, CheckSquare, Calendar, Save } from 'lucide-react'
+import type { HealthRecord } from '@/types/utilities'
 
 interface HealthCheckItem {
   id: string
@@ -62,7 +63,7 @@ const defaultChecklist: HealthCheckItem[] = [
 export default function HealthChecklistPage() {
   const [checklist, setChecklist] = useState<HealthCheckItem[]>(defaultChecklist)
   const [checkDate, setCheckDate] = useState<string>(new Date().toISOString().split('T')[0])
-  const [savedRecords, setSavedRecords] = useState<any[]>([])
+  const [savedRecords, setSavedRecords] = useState<HealthRecord[]>([])
 
   useEffect(() => {
     const saved = localStorage.getItem('healthCheckRecords')

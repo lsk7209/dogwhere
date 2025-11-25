@@ -1,26 +1,41 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Plane, Navigation, Home, MapPin, Calendar } from 'lucide-react'
+import type { TravelPlan } from '@/types/utilities'
+
+interface TravelPlanResult {
+  distance: number
+  duration: string
+  accommodations: Array<{ name: string; address: string; type: string }>
+  experiences: Array<{ name: string; type: string }>
+  tips: string[]
+}
 
 export default function PetTravelPlannerPage() {
   const [origin, setOrigin] = useState<string>('')
   const [destination, setDestination] = useState<string>('')
   const [duration, setDuration] = useState<number>(2)
   const [loading, setLoading] = useState(false)
-  const [plan, setPlan] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [plan, setPlan] = useState<TravelPlanResult | null>(null)
 
-  const generatePlan = async () => {
+  const generatePlan = useCallback(async () => {
     if (!origin || !destination) {
-      alert('출발지와 목적지를 입력해주세요.')
+      setError('출발지와 목적지를 입력해주세요.')
       return
     }
 
     setLoading(true)
-    // TODO: Naver Directions API 또는 Kakao Directions API 연동
-    setTimeout(() => {
-      setPlan({
+    setError(null)
+    
+    try {
+      // 향후: Naver Directions API 또는 Kakao Directions API 연동
+      // 현재는 샘플 데이터 사용
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const samplePlan: TravelPlanResult = {
         distance: 350,
         duration: '약 4시간',
         accommodations: [
@@ -32,10 +47,14 @@ export default function PetTravelPlannerPage() {
           { name: '반려견 카페', description: '동반 가능 카페' },
           { name: '산책로 코스', description: '전용 산책로' }
         ]
-      })
+      }
+      setPlan(samplePlan)
+    } catch (err) {
+      setError('여행 계획을 생성하는 중 오류가 발생했습니다.')
+    } finally {
       setLoading(false)
-    }, 1500)
-  }
+    }
+  }, [origin, destination, duration])
 
   return (
     <div className="min-h-screen bg-gray-50">
