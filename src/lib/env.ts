@@ -41,9 +41,19 @@ const envSchema = z.object({
 })
 
 // 환경변수 검증 및 파싱
+// 싱글톤 패턴으로 한 번만 검증하도록 개선
+let cachedEnv: z.infer<typeof envSchema> | null = null
+let hasWarned = false
+
 function getEnv() {
+  // 이미 검증된 환경변수가 있으면 재사용
+  if (cachedEnv) {
+    return cachedEnv
+  }
+
   try {
-    return envSchema.parse(process.env)
+    cachedEnv = envSchema.parse(process.env)
+    return cachedEnv
   } catch (error) {
     if (error instanceof z.ZodError) {
       const missingVars = error.issues
@@ -52,16 +62,21 @@ function getEnv() {
       
       // 빌드 시에는 환경변수가 없어도 빌드가 진행되도록 기본값 사용
       if (process.env.NEXT_PHASE === 'phase-production-build') {
-        console.warn('⚠️ 환경변수 검증 실패 (빌드 중):', missingVars.join(', '))
-        console.warn('⚠️ 기본값을 사용합니다. 프로덕션 배포 시 환경변수를 설정하세요.')
+        // 경고는 한 번만 출력
+        if (!hasWarned) {
+          console.warn('⚠️ 환경변수 검증 실패 (빌드 중):', missingVars.join(', '))
+          console.warn('⚠️ 기본값을 사용합니다. 프로덕션 배포 시 환경변수를 설정하세요.')
+          hasWarned = true
+        }
         
         // 기본값으로 fallback
-        return envSchema.parse({
+        cachedEnv = envSchema.parse({
           ...process.env,
           ADMIN_USERNAME: process.env.ADMIN_USERNAME || 'admin',
           ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'changeme12345678',
           JWT_SECRET: process.env.JWT_SECRET || 'changeme123456789012345678901234567890',
         })
+        return cachedEnv
       }
       
       throw new Error(
