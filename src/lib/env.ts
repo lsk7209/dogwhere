@@ -43,7 +43,27 @@ const envSchema = z.object({
 // 환경변수 검증 및 파싱
 // 싱글톤 패턴으로 한 번만 검증하도록 개선
 let cachedEnv: z.infer<typeof envSchema> | null = null
-let hasWarned = false
+
+// Edge Runtime 호환 전역 플래그 (globalThis 사용)
+const getGlobalWarnedFlag = () => {
+  if (typeof globalThis !== 'undefined') {
+    // @ts-ignore - Edge Runtime 호환을 위한 동적 속성
+    if (!globalThis.__env_warned__) {
+      // @ts-ignore
+      globalThis.__env_warned__ = false
+    }
+    // @ts-ignore
+    return globalThis.__env_warned__
+  }
+  return false
+}
+
+const setGlobalWarnedFlag = (value: boolean) => {
+  if (typeof globalThis !== 'undefined') {
+    // @ts-ignore - Edge Runtime 호환을 위한 동적 속성
+    globalThis.__env_warned__ = value
+  }
+}
 
 function getEnv() {
   // 이미 검증된 환경변수가 있으면 재사용
@@ -62,11 +82,11 @@ function getEnv() {
       
       // 빌드 시에는 환경변수가 없어도 빌드가 진행되도록 기본값 사용
       if (process.env.NEXT_PHASE === 'phase-production-build') {
-        // 경고는 한 번만 출력
-        if (!hasWarned) {
+        // 전역 플래그를 사용하여 경고가 한 번만 출력되도록 보장 (Edge Runtime 호환)
+        if (!getGlobalWarnedFlag()) {
           console.warn('⚠️ 환경변수 검증 실패 (빌드 중):', missingVars.join(', '))
           console.warn('⚠️ 기본값을 사용합니다. 프로덕션 배포 시 환경변수를 설정하세요.')
-          hasWarned = true
+          setGlobalWarnedFlag(true)
         }
         
         // 기본값으로 fallback
