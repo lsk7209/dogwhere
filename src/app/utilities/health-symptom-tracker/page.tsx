@@ -49,12 +49,6 @@ export default function HealthSymptomTrackerPage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (records.length > 0) {
-      localStorage.setItem('healthSymptomRecords', JSON.stringify(records))
-    }
-  }, [records])
-
   const addRecord = () => {
     if (!newRecord.time || newRecord.symptoms.length === 0) return
 
@@ -192,8 +186,8 @@ export default function HealthSymptomTrackerPage() {
                         key={symptom}
                         onClick={() => toggleSymptom(symptom)}
                         className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${newRecord.symptoms.includes(symptom)
-                            ? 'bg-red-500 border-red-500 text-white shadow-sm'
-                            : 'bg-white border-gray-200 text-gray-600 hover:border-red-200 hover:bg-red-50'
+                          ? 'bg-red-500 border-red-500 text-white shadow-sm'
+                          : 'bg-white border-gray-200 text-gray-600 hover:border-red-200 hover:bg-red-50'
                           }`}
                       >
                         {symptom}
@@ -210,10 +204,12 @@ export default function HealthSymptomTrackerPage() {
                         key={severity}
                         onClick={() => setNewRecord({ ...newRecord, severity: severity as any })}
                         className={`flex-1 py-3 rounded-xl border-2 transition-all text-sm font-bold ${newRecord.severity === severity
-                            ? severity === 'severe' ? 'border-red-500 bg-red-50 text-red-700' :
-                              severity === 'moderate' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' :
-                                'border-green-500 bg-green-50 text-green-700'
-                            : 'border-gray-100 text-gray-400 hover:border-gray-200'
+                          ? (severity as string) === 'severe'
+                            ? 'border-red-500 bg-red-50 text-red-700'
+                            : (severity as string) === 'moderate'
+                              ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                              : 'border-green-500 bg-green-50 text-green-700'
+                          : 'border-gray-100 text-gray-400 hover:border-gray-200'
                           }`}
                       >
                         {getSeverityText(severity)}
@@ -230,8 +226,8 @@ export default function HealthSymptomTrackerPage() {
                         key={trigger}
                         onClick={() => toggleTrigger(trigger)}
                         className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${newRecord.triggers.includes(trigger)
-                            ? 'bg-blue-50 border-blue-200 text-blue-700'
-                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                          ? 'bg-blue-50 border-blue-200 text-blue-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                           }`}
                       >
                         {trigger}
