@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { AlertCircle, CheckCircle, Clock, AlertTriangle, Heart } from 'lucide-react'
+import { AlertCircle, CheckCircle, Clock, AlertTriangle, Heart, ArrowLeft, Brain, Volume2, Home, Activity, ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
 
 interface AnxietySymptom {
   id: string
@@ -14,7 +14,6 @@ interface AnxietySymptom {
   solutions: string[]
   completed: boolean
   date?: string
-  notes?: string
 }
 
 interface AnxietyRecord {
@@ -30,6 +29,7 @@ interface AnxietyRecord {
 export default function DogAnxietyTrackerPage() {
   const [symptoms, setSymptoms] = useState<AnxietySymptom[]>([])
   const [records, setRecords] = useState<AnxietyRecord[]>([])
+  const [expandedSymptom, setExpandedSymptom] = useState<string | null>(null)
   const [newRecord, setNewRecord] = useState({
     date: new Date().toISOString().split('T')[0],
     symptom: '',
@@ -42,162 +42,32 @@ export default function DogAnxietyTrackerPage() {
   const initialSymptoms: AnxietySymptom[] = [
     {
       id: '1',
-      name: '과도한 짖음',
-      description: '평소보다 많이 짖거나 지속적으로 짖는 증상',
+      name: '분리 불안',
+      description: '보호자와 떨어져 있을 때 보이는 불안 증세',
       severity: 'moderate',
-      category: 'behavioral',
-      triggers: [
-        '외로움',
-        '낯선 소리',
-        '다른 동물',
-        '분리 불안'
-      ],
-      solutions: [
-        '안전한 공간 제공하기',
-        '점진적 적응 훈련하기',
-        '전문가 상담받기',
-        '일관성 있는 반응하기'
-      ],
+      category: 'emotional',
+      triggers: ['보호자의 외출 준비', '혼자 남겨짐'],
+      solutions: ['점진적 분리 훈련', '노즈워크 장난감 제공', '외출 전후 무관심하기'],
       completed: false
     },
     {
       id: '2',
-      name: '과도한 핥기',
-      description: '신체 일부를 계속 핥거나 물어뜯는 증상',
-      severity: 'mild',
-      category: 'behavioral',
-      triggers: [
-        '스트레스',
-        '피부 가려움',
-        '지루함',
-        '불안감'
-      ],
-      solutions: [
-        '원인 파악하기',
-        '대체 활동 제공하기',
-        '전문가 상담받기',
-        '일관성 있는 반응하기'
-      ],
+      name: '소음 공포증',
+      description: '천둥, 불꽃놀이 등 큰 소리에 대한 공포',
+      severity: 'severe',
+      category: 'environmental',
+      triggers: ['천둥번개', '공사 소음', '폭죽'],
+      solutions: ['백색소음 틀어주기', '안전한 은신처 제공', '둔감화 교육'],
       completed: false
     },
     {
       id: '3',
-      name: '파괴 행동',
-      description: '가구나 물건을 물어뜯거나 파괴하는 행동',
+      name: '강박 행동',
+      description: '꼬리 쫓기, 발 핥기 등 반복적인 행동',
       severity: 'moderate',
       category: 'behavioral',
-      triggers: [
-        '지루함',
-        '분리 불안',
-        '에너지 과다',
-        '주의 끌기'
-      ],
-      solutions: [
-        '충분한 운동 제공하기',
-        '적절한 장난감 제공하기',
-        '훈련하기',
-        '전문가 상담받기'
-      ],
-      completed: false
-    },
-    {
-      id: '4',
-      name: '소변 실수',
-      description: '집안에서 소변을 보는 실수 행동',
-      severity: 'moderate',
-      category: 'behavioral',
-      triggers: [
-        '불안감',
-        '낯선 환경',
-        '분리 불안',
-        '건강 문제'
-      ],
-      solutions: [
-        '원인 파악하기',
-        '훈련하기',
-        '전문가 상담받기',
-        '일관성 있는 반응하기'
-      ],
-      completed: false
-    },
-    {
-      id: '5',
-      name: '과도한 침 흘리기',
-      description: '평소보다 많이 침을 흘리는 증상',
-      severity: 'mild',
-      category: 'physical',
-      triggers: [
-        '스트레스',
-        '구강 문제',
-        '소화 문제',
-        '불안감'
-      ],
-      solutions: [
-        '원인 파악하기',
-        '전문가 상담받기',
-        '안정적인 환경 제공하기',
-        '일관성 있는 반응하기'
-      ],
-      completed: false
-    },
-    {
-      id: '6',
-      name: '과도한 떨림',
-      description: '신체가 계속 떨리는 증상',
-      severity: 'severe',
-      category: 'physical',
-      triggers: [
-        '극심한 불안',
-        '낯선 환경',
-        '큰 소리',
-        '건강 문제'
-      ],
-      solutions: [
-        '즉시 안정시키기',
-        '전문가 상담받기',
-        '안전한 공간 제공하기',
-        '일관성 있는 반응하기'
-      ],
-      completed: false
-    },
-    {
-      id: '7',
-      name: '과도한 하품',
-      description: '평소보다 많이 하품하는 증상',
-      severity: 'mild',
-      category: 'behavioral',
-      triggers: [
-        '스트레스',
-        '불안감',
-        '피로',
-        '건강 문제'
-      ],
-      solutions: [
-        '원인 파악하기',
-        '전문가 상담받기',
-        '안정적인 환경 제공하기',
-        '일관성 있는 반응하기'
-      ],
-      completed: false
-    },
-    {
-      id: '8',
-      name: '과도한 숨가쁨',
-      description: '평소보다 빠르게 숨을 쉬는 증상',
-      severity: 'severe',
-      category: 'physical',
-      triggers: [
-        '극심한 불안',
-        '건강 문제',
-        '과도한 운동',
-        '환경 변화'
-      ],
-      solutions: [
-        '즉시 안정시키기',
-        '전문가 상담받기',
-        '안전한 공간 제공하기',
-        '일관성 있는 반응하기'
-      ],
+      triggers: ['스트레스', '지루함', '운동 부족'],
+      solutions: ['충분한 산책과 운동', '지적 자극 제공', '관심 돌리기'],
       completed: false
     }
   ]
@@ -205,7 +75,7 @@ export default function DogAnxietyTrackerPage() {
   useEffect(() => {
     const savedSymptoms = localStorage.getItem('anxietySymptoms')
     const savedRecords = localStorage.getItem('anxietyRecords')
-    
+
     if (savedSymptoms) {
       try {
         setSymptoms(JSON.parse(savedSymptoms))
@@ -215,11 +85,11 @@ export default function DogAnxietyTrackerPage() {
     } else {
       setSymptoms(initialSymptoms)
     }
-    
+
     if (savedRecords) {
       try {
         setRecords(JSON.parse(savedRecords))
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [])
 
@@ -234,18 +104,6 @@ export default function DogAnxietyTrackerPage() {
       localStorage.setItem('anxietyRecords', JSON.stringify(records))
     }
   }, [records])
-
-  const toggleSymptom = (symptomId: string) => {
-    setSymptoms(symptoms.map(symptom => 
-      symptom.id === symptomId 
-        ? { 
-            ...symptom, 
-            completed: !symptom.completed,
-            date: !symptom.completed ? new Date().toISOString().split('T')[0] : undefined
-          } 
-        : symptom
-    ))
-  }
 
   const addRecord = () => {
     if (!newRecord.symptom) return
@@ -265,186 +123,185 @@ export default function DogAnxietyTrackerPage() {
     })
   }
 
+  const deleteRecord = (id: string) => {
+    const updated = records.filter(r => r.id !== id)
+    setRecords(updated)
+    localStorage.setItem('anxietyRecords', JSON.stringify(updated))
+  }
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'mild': return 'text-green-600 bg-green-100'
-      case 'moderate': return 'text-yellow-600 bg-yellow-100'
-      case 'severe': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'mild': return 'text-teal-600 bg-teal-50 border-teal-100'
+      case 'moderate': return 'text-yellow-600 bg-yellow-50 border-yellow-100'
+      case 'severe': return 'text-red-600 bg-red-50 border-red-100'
+      default: return 'text-gray-600 bg-gray-50 border-gray-100'
     }
   }
 
   const getSeverityText = (severity: string) => {
     switch (severity) {
-      case 'mild': return '경미'
+      case 'mild': return '경미함'
       case 'moderate': return '보통'
-      case 'severe': return '심각'
+      case 'severe': return '심각함'
       default: return severity
     }
   }
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'physical': return 'text-red-600 bg-red-100'
-      case 'behavioral': return 'text-blue-600 bg-blue-100'
-      case 'emotional': return 'text-purple-600 bg-purple-100'
-      case 'environmental': return 'text-orange-600 bg-orange-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'emotional': return <Heart className="w-4 h-4" />
+      case 'environmental': return <Volume2 className="w-4 h-4" />
+      case 'behavioral': return <Activity className="w-4 h-4" />
+      default: return <Brain className="w-4 h-4" />
     }
   }
-
-  const getCategoryText = (category: string) => {
-    switch (category) {
-      case 'physical': return '신체적'
-      case 'behavioral': return '행동적'
-      case 'emotional': return '감정적'
-      case 'environmental': return '환경적'
-      default: return category
-    }
-  }
-
-  const completedSymptoms = symptoms.filter(symptom => symptom.completed).length
-  const totalSymptoms = symptoms.length
-  const severeSymptoms = symptoms.filter(symptom => symptom.severity === 'severe').length
-  const totalRecords = records.length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-teal-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <AlertCircle className="w-10 h-10 text-orange-600 mr-3" />
-            불안 증상 추적기
-          </h1>
-          <p className="text-xl text-gray-600">강아지의 불안 증상과 패턴을 기록하고 분석</p>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertCircle className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{totalSymptoms}개</p>
-            <p className="text-sm text-gray-600">불안 증상</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-teal-100 rounded-2xl text-teal-600">
+              <Brain className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">불안 행동 트래커</h1>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">{completedSymptoms}개</p>
-            <p className="text-sm text-gray-600">해결된 증상</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-red-600">{severeSymptoms}개</p>
-            <p className="text-sm text-gray-600">심각한 증상</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Heart className="w-8 h-8 text-pink-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-pink-600">{totalRecords}회</p>
-            <p className="text-sm text-gray-600">기록된 증상</p>
-          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            반려견의 불안 신호를 이해하고 편안한 일상을 찾아주세요.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left Column: Symptom Guide */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">불안 증상</h2>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <AlertCircle className="w-5 h-5 mr-2 text-teal-500" />
+                주요 불안 증상 정보
+              </h2>
               <div className="space-y-4">
                 {symptoms.map((symptom) => (
-                  <div key={symptom.id} className="border-2 border-gray-200 rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900">{symptom.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{symptom.description}</p>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded text-xs ${getSeverityColor(symptom.severity)}`}>
-                            {getSeverityText(symptom.severity)}
+                  <div
+                    key={symptom.id}
+                    className="border-2 border-gray-100 rounded-xl bg-white overflow-hidden transition-all hover:border-teal-200"
+                  >
+                    <div
+                      className="p-4 cursor-pointer flex items-start justify-between"
+                      onClick={() => setExpandedSymptom(expandedSymptom === symptom.id ? null : symptom.id)}
+                    >
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-bold text-gray-900">{symptom.name}</h3>
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                            {getCategoryIcon(symptom.category)}
+                            {symptom.category}
                           </span>
-                          <span className={`px-2 py-1 rounded text-xs ${getCategoryColor(symptom.category)}`}>
-                            {getCategoryText(symptom.category)}
-                          </span>
-                          {symptom.date && (
-                            <span className="text-green-600">해결: {symptom.date}</span>
-                          )}
+                        </div>
+                        <p className="text-sm text-gray-600">{symptom.description}</p>
+                      </div>
+                      {expandedSymptom === symptom.id ? (
+                        <ChevronUp className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+
+                    {expandedSymptom === symptom.id && (
+                      <div className="px-4 pb-4 pt-0 border-t border-gray-100 bg-gray-50/50">
+                        <div className="mt-4 grid grid-cols-1 gap-4 text-sm">
+                          <div>
+                            <span className="font-bold text-gray-900 block mb-1">주요 원인 (Triggers)</span>
+                            <p className="text-gray-600">{symptom.triggers.join(', ')}</p>
+                          </div>
+                          <div>
+                            <span className="font-bold text-gray-900 block mb-1">대처 방법</span>
+                            <p className="text-gray-600">{symptom.solutions.join(', ')}</p>
+                          </div>
                         </div>
                       </div>
-                      <button
-                        onClick={() => toggleSymptom(symptom.id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          symptom.completed
-                            ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        <CheckCircle className="w-6 h-6" />
-                      </button>
-                    </div>
-                    
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">유발 요인</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {symptom.triggers.map((trigger, index) => (
-                            <li key={index}>• {trigger}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">해결 방법</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {symptom.solutions.map((solution, index) => (
-                            <li key={index}>• {solution}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Guide Box */}
+            <div className="bg-teal-50 rounded-2xl p-6 border border-teal-100">
+              <h3 className="font-bold text-teal-800 mb-3 flex items-center">
+                <Heart className="w-4 h-4 mr-2" />
+                안정을 위한 팁
+              </h3>
+              <ul className="space-y-2 text-sm text-teal-700">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  보호자의 차분한 태도가 강아지에게 안정감을 줍니다.
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  '썬더셔츠'나 안정감을 주는 음악이 도움이 될 수 있습니다.
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  증상이 심할 경우 행동 교정 전문가나 수의사와 상담하세요.
+                </li>
+              </ul>
+            </div>
           </div>
 
+          {/* Right Column: Record Form & History */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">불안 증상 기록</h2>
-              <div className="space-y-4 mb-6">
-                <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Plus className="w-5 h-5 mr-2 text-teal-500" />
+                증상 기록하기
+              </h2>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">기록 날짜</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">날짜</label>
                     <input
                       type="date"
                       value={newRecord.date}
-                      onChange={(e) => setNewRecord({...newRecord, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, date: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">불안 증상</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">증상 유형</label>
                     <select
                       value={newRecord.symptom}
-                      onChange={(e) => setNewRecord({...newRecord, symptom: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, symptom: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
-                      <option value="">증상 선택</option>
-                      {symptoms.map((symptom) => (
-                        <option key={symptom.id} value={symptom.name}>
-                          {symptom.name}
-                        </option>
+                      <option value="">선택하세요</option>
+                      {symptoms.map((s) => (
+                        <option key={s.id} value={s.name}>{s.name}</option>
                       ))}
+                      <option value="기타">기타</option>
                     </select>
                   </div>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">심각도</label>
                     <select
                       value={newRecord.severity}
-                      onChange={(e) => setNewRecord({...newRecord, severity: e.target.value as 'mild' | 'moderate' | 'severe'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, severity: e.target.value as any })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
-                      <option value="mild">경미</option>
-                      <option value="moderate">보통</option>
-                      <option value="severe">심각</option>
+                      <option value="mild">경미함 (약간 불안)</option>
+                      <option value="moderate">보통 (떨림/짖음)</option>
+                      <option value="severe">심각함 (패닉/파괴)</option>
                     </select>
                   </div>
                   <div>
@@ -452,89 +309,80 @@ export default function DogAnxietyTrackerPage() {
                     <input
                       type="number"
                       value={newRecord.duration}
-                      onChange={(e) => setNewRecord({...newRecord, duration: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setNewRecord({ ...newRecord, duration: parseInt(e.target.value) || 0 })}
                       min="1"
-                      max="120"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">유발 요인</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">유발 상황 (Trigger)</label>
                   <input
                     type="text"
                     value={newRecord.trigger}
-                    onChange={(e) => setNewRecord({...newRecord, trigger: e.target.value})}
-                    placeholder="불안을 유발한 요인"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    onChange={(e) => setNewRecord({ ...newRecord, trigger: e.target.value })}
+                    placeholder="예: 천둥 소리가 들렸을 때"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
                   <textarea
                     value={newRecord.notes}
-                    onChange={(e) => setNewRecord({...newRecord, notes: e.target.value})}
-                    rows={3}
-                    placeholder="불안 증상의 상세한 상황이나 강아지 반응"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    onChange={(e) => setNewRecord({ ...newRecord, notes: e.target.value })}
+                    rows={2}
+                    placeholder="구체적인 행동이나 대처 방법을 기록해주세요"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 resize-none"
                   />
                 </div>
+
                 <button
                   onClick={addRecord}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={!newRecord.symptom}
+                  className="w-full bg-teal-600 text-white py-3 rounded-xl hover:bg-teal-700 transition-all shadow-lg shadow-teal-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  불안 증상 기록 추가
+                  기록 저장
                 </button>
               </div>
 
-              {records.length > 0 && (
+              <div className="mt-8">
+                <h3 className="font-bold text-gray-900 mb-4 text-sm">최근 기록</h3>
                 <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-900">최근 불안 증상 기록</h3>
                   {records.slice(0, 5).map((record) => (
-                    <div key={record.id} className="p-4 bg-gray-50 rounded-lg">
+                    <div key={record.id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all group relative">
                       <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{record.symptom}</p>
-                          <p className="text-sm text-gray-600">{record.date}</p>
-                          <p className="text-sm text-gray-600">
-                            {record.duration}분 - {record.trigger}
-                          </p>
-                          {record.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{record.notes}</p>
-                          )}
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getSeverityColor(record.severity)}`}>
+                            {getSeverityText(record.severity)}
+                          </span>
+                          <span className="text-xs text-gray-400">{record.date}</span>
                         </div>
-                        <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(record.severity)}`}>
-                          {getSeverityText(record.severity)}
-                        </span>
+                        <button
+                          onClick={() => deleteRecord(record.id)}
+                          className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
+
+                      <h4 className="font-bold text-gray-900 mb-1">{record.symptom}</h4>
+                      {record.trigger && (
+                        <p className="text-sm text-teal-600 mb-1">상황: {record.trigger}</p>
+                      )}
+                      {record.notes && (
+                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-2">{record.notes}</p>
+                      )}
                     </div>
                   ))}
+                  {records.length === 0 && (
+                    <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                      <p className="text-gray-500 text-sm">아직 기록된 내용이 없습니다.</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 rounded-lg p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">😰 불안 증상 추적 핵심 포인트</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-            <div>
-              <h3 className="font-semibold mb-2">성공을 위한 원칙</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 일관성 있게 증상을 관찰하세요</li>
-                <li>• 원인을 파악하고 해결하세요</li>
-                <li>• 전문가의 도움을 받으세요</li>
-                <li>• 강아지가 편안해하는 환경을 제공하세요</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">주의사항</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 심각한 증상이 있으면 즉시 수의사에게 연락하세요</li>
-                <li>• 과도한 자극을 피하세요</li>
-                <li>• 강아지가 불안해하면 즉시 중단하세요</li>
-                <li>• 실패해도 괜찮다고 안심시켜주세요</li>
-              </ul>
+              </div>
             </div>
           </div>
         </div>

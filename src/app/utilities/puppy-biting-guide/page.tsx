@@ -2,608 +2,206 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, CheckCircle, Clock, Heart, Users } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Clock, Heart, Users, ArrowLeft, Bone, Shield, Hand, Zap, Info, ChevronRight } from 'lucide-react'
 
 interface BitingProblem {
   id: string
   name: string
-  description: string
+  desc: string
   severity: 'mild' | 'moderate' | 'severe'
-  age: 'puppy' | 'adult' | 'senior'
-  causes: string[]
-  solutions: string[]
-  prevention: string[]
-  completed: boolean
-  date?: string
-  notes?: string
-}
-
-interface BitingRecord {
-  id: string
-  date: string
-  problem: string
   solution: string
-  duration: number
-  result: 'excellent' | 'good' | 'fair' | 'poor'
-  notes: string
+  completed: boolean
 }
 
 export default function PuppyBitingGuidePage() {
-  const [problems, setProblems] = useState<BitingProblem[]>([])
-  const [records, setRecords] = useState<BitingRecord[]>([])
-  const [newRecord, setNewRecord] = useState({
-    date: new Date().toISOString().split('T')[0],
-    problem: '',
-    solution: '',
-    duration: 15,
-    result: 'good' as 'excellent' | 'good' | 'fair' | 'poor',
-    notes: ''
-  })
+  const [problems, setProblems] = useState<BitingProblem[]>([
+    { id: '1', name: '놀이 중 물기', desc: '놀다가 흥분해서 손이나 발을 무는 경우', severity: 'mild', solution: '즉시 놀이를 중단하고 등을 돌려 무시하세요. 얌전해지면 다시 놀아줍니다.', completed: false },
+    { id: '2', name: '손가락 물기', desc: '손가락을 장난감처럼 씹으려는 경우', severity: 'moderate', solution: '손 대신 터그나 인형 등 물어도 되는 장난감을 입에 물려주세요.', completed: false },
+    { id: '3', name: '발목 쫓아오며 물기', desc: '걸을 때 발뒤꿈치나 바짓단을 무는 경우', severity: 'moderate', solution: '제자리에 멈춰서 반응하지 마세요. 움직임을 멈추면 재미가 없어져 그만둡니다.', completed: false },
+    { id: '4', name: '가구/물건 씹기', desc: '이갈이 시기에 가구나 전선을 씹는 경우', severity: 'severe', solution: '기피제를 뿌리거나 울타리로 접근을 막고, 씹기 좋은 우드스틱을 제공하세요.', completed: false }
+  ])
 
-  const initialProblems: BitingProblem[] = [
-    {
-      id: '1',
-      name: '놀이 중 물기',
-      description: '놀이 중에 강아지가 물어대는 행동',
-      severity: 'mild',
-      age: 'puppy',
-      causes: [
-        '놀이 중 흥분으로 인한 물기',
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '놀이를 즉시 중단하고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '놀이 중 과도한 흥분 방지하기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '2',
-      name: '손가락 물기',
-      description: '손가락을 물어대는 행동',
-      severity: 'moderate',
-      age: 'puppy',
-      causes: [
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '놀이 중 흥분으로 인한 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '손을 즉시 빼고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '손을 장난감으로 사용하지 않기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '3',
-      name: '발목 물기',
-      description: '발목을 물어대는 행동',
-      severity: 'moderate',
-      age: 'puppy',
-      causes: [
-        '놀이 중 흥분으로 인한 물기',
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '걷기를 즉시 중단하고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '걷기 중 과도한 흥분 방지하기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '4',
-      name: '옷 물기',
-      description: '옷을 물어대는 행동',
-      severity: 'mild',
-      age: 'puppy',
-      causes: [
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '놀이 중 흥분으로 인한 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '옷을 즉시 빼고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '옷을 장난감으로 사용하지 않기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '5',
-      name: '가구 물기',
-      description: '가구를 물어대는 행동',
-      severity: 'moderate',
-      age: 'puppy',
-      causes: [
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '놀이 중 흥분으로 인한 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '가구를 즉시 빼고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '가구를 장난감으로 사용하지 않기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '6',
-      name: '신발 물기',
-      description: '신발을 물어대는 행동',
-      severity: 'mild',
-      age: 'puppy',
-      causes: [
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '놀이 중 흥분으로 인한 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '신발을 즉시 빼고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '신발을 장난감으로 사용하지 않기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '7',
-      name: '전선 물기',
-      description: '전선을 물어대는 위험한 행동',
-      severity: 'severe',
-      age: 'puppy',
-      causes: [
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '놀이 중 흥분으로 인한 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '전선을 즉시 빼고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '전선을 장난감으로 사용하지 않기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    },
-    {
-      id: '8',
-      name: '다른 강아지 물기',
-      description: '다른 강아지를 물어대는 행동',
-      severity: 'severe',
-      age: 'puppy',
-      causes: [
-        '놀이 중 흥분으로 인한 물기',
-        '이빨이 가려워서 물기',
-        '관심을 끌기 위해 물기',
-        '에너지가 넘쳐서 물기'
-      ],
-      solutions: [
-        '놀이를 즉시 중단하고 무시하기',
-        '대체 행동으로 유도하기',
-        '적절한 장난감 제공하기',
-        '일관성 있게 반응하기'
-      ],
-      prevention: [
-        '놀이 중 과도한 흥분 방지하기',
-        '적절한 장난감 사용하기',
-        '정기적인 운동 제공하기',
-        '일관성 있는 규칙 적용하기'
-      ],
-      completed: false
-    }
-  ]
+  const [selectedProblem, setSelectedProblem] = useState<string | null>(null)
 
-  useEffect(() => {
-    const savedProblems = localStorage.getItem('bitingProblems')
-    const savedRecords = localStorage.getItem('bitingRecords')
-    
-    if (savedProblems) {
-      try {
-        setProblems(JSON.parse(savedProblems))
-      } catch (e) {
-        setProblems(initialProblems)
-      }
-    } else {
-      setProblems(initialProblems)
-    }
-    
-    if (savedRecords) {
-      try {
-        setRecords(JSON.parse(savedRecords))
-      } catch (e) {}
-    }
-  }, [])
-
-  useEffect(() => {
-    if (problems.length > 0) {
-      localStorage.setItem('bitingProblems', JSON.stringify(problems))
-    }
-  }, [problems])
-
-  useEffect(() => {
-    if (records.length > 0) {
-      localStorage.setItem('bitingRecords', JSON.stringify(records))
-    }
-  }, [records])
-
-  const toggleProblem = (problemId: string) => {
-    setProblems(problems.map(problem => 
-      problem.id === problemId 
-        ? { 
-            ...problem, 
-            completed: !problem.completed,
-            date: !problem.completed ? new Date().toISOString().split('T')[0] : undefined
-          } 
-        : problem
-    ))
-  }
-
-  const addRecord = () => {
-    if (!newRecord.problem) return
-
-    const record: BitingRecord = {
-      id: Date.now().toString(),
-      ...newRecord
-    }
-    setRecords([record, ...records])
-    setNewRecord({
-      date: new Date().toISOString().split('T')[0],
-      problem: '',
-      solution: '',
-      duration: 15,
-      result: 'good',
-      notes: ''
-    })
+  const toggleComplete = (id: string) => {
+    setProblems(problems.map(p => p.id === id ? { ...p, completed: !p.completed } : p))
   }
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'mild': return 'text-green-600 bg-green-100'
-      case 'moderate': return 'text-yellow-600 bg-yellow-100'
-      case 'severe': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'mild': return 'bg-green-100 text-green-700 border-green-200'
+      case 'moderate': return 'bg-orange-100 text-orange-700 border-orange-200'
+      case 'severe': return 'bg-red-100 text-red-700 border-red-200'
+      default: return 'bg-gray-100 text-gray-700'
     }
   }
 
-  const getSeverityText = (severity: string) => {
+  const getSeverityLabel = (severity: string) => {
     switch (severity) {
-      case 'mild': return '경미'
-      case 'moderate': return '보통'
+      case 'mild': return '경미함'
+      case 'moderate': return '주의'
       case 'severe': return '심각'
-      default: return severity
+      default: return ''
     }
   }
-
-  const getAgeText = (age: string) => {
-    switch (age) {
-      case 'puppy': return '강아지'
-      case 'adult': return '성견'
-      case 'senior': return '노견'
-      default: return age
-    }
-  }
-
-  const getResultColor = (result: string) => {
-    switch (result) {
-      case 'excellent': return 'text-green-600 bg-green-100'
-      case 'good': return 'text-blue-600 bg-blue-100'
-      case 'fair': return 'text-yellow-600 bg-yellow-100'
-      case 'poor': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
-    }
-  }
-
-  const getResultText = (result: string) => {
-    switch (result) {
-      case 'excellent': return '매우 좋음'
-      case 'good': return '좋음'
-      case 'fair': return '보통'
-      case 'poor': return '나쁨'
-      default: return result
-    }
-  }
-
-  const completedProblems = problems.filter(problem => problem.completed).length
-  const totalProblems = problems.length
-  const severeProblems = problems.filter(problem => problem.severity === 'severe').length
-  const excellentRecords = records.filter(record => record.result === 'excellent').length
-  const totalRecords = records.length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-orange-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <AlertTriangle className="w-10 h-10 text-red-600 mr-3" />
-            강아지 물기 훈련
-          </h1>
-          <p className="text-xl text-gray-600">강아지의 물기 습관 교정 방법</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-orange-100 rounded-2xl text-orange-600">
+              <Bone className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">입질 교정 가이드</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            이갈이 시기 강아지의 입질, 올바른 대처로 예쁜 습관을 만들어주세요.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{totalProblems}개</p>
-            <p className="text-sm text-gray-600">물기 문제</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">{completedProblems}개</p>
-            <p className="text-sm text-gray-600">해결된 문제</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-red-600">{severeProblems}개</p>
-            <p className="text-sm text-gray-600">심각한 문제</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Heart className="w-8 h-8 text-pink-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-pink-600">{excellentRecords}회</p>
-            <p className="text-sm text-gray-600">우수한 결과</p>
-          </div>
-        </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Problem List */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2 text-orange-500" />
+                입질 유형 체크리스트
+              </h2>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">물기 문제 해결</h2>
               <div className="space-y-4">
                 {problems.map((problem) => (
-                  <div key={problem.id} className="border-2 border-gray-200 rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900">{problem.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{problem.description}</p>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded text-xs ${getSeverityColor(problem.severity)}`}>
-                            {getSeverityText(problem.severity)}
-                          </span>
-                          <span className="text-blue-600">{getAgeText(problem.age)}</span>
-                          {problem.date && (
-                            <span className="text-green-600">해결: {problem.date}</span>
-                          )}
+                  <div
+                    key={problem.id}
+                    className={`border-2 rounded-xl p-4 transition-all cursor-pointer ${selectedProblem === problem.id
+                        ? 'border-orange-500 bg-orange-50'
+                        : 'border-gray-100 hover:border-orange-200 bg-white'
+                      }`}
+                    onClick={() => setSelectedProblem(problem.id === selectedProblem ? null : problem.id)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            toggleComplete(problem.id)
+                          }}
+                          className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${problem.completed
+                              ? 'bg-green-500 border-green-500 text-white'
+                              : 'border-gray-300 hover:border-green-500'
+                            }`}
+                        >
+                          {problem.completed && <CheckCircle className="w-4 h-4" />}
+                        </button>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-bold text-gray-900">{problem.name}</h3>
+                            <span className={`text-xs px-2 py-0.5 rounded-full border ${getSeverityColor(problem.severity)}`}>
+                              {getSeverityLabel(problem.severity)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">{problem.desc}</p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => toggleProblem(problem.id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          problem.completed
-                            ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        <CheckCircle className="w-6 h-6" />
-                      </button>
+                      <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${selectedProblem === problem.id ? 'rotate-90' : ''}`} />
                     </div>
-                    
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">원인</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {problem.causes.map((cause, index) => (
-                            <li key={index}>• {cause}</li>
-                          ))}
-                        </ul>
+
+                    {selectedProblem === problem.id && (
+                      <div className="mt-4 pl-10 pt-4 border-t border-orange-200/50 animate-in fade-in slide-in-from-top-2">
+                        <div className="bg-white rounded-lg p-4 border border-orange-100">
+                          <h4 className="font-bold text-orange-600 mb-2 flex items-center text-sm">
+                            <Shield className="w-4 h-4 mr-2" />
+                            솔루션
+                          </h4>
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            {problem.solution}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">해결 방법</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {problem.solutions.map((solution, index) => (
-                            <li key={index}>• {solution}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">예방법</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {problem.prevention.map((prevention, index) => (
-                            <li key={index}>• {prevention}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">물기 훈련 기록</h2>
-              <div className="space-y-4 mb-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 날짜</label>
-                    <input
-                      type="date"
-                      value={newRecord.date}
-                      onChange={(e) => setNewRecord({...newRecord, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          {/* Right Column: Guide & Stats */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Progress Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">교정 진행률</h2>
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative w-32 h-32">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="60"
+                      fill="none"
+                      stroke="#f3f4f6"
+                      strokeWidth="8"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">물기 문제</label>
-                    <select
-                      value={newRecord.problem}
-                      onChange={(e) => setNewRecord({...newRecord, problem: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    >
-                      <option value="">문제 선택</option>
-                      {problems.map((problem) => (
-                        <option key={problem.id} value={problem.name}>
-                          {problem.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">해결 방법</label>
-                  <select
-                    value={newRecord.solution}
-                    onChange={(e) => setNewRecord({...newRecord, solution: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  >
-                    <option value="">해결 방법 선택</option>
-                    <option value="즉시 중단하고 무시하기">즉시 중단하고 무시하기</option>
-                    <option value="대체 행동으로 유도하기">대체 행동으로 유도하기</option>
-                    <option value="적절한 장난감 제공하기">적절한 장난감 제공하기</option>
-                    <option value="일관성 있게 반응하기">일관성 있게 반응하기</option>
-                  </select>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 시간 (분)</label>
-                    <input
-                      type="number"
-                      value={newRecord.duration}
-                      onChange={(e) => setNewRecord({...newRecord, duration: parseInt(e.target.value) || 0})}
-                      min="1"
-                      max="120"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="60"
+                      fill="none"
+                      stroke="#f97316"
+                      strokeWidth="8"
+                      strokeDasharray={2 * Math.PI * 60}
+                      strokeDashoffset={2 * Math.PI * 60 * (1 - problems.filter(p => p.completed).length / problems.length)}
+                      className="transition-all duration-1000 ease-out"
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 결과</label>
-                    <select
-                      value={newRecord.result}
-                      onChange={(e) => setNewRecord({...newRecord, result: e.target.value as 'excellent' | 'good' | 'fair' | 'poor'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    >
-                      <option value="excellent">매우 좋음</option>
-                      <option value="good">좋음</option>
-                      <option value="fair">보통</option>
-                      <option value="poor">나쁨</option>
-                    </select>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-3xl font-black text-gray-900">
+                      {Math.round((problems.filter(p => p.completed).length / problems.length) * 100)}%
+                    </span>
+                    <span className="text-xs text-gray-500">완료</span>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
-                  <textarea
-                    value={newRecord.notes}
-                    onChange={(e) => setNewRecord({...newRecord, notes: e.target.value})}
-                    rows={3}
-                    placeholder="훈련 과정이나 강아지 반응"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-                <button
-                  onClick={addRecord}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  물기 훈련 기록 추가
-                </button>
               </div>
-
-              {records.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-900">최근 물기 훈련 기록</h3>
-                  {records.slice(0, 5).map((record) => (
-                    <div key={record.id} className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{record.problem}</p>
-                          <p className="text-sm text-gray-600">{record.date}</p>
-                          <p className="text-sm text-gray-600">
-                            {record.solution} - {record.duration}분
-                          </p>
-                          {record.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{record.notes}</p>
-                          )}
-                        </div>
-                        <span className={`px-2 py-1 text-xs rounded ${getResultColor(record.result)}`}>
-                          {getResultText(record.result)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="text-center text-sm text-gray-500">
+                꾸준한 훈련만이<br />입질을 고칠 수 있습니다.
+              </p>
             </div>
-          </div>
-        </div>
 
-        <div className="bg-blue-50 rounded-lg p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">🐕 강아지 물기 훈련 핵심 포인트</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-            <div>
-              <h3 className="font-semibold mb-2">성공을 위한 원칙</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 일관성 있게 반응하세요</li>
-                <li>• 즉시 중단하고 무시하세요</li>
-                <li>• 대체 행동으로 유도하세요</li>
-                <li>• 적절한 장난감을 제공하세요</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">주의사항</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 강아지가 불안해하면 즉시 중단하세요</li>
-                <li>• 과도한 자극을 피하세요</li>
-                <li>• 이상 증상이 있으면 즉시 수의사에게 연락하세요</li>
-                <li>• 실패해도 괜찮다고 안심시켜주세요</li>
+            {/* Tips Card */}
+            <div className="bg-orange-900 rounded-2xl p-6 text-white shadow-lg">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <Info className="w-5 h-5 mr-2 text-orange-400" />
+                훈련 핵심 원칙
+              </h3>
+              <ul className="space-y-4 text-orange-100 text-sm">
+                <li className="flex items-start">
+                  <span className="mr-2 text-orange-400 font-bold">1.</span>
+                  <span>
+                    <strong className="text-white">무반응이 답이다</strong><br />
+                    소리를 지르거나 밀치면 놀이로 착각할 수 있습니다.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-orange-400 font-bold">2.</span>
+                  <span>
+                    <strong className="text-white">대체재 제공</strong><br />
+                    '안돼'라고만 하지 말고 물어도 되는 것을 주세요.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-orange-400 font-bold">3.</span>
+                  <span>
+                    <strong className="text-white">타임아웃</strong><br />
+                    흥분이 가라앉지 않으면 1-2분간 격리하세요.
+                  </span>
+                </li>
               </ul>
             </div>
           </div>

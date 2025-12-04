@@ -2,200 +2,191 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Syringe, Calendar } from 'lucide-react'
+import { Syringe, Calendar, ArrowLeft, ShieldCheck, Clock, AlertCircle, CheckCircle } from 'lucide-react'
 
 interface Vaccination {
+  id: string
   name: string
-  age: string
-  nextAge?: string
-  description: string
-}
-
-const vaccinationSchedule: Record<string, Vaccination[]> = {
-  puppy: [
-    { name: '종합백신 1차', age: '6주', nextAge: '9주', description: '기본 예방접종 시작' },
-    { name: '종합백신 2차', age: '9주', nextAge: '12주', description: '면역력 강화' },
-    { name: '종합백신 3차', age: '12주', nextAge: '16주', description: '면역력 강화' },
-    { name: '종합백신 4차', age: '16주', description: '기본 접종 완료' },
-    { name: '켄넬코프', age: '6주', nextAge: '9주', description: '기침 예방' },
-    { name: '광견병', age: '3개월', description: '법정 접종' }
-  ],
-  adult: [
-    { name: '종합백신', age: '1년마다', description: '연간 접종' },
-    { name: '켄넬코프', age: '1년마다', description: '연간 접종' },
-    { name: '광견병', age: '1-3년마다', description: '법정 접종 (지역별 상이)' }
-  ]
+  desc: string
+  weeks: number // age in weeks
+  isMandatory: boolean
 }
 
 export default function VaccinationScheduleCalculatorPage() {
   const [birthDate, setBirthDate] = useState<string>('')
-  const [ageType, setAgeType] = useState<string>('puppy')
-  const [result, setResult] = useState<{
-    schedule: Array<{ name: string; date: string; age: string; description: string }>
-    nextVaccination: { name: string; date: string; daysLeft: number } | null
-  } | null>(null)
 
-  const calculate = () => {
-    if (!birthDate) return
+  const vaccinations: Vaccination[] = [
+    { id: '1', name: '종합백신 1차', desc: 'DHPPL + 코로나 장염', weeks: 6, isMandatory: true },
+    { id: '2', name: '종합백신 2차', desc: 'DHPPL + 코로나 장염', weeks: 8, isMandatory: true },
+    { id: '3', name: '종합백신 3차', desc: 'DHPPL + 켄넬코프', weeks: 10, isMandatory: true },
+    { id: '4', name: '종합백신 4차', desc: 'DHPPL + 켄넬코프', weeks: 12, isMandatory: true },
+    { id: '5', name: '종합백신 5차', desc: 'DHPPL + 인플루엔자', weeks: 14, isMandatory: true },
+    { id: '6', name: '광견병', desc: '광견병 + 인플루엔자', weeks: 16, isMandatory: true },
+  ]
 
-    const birth = new Date(birthDate)
+  const calculateDate = (weeks: number) => {
+    if (!birthDate) return null
+    const date = new Date(birthDate)
+    date.setDate(date.getDate() + (weeks * 7))
+    return date
+  }
+
+  const getStatus = (date: Date | null) => {
+    if (!date) return 'pending'
     const today = new Date()
-    const ageInDays = Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24))
-    const ageInWeeks = Math.floor(ageInDays / 7)
-    const ageInMonths = Math.floor(ageInDays / 30)
+    const diff = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
-    const schedule = vaccinationSchedule[ageType] || []
-    const calculatedSchedule = schedule.map(vacc => {
-      let vaccDate = new Date(birth)
-      
-      if (vacc.age.includes('주')) {
-        const weeks = parseInt(vacc.age)
-        vaccDate.setDate(vaccDate.getDate() + (weeks * 7))
-      } else if (vacc.age.includes('개월')) {
-        const months = parseInt(vacc.age)
-        vaccDate.setDate(vaccDate.getDate() + (months * 30))
-      } else if (vacc.age.includes('년')) {
-        vaccDate.setFullYear(vaccDate.getFullYear() + 1)
-      }
+    if (diff < -7) return 'overdue' // 1 week past
+    if (diff < 0) return 'due' // passed but recent
+    if (diff < 14) return 'upcoming' // within 2 weeks
+    return 'future'
+  }
 
-      return {
-        name: vacc.name,
-        date: vaccDate.toISOString().split('T')[0],
-        age: vacc.age,
-        description: vacc.description
-      }
-    })
-
-    // 다음 접종일 찾기
-    const upcoming = calculatedSchedule
-      .filter(v => new Date(v.date) > today)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
-
-    let nextVaccination = null
-    if (upcoming) {
-      const daysLeft = Math.ceil((new Date(upcoming.date).getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-      nextVaccination = {
-        name: upcoming.name,
-        date: upcoming.date,
-        daysLeft
-      }
-    }
-
-    setResult({
-      schedule: calculatedSchedule,
-      nextVaccination
-    })
+  const formatDate = (date: Date | null) => {
+    if (!date) return '-'
+    return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-teal-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Syringe className="w-10 h-10 text-red-600 mr-3" />
-            예방접종 일정 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            다음 예방접종일과 일정을 계산합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-teal-100 rounded-2xl text-teal-600">
+              <Syringe className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">예방접종 스케줄러</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            생년월일만 입력하면 우리 아이의 평생 건강 지킴이 일정이 완성됩니다.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Input */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-teal-500" />
+                기본 정보
+              </h2>
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  생년월일
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">생년월일</label>
                 <input
                   type="date"
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none transition-all"
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  생애 단계
-                </label>
-                <select
-                  value={ageType}
-                  onChange={(e) => setAgeType(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="puppy">강아지 (1세 미만)</option>
-                  <option value="adult">성견 (1세 이상)</option>
-                </select>
+                <p className="text-xs text-gray-500 mt-2">
+                  * 정확한 날짜를 모른다면 추정일로 입력해주세요.
+                </p>
               </div>
             </div>
 
-            <button
-              onClick={calculate}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors font-medium text-lg"
-            >
-              일정 계산하기
-            </button>
+            <div className="bg-teal-900 rounded-2xl p-6 text-white shadow-lg">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <ShieldCheck className="w-5 h-5 mr-2 text-teal-400" />
+                접종 전 체크리스트
+              </h3>
+              <ul className="space-y-4 text-teal-100 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 font-bold">✓</span>
+                  컨디션이 좋은 날 오전에 접종하세요.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 font-bold">✓</span>
+                  접종 후 2-3일은 목욕을 피해주세요.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 font-bold">✓</span>
+                  구토, 설사 등 부작용을 관찰하세요.
+                </li>
+              </ul>
+            </div>
+          </div>
 
-            {result && (
-              <div className="space-y-4">
-                {result.nextVaccination && (
-                  <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <p className="text-sm text-gray-600">다음 예방접종</p>
-                        <p className="text-2xl font-bold text-red-700">{result.nextVaccination.name}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">접종일</p>
-                        <p className="text-xl font-bold text-red-700">{result.nextVaccination.date}</p>
-                        <p className="text-sm text-gray-600 mt-1">{result.nextVaccination.daysLeft}일 후</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+          {/* Right Column: Timeline */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center">
+                <Clock className="w-5 h-5 mr-2 text-teal-500" />
+                접종 타임라인
+              </h2>
 
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">전체 예방접종 일정</h3>
-                  <div className="space-y-3">
-                    {result.schedule.map((vacc, index) => (
-                      <div key={index} className="border-l-4 border-red-500 pl-4 py-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-gray-900">{vacc.name}</p>
-                            <p className="text-sm text-gray-600">{vacc.description}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm font-medium text-gray-700">{vacc.date}</p>
-                            <p className="text-xs text-gray-500">{vacc.age}</p>
+              {!birthDate ? (
+                <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>생년월일을 입력하면 일정이 표시됩니다.</p>
+                </div>
+              ) : (
+                <div className="space-y-8 relative before:absolute before:left-8 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100">
+                  {vaccinations.map((vacc) => {
+                    const date = calculateDate(vacc.weeks)
+                    const status = getStatus(date)
+
+                    return (
+                      <div key={vacc.id} className="relative pl-20">
+                        {/* Timeline Node */}
+                        <div className={`absolute left-0 top-0 w-16 text-right`}>
+                          <span className="text-xs font-bold text-gray-400 block mb-1">{vacc.weeks}주차</span>
+                          <div className={`absolute right-[-21px] top-1.5 w-3 h-3 rounded-full border-2 bg-white z-10 ${status === 'overdue' ? 'border-red-500' :
+                              status === 'due' ? 'border-orange-500' :
+                                status === 'upcoming' ? 'border-teal-500' : 'border-gray-300'
+                            }`} />
+                        </div>
+
+                        {/* Card */}
+                        <div className={`p-5 rounded-xl border transition-all ${status === 'overdue' ? 'border-red-200 bg-red-50/50' :
+                            status === 'due' ? 'border-orange-200 bg-orange-50/50' :
+                              status === 'upcoming' ? 'border-teal-200 bg-teal-50/50 shadow-md transform scale-[1.02]' :
+                                'border-gray-100 bg-white'
+                          }`}>
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                                {vacc.name}
+                                {status === 'upcoming' && (
+                                  <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 text-xs font-bold">
+                                    접종 예정
+                                  </span>
+                                )}
+                              </h3>
+                              <p className="text-sm text-gray-500">{vacc.desc}</p>
+                            </div>
+                            <div className="text-right">
+                              <div className={`font-bold text-sm ${status === 'overdue' ? 'text-red-600' :
+                                  status === 'due' ? 'text-orange-600' :
+                                    status === 'upcoming' ? 'text-teal-600' : 'text-gray-400'
+                                }`}>
+                                {formatDate(date)}
+                              </div>
+                              {status === 'overdue' && (
+                                <div className="text-xs text-red-500 flex items-center justify-end gap-1 mt-1">
+                                  <AlertCircle className="w-3 h-3" /> 지남
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    )
+                  })}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-
-        <div className="bg-red-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 예방접종 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 강아지는 생후 6주부터 예방접종을 시작합니다</li>
-            <li>• 종합백신은 3-4주 간격으로 3-4회 접종합니다</li>
-            <li>• 광견병 예방접종은 법정 접종으로 필수입니다</li>
-            <li>• 성견은 매년 종합백신과 켄넬코프 접종을 받아야 합니다</li>
-            <li>• 예방접종 전후 1주일은 목욕과 과도한 운동을 피하세요</li>
-            <li>• 예방접종 후 이상 반응이 있으면 즉시 수의사에게 연락하세요</li>
-            <li>• 예방접종 기록을 보관하여 다음 접종일을 놓치지 마세요</li>
-          </ul>
         </div>
       </div>
     </div>
   )
 }
-

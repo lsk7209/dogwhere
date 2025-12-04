@@ -2,56 +2,62 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Shield, Calculator } from 'lucide-react'
+import { Shield, Calculator, ArrowLeft, Check, X, Umbrella, HeartPulse, Stethoscope, AlertCircle, DollarSign } from 'lucide-react'
 
 export default function PetInsuranceCalculatorPage() {
   const [breedSize, setBreedSize] = useState<string>('medium')
   const [age, setAge] = useState<string>('adult')
-  const [coverageType, setCoverageType] = useState<string>('basic')
+  const [coverageType, setCoverageType] = useState<string>('standard')
   const [result, setResult] = useState<{
     monthlyPremium: number
     yearlyPremium: number
     coverage: string
-    benefits: string[]
+    benefits: { name: string; included: boolean }[]
   } | null>(null)
 
   const calculate = () => {
     let basePremium = 20000 // 기본값 (월간)
-    
+
     // 견종 크기별 조정
-    if (breedSize === 'small') {
-      basePremium = 15000
-    } else if (breedSize === 'large') {
-      basePremium = 30000
-    }
+    if (breedSize === 'small') basePremium = 15000
+    else if (breedSize === 'large') basePremium = 30000
 
     // 연령별 조정
-    if (age === 'puppy') {
-      basePremium = Math.round(basePremium * 0.8) // 강아지는 조금 저렴
-    } else if (age === 'senior') {
-      basePremium = Math.round(basePremium * 1.5) // 노령견은 더 비쌈
-    }
+    if (age === 'puppy') basePremium = Math.round(basePremium * 0.8)
+    else if (age === 'senior') basePremium = Math.round(basePremium * 1.5)
 
     // 보장 종류별 조정
     let coverage = ''
-    const benefits: string[] = []
-    
+    let multiplier = 1
+
     if (coverageType === 'basic') {
-      basePremium = basePremium
-      coverage = '기본 보장'
-      benefits.push('사고 치료비', '응급실 비용', '입원비')
+      multiplier = 1
+      coverage = '실속형'
     } else if (coverageType === 'standard') {
-      basePremium = Math.round(basePremium * 1.5)
-      coverage = '표준 보장'
-      benefits.push('사고 치료비', '응급실 비용', '입원비', '수술비', '검진비')
+      multiplier = 1.6
+      coverage = '표준형'
     } else if (coverageType === 'premium') {
-      basePremium = Math.round(basePremium * 2.0)
-      coverage = '프리미엄 보장'
-      benefits.push('사고 치료비', '응급실 비용', '입원비', '수술비', '검진비', '만성 질환 치료비', '치과 치료비')
+      multiplier = 2.5
+      coverage = '고급형'
     }
 
-    const monthlyPremium = basePremium
+    const monthlyPremium = Math.round(basePremium * multiplier / 100) * 100 // 100원 단위 반올림
     const yearlyPremium = monthlyPremium * 12
+
+    const allBenefits = [
+      { name: '통원 의료비 (일 15만원 한도)', type: ['basic', 'standard', 'premium'] },
+      { name: '입원 의료비 (일 15만원 한도)', type: ['basic', 'standard', 'premium'] },
+      { name: '수술비 (회당 200만원 한도)', type: ['standard', 'premium'] },
+      { name: '피부병/슬개골 탈구', type: ['standard', 'premium'] },
+      { name: 'MRI/CT 촬영', type: ['premium'] },
+      { name: '치과 치료', type: ['premium'] },
+      { name: '배상책임 (최대 1천만원)', type: ['premium'] }
+    ]
+
+    const benefits = allBenefits.map(b => ({
+      name: b.name,
+      included: b.type.includes(coverageType)
+    }))
 
     setResult({
       monthlyPremium,
@@ -61,121 +67,194 @@ export default function PetInsuranceCalculatorPage() {
     })
   }
 
+  const plans = [
+    { id: 'basic', label: '실속형', desc: '필수 의료비 보장', icon: Shield },
+    { id: 'standard', label: '표준형', desc: '가장 많이 선택', icon: Umbrella },
+    { id: 'premium', label: '고급형', desc: '모든 질병 완벽 대비', icon: HeartPulse }
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-blue-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Shield className="w-10 h-10 text-blue-600 mr-3" />
-            보험료 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            반려동물 보험료를 계산합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-100 rounded-2xl text-blue-600">
+              <Shield className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">펫보험료 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            우리 아이에게 맞는 최적의 보험 플랜과 예상 보험료를 확인하세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  견종 크기
-                </label>
-                <select
-                  value={breedSize}
-                  onChange={(e) => setBreedSize(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="small">소형견</option>
-                  <option value="medium">중형견</option>
-                  <option value="large">대형견</option>
-                </select>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Input Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Calculator className="w-5 h-5 mr-2 text-blue-500" />
+                정보 입력
+              </h2>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  연령
-                </label>
-                <select
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="puppy">강아지 (1세 미만)</option>
-                  <option value="adult">성견 (1-7세)</option>
-                  <option value="senior">노령견 (7세 이상)</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                보장 종류
-              </label>
-              <select
-                value={coverageType}
-                onChange={(e) => setCoverageType(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              >
-                <option value="basic">기본 보장</option>
-                <option value="standard">표준 보장</option>
-                <option value="premium">프리미엄 보장</option>
-              </select>
-            </div>
-
-            <button
-              onClick={calculate}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
-            >
-              계산하기
-            </button>
-
-            {result && (
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">월간 보험료</p>
-                    <p className="text-3xl font-bold text-blue-700">{result.monthlyPremium.toLocaleString()}원</p>
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">견종 크기</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {['small', 'medium', 'large'].map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => setBreedSize(size)}
+                          className={`p-3 rounded-xl border-2 transition-all text-center ${breedSize === size
+                              ? 'border-blue-500 bg-blue-50 text-blue-700'
+                              : 'border-gray-100 hover:border-blue-200 text-gray-600'
+                            }`}
+                        >
+                          <div className="font-bold text-sm">
+                            {size === 'small' ? '소형견' : size === 'medium' ? '중형견' : '대형견'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">연간 보험료</p>
-                    <p className="text-3xl font-bold text-blue-700">{result.yearlyPremium.toLocaleString()}원</p>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">나이</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {['puppy', 'adult', 'senior'].map((a) => (
+                        <button
+                          key={a}
+                          onClick={() => setAge(a)}
+                          className={`p-3 rounded-xl border-2 transition-all text-center ${age === a
+                              ? 'border-blue-500 bg-blue-50 text-blue-700'
+                              : 'border-gray-100 hover:border-blue-200 text-gray-600'
+                            }`}
+                        >
+                          <div className="font-bold text-sm">
+                            {a === 'puppy' ? '1세 미만' : a === 'adult' ? '1-7세' : '7세 이상'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">보장 내용</p>
-                  <p className="text-lg font-bold text-blue-700 mb-3">{result.coverage}</p>
-                  <div className="space-y-2">
-                    {result.benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <span className="text-blue-600">✓</span>
-                        <span className="text-gray-700">{benefit}</span>
-                      </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">보장 플랜 선택</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {plans.map((plan) => (
+                      <button
+                        key={plan.id}
+                        onClick={() => setCoverageType(plan.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-left relative overflow-hidden ${coverageType === plan.id
+                            ? 'border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500'
+                            : 'border-gray-100 hover:border-blue-200 text-gray-600'
+                          }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <plan.icon className={`w-6 h-6 ${coverageType === plan.id ? 'text-blue-600' : 'text-gray-400'}`} />
+                          {coverageType === plan.id && <Check className="w-5 h-5 text-blue-600" />}
+                        </div>
+                        <div className="font-bold mb-1">{plan.label}</div>
+                        <div className="text-xs opacity-70">{plan.desc}</div>
+                      </button>
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 보험 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 반려동물 보험은 예상치 못한 의료비를 대비하는 좋은 방법입니다</li>
-            <li>• 강아지일 때 가입하면 보험료가 저렴합니다</li>
-            <li>• 노령견은 보험료가 높지만 만성 질환 대비에 중요합니다</li>
-            <li>• 보험 가입 전 기존 질환 여부를 확인하세요</li>
-            <li>• 보장 범위와 자기부담금을 확인하세요</li>
-            <li>• 여러 보험사 상품을 비교하여 선택하세요</li>
-            <li>• 보험 가입 후에도 정기 검진과 예방접종은 계속 받으세요</li>
-          </ul>
+                <button
+                  onClick={calculate}
+                  className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 font-bold text-lg flex items-center justify-center"
+                >
+                  <DollarSign className="w-5 h-5 mr-2" />
+                  예상 보험료 확인
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {result ? (
+                <div className="bg-white rounded-2xl shadow-lg border border-blue-100 overflow-hidden">
+                  <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-center text-white">
+                    <span className="text-sm font-semibold text-blue-100 uppercase tracking-wider">{result.coverage} 예상 보험료</span>
+                    <div className="text-3xl font-black my-4 flex items-end justify-center leading-none">
+                      {result.monthlyPremium.toLocaleString()}
+                      <span className="text-xl ml-1 font-medium text-blue-200 mb-1">원/월</span>
+                    </div>
+                    <div className="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
+                      연간 {result.yearlyPremium.toLocaleString()}원
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <h4 className="font-bold text-gray-900 mb-4 flex items-center text-sm">
+                      <Stethoscope className="w-4 h-4 mr-2 text-blue-500" />
+                      보장 내용 상세
+                    </h4>
+                    <div className="space-y-3">
+                      {result.benefits.map((benefit, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-sm">
+                          <span className={benefit.included ? 'text-gray-700' : 'text-gray-400 line-through decoration-gray-300'}>
+                            {benefit.name}
+                          </span>
+                          {benefit.included ? (
+                            <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          ) : (
+                            <X className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <Shield className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    정보를 입력하면<br />예상 보험료를 계산해드립니다.
+                  </p>
+                </div>
+              )}
+
+              {/* Guide Box */}
+              <div className="bg-indigo-900 rounded-2xl p-6 text-white shadow-lg">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2 text-indigo-400" />
+                  가입 전 체크포인트
+                </h3>
+                <ul className="space-y-3 text-indigo-100 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    슬개골 탈구 보장 여부를 꼭 확인하세요.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    자기부담금 비율에 따라 보험료가 달라집니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    만 8세 이상은 가입이 제한될 수 있습니다.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Play, Calculator } from 'lucide-react'
+import { Play, Calculator, ArrowLeft, Zap, Clock, Smile, Heart, Battery, Activity, Info } from 'lucide-react'
 
 export default function PlaytimeCalculatorPage() {
   const [weight, setWeight] = useState<number>(0)
@@ -12,242 +12,264 @@ export default function PlaytimeCalculatorPage() {
   const [result, setResult] = useState<{
     dailyPlaytime: number
     sessionLength: number
-    activities: string[]
-    tips: string[]
+    activities: { name: string; icon: string; desc: string }[]
+    intensity: 'low' | 'medium' | 'high'
   } | null>(null)
 
   const calculate = () => {
     if (weight <= 0) return
 
-    // 기본 놀이 시간 (분)
     let basePlaytime = 30
+    let intensity: 'low' | 'medium' | 'high' = 'medium'
 
     // 연령별 조정
-    const ageFactors: Record<string, number> = {
-      puppy: 1.5,    // 강아지는 더 많은 놀이 필요
-      adult: 1.0,    // 성견
-      senior: 0.7    // 노령견은 조금 덜 필요
+    if (age === 'puppy') {
+      basePlaytime *= 1.5
+      intensity = 'high'
+    } else if (age === 'senior') {
+      basePlaytime *= 0.7
+      intensity = 'low'
     }
-    basePlaytime *= (ageFactors[age] || 1.0)
 
     // 견종별 조정
-    const breedFactors: Record<string, number> = {
-      small: 0.8,    // 소형견
-      medium: 1.0,   // 중형견
-      large: 1.2,    // 대형견
-      working: 1.5   // 작업견
+    if (breed === 'working') {
+      basePlaytime *= 1.5
+      intensity = 'high'
+    } else if (breed === 'small') {
+      basePlaytime *= 0.8
     }
-    basePlaytime *= (breedFactors[breed] || 1.0)
 
     // 건강 상태 조정
-    const healthFactors: Record<string, number> = {
-      excellent: 1.2,
-      good: 1.0,
-      fair: 0.8,
-      poor: 0.5
+    if (health === 'poor') {
+      basePlaytime *= 0.5
+      intensity = 'low'
+    } else if (health === 'excellent') {
+      basePlaytime *= 1.2
     }
-    basePlaytime *= (healthFactors[health] || 1.0)
 
     const dailyPlaytime = Math.round(basePlaytime)
-    const sessionLength = Math.min(Math.round(dailyPlaytime / 3), 30) // 최대 30분 세션
+    const sessionLength = Math.min(Math.round(dailyPlaytime / 3), 30)
 
-    const activities = getRecommendedActivities(age, breed, health)
-    const tips = getPlaytimeTips(age, breed, health, dailyPlaytime)
+    const activities = []
+    if (intensity === 'high') {
+      activities.push(
+        { name: '터그 놀이', icon: '🦴', desc: '에너지 발산에 최고' },
+        { name: '공 던지기', icon: '🎾', desc: '전력 질주 운동' },
+        { name: '어질리티', icon: '🏃', desc: '민첩성 향상' }
+      )
+    } else if (intensity === 'medium') {
+      activities.push(
+        { name: '노즈워크', icon: '👃', desc: '스트레스 해소' },
+        { name: '숨바꼭질', icon: '🙈', desc: '두뇌 자극' },
+        { name: '산책', icon: '🐕', desc: '기분 전환' }
+      )
+    } else {
+      activities.push(
+        { name: '가벼운 산책', icon: '🚶', desc: '관절 무리 없이' },
+        { name: '퍼즐 장난감', icon: '🧩', desc: '앉아서 하는 놀이' },
+        { name: '마사지', icon: '💆', desc: '교감과 이완' }
+      )
+    }
 
     setResult({
       dailyPlaytime,
       sessionLength,
       activities,
-      tips
+      intensity
     })
   }
 
-  const getRecommendedActivities = (age: string, breed: string, health: string) => {
-    const activities: string[] = []
-
-    // 연령별 활동
-    if (age === 'puppy') {
-      activities.push('기본 놀이', '사회화 놀이', '간단한 훈련 게임')
-    } else if (age === 'adult') {
-      activities.push('공놀이', '산책', '퍼즐 장난감')
-    } else if (age === 'senior') {
-      activities.push('가벼운 산책', '부드러운 놀이', '정신 자극 게임')
-    }
-
-    // 견종별 활동
-    if (breed === 'working') {
-      activities.push('훈련 게임', '정신 자극 활동', '체력 활동')
-    } else if (breed === 'small') {
-      activities.push('실내 놀이', '부드러운 장난감', '간단한 퍼즐')
-    }
-
-    // 건강 상태별 활동
-    if (health === 'excellent' || health === 'good') {
-      activities.push('활발한 놀이', '운동 게임')
-    } else if (health === 'fair' || health === 'poor') {
-      activities.push('부드러운 놀이', '정신 자극 활동')
-    }
-
-    return [...new Set(activities)] // 중복 제거
-  }
-
-  const getPlaytimeTips = (age: string, breed: string, health: string, playtime: number) => {
-    const tips: string[] = []
-
-    if (age === 'puppy') {
-      tips.push('강아지는 성장을 위해 충분한 휴식도 필요합니다')
-      tips.push('짧은 세션으로 나누어 놀아주세요')
-    }
-
-    if (breed === 'working') {
-      tips.push('작업견은 정신적 자극이 중요합니다')
-      tips.push('훈련과 놀이를 결합해보세요')
-    }
-
-    if (health === 'fair' || health === 'poor') {
-      tips.push('건강 상태를 고려하여 무리하지 마세요')
-      tips.push('수의사와 상담 후 활동량을 조절하세요')
-    }
-
-    if (playtime > 120) {
-      tips.push('놀이 시간이 많으니 충분한 휴식을 제공하세요')
-    }
-
-    return tips
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-yellow-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Play className="w-10 h-10 text-green-600 mr-3" />
-            놀이 시간 계산기
-          </h1>
-          <p className="text-xl text-gray-600">연령과 견종에 따른 적정 놀이 시간을 계산합니다</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-yellow-100 rounded-2xl text-yellow-600">
+              <Smile className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">놀이 시간 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            우리 아이의 나이와 체력에 딱 맞는 놀이 시간을 알려드립니다.
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">체중 (kg)</label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={weight || ''}
-                onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg"
-              />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Input Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Calculator className="w-5 h-5 mr-2 text-yellow-500" />
+                정보 입력
+              </h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">연령</label>
-              <select
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              >
-                <option value="puppy">강아지 (2-12개월)</option>
-                <option value="adult">성견 (1-7세)</option>
-                <option value="senior">노령견 (7세 이상)</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">견종 크기</label>
-              <select
-                value={breed}
-                onChange={(e) => setBreed(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              >
-                <option value="small">소형견 (5kg 이하)</option>
-                <option value="medium">중형견 (5-25kg)</option>
-                <option value="large">대형견 (25kg 이상)</option>
-                <option value="working">작업견/헌팅견</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">건강 상태</label>
-              <select
-                value={health}
-                onChange={(e) => setHealth(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              >
-                <option value="excellent">매우 좋음</option>
-                <option value="good">좋음</option>
-                <option value="fair">보통</option>
-                <option value="poor">나쁨</option>
-              </select>
-            </div>
-
-            <button
-              onClick={calculate}
-              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg"
-            >
-              놀이 시간 계산하기
-            </button>
-
-            {result && (
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-6 text-center">
-                    <Play className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                    <p className="text-sm text-gray-600 mb-2">하루 권장 놀이 시간</p>
-                    <p className="text-4xl font-bold text-green-700 mb-2">{result.dailyPlaytime}분</p>
-                    <p className="text-sm text-gray-500">약 {Math.round(result.dailyPlaytime / 60 * 10) / 10}시간</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-6 text-center">
-                    <Calculator className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                    <p className="text-sm text-gray-600 mb-2">권장 세션 길이</p>
-                    <p className="text-4xl font-bold text-green-700 mb-2">{result.sessionLength}분</p>
-                    <p className="text-sm text-gray-500">세션당</p>
+              <div className="space-y-8">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">체중 (kg)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={weight || ''}
+                      onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 text-lg"
+                      placeholder="0.0"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">kg</span>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg p-4">
-                  <h4 className="font-bold text-gray-900 mb-3">🎾 추천 활동</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {result.activities.map((activity, idx) => (
-                      <span key={idx} className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
-                        {activity}
-                      </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">연령대</label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        { id: 'puppy', label: '퍼피 (1세 미만)', icon: Zap },
+                        { id: 'adult', label: '성견 (1-7세)', icon: Activity },
+                        { id: 'senior', label: '시니어 (7세 이상)', icon: Heart }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setAge(item.id)}
+                          className={`p-3 rounded-xl border-2 transition-all flex items-center gap-3 ${age === item.id
+                              ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                              : 'border-gray-100 hover:border-yellow-200 text-gray-600'
+                            }`}
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span className="font-bold text-sm">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">견종 타입</label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {[
+                        { id: 'small', label: '소형견' },
+                        { id: 'medium', label: '중형견' },
+                        { id: 'large', label: '대형견' },
+                        { id: 'working', label: '활동견/사역견' }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setBreed(item.id)}
+                          className={`p-3 rounded-xl border-2 transition-all text-left ${breed === item.id
+                              ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                              : 'border-gray-100 hover:border-yellow-200 text-gray-600'
+                            }`}
+                        >
+                          <span className="font-bold text-sm">{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">건강 상태</label>
+                  <div className="flex gap-2">
+                    {['excellent', 'good', 'fair', 'poor'].map((h) => (
+                      <button
+                        key={h}
+                        onClick={() => setHealth(h)}
+                        className={`flex-1 p-3 rounded-xl border-2 transition-all text-center ${health === h
+                            ? 'border-yellow-500 bg-yellow-50 text-yellow-700'
+                            : 'border-gray-100 hover:border-yellow-200 text-gray-600'
+                          }`}
+                      >
+                        <div className="font-bold text-sm capitalize">
+                          {h === 'excellent' ? '매우 좋음' : h === 'good' ? '좋음' : h === 'fair' ? '보통' : '나쁨'}
+                        </div>
+                      </button>
                     ))}
                   </div>
                 </div>
 
-                {result.tips.length > 0 && (
-                  <div className="bg-white rounded-lg p-4">
-                    <h4 className="font-bold text-gray-900 mb-3">💡 놀이 시간 팁</h4>
-                    <ul className="space-y-2">
-                      {result.tips.map((tip, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <span className="mr-2 text-green-600">•</span>
-                          <span className="text-gray-700">{tip}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                <button
+                  onClick={calculate}
+                  disabled={weight <= 0}
+                  className="w-full bg-yellow-500 text-white py-4 px-6 rounded-xl hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-200 font-bold text-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Play className="w-5 h-5 mr-2 fill-current" />
+                  놀이 시간 확인하기
+                </button>
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        <div className="bg-green-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">💡 놀이 시간 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 강아지는 성장을 위해 더 많은 놀이가 필요합니다</li>
-            <li>• 노령견은 무리한 놀이보다는 가벼운 활동이 좋습니다</li>
-            <li>• 작업견은 정신적 자극이 포함된 놀이가 필요합니다</li>
-            <li>• 놀이 시간을 여러 세션으로 나누어 제공하세요</li>
-            <li>• 강아지의 상태를 관찰하며 적절히 조절하세요</li>
-            <li>• 과도한 놀이는 오히려 스트레스를 줄 수 있습니다</li>
-          </ul>
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {result ? (
+                <div className="bg-white rounded-2xl shadow-lg border border-yellow-100 overflow-hidden">
+                  <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-8 text-center text-white">
+                    <span className="text-sm font-semibold text-yellow-50 uppercase tracking-wider">일일 권장 놀이 시간</span>
+                    <div className="text-5xl font-black my-4 flex items-end justify-center leading-none">
+                      {result.dailyPlaytime}
+                      <span className="text-xl ml-1 font-medium text-yellow-100 mb-2">분</span>
+                    </div>
+                    <div className="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
+                      1회 {result.sessionLength}분씩 나누어 진행
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-6">
+                    <div>
+                      <h4 className="font-bold text-gray-900 mb-4 flex items-center text-sm">
+                        <Zap className="w-4 h-4 mr-2 text-yellow-500" />
+                        추천 활동 ({result.intensity === 'high' ? '고강도' : result.intensity === 'medium' ? '중강도' : '저강도'})
+                      </h4>
+                      <div className="space-y-3">
+                        {result.activities.map((activity, idx) => (
+                          <div key={idx} className="flex items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
+                            <span className="text-2xl mr-3">{activity.icon}</span>
+                            <div>
+                              <div className="font-bold text-gray-900 text-sm">{activity.name}</div>
+                              <div className="text-xs text-gray-500">{activity.desc}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-100">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Info className="w-5 h-5 text-yellow-600" />
+                        <span className="font-bold text-gray-900">놀이 팁</span>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {result.intensity === 'high'
+                          ? '에너지가 넘치는 시기입니다. 충분한 신체 활동으로 스트레스를 해소해주세요.'
+                          : result.intensity === 'low'
+                            ? '관절에 무리가 가지 않도록 주의하며, 두뇌를 사용하는 노즈워크 위주로 진행하세요.'
+                            : '규칙적인 놀이로 유대감을 형성하고 비만을 예방하세요.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <Battery className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    정보를 입력하면<br />적절한 놀이 시간을 알려드립니다.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

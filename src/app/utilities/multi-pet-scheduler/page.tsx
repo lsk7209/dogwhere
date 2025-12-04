@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Users, Plus, Calendar, CheckCircle } from 'lucide-react'
+import { Users, Plus, Calendar, CheckCircle, ArrowLeft, Dog, Cat, Fish, Rabbit, Bird, Trash2, Clock, AlertCircle } from 'lucide-react'
 
 interface Pet {
   id: string
@@ -37,28 +37,34 @@ export default function MultiPetSchedulerPage() {
     activity: '',
     notes: ''
   })
+  const [activeTab, setActiveTab] = useState<'pets' | 'schedule'>('schedule')
 
-  const petTypes = ['dog', 'cat', 'bird', 'fish', 'hamster', 'rabbit', 'other']
-  const specialNeedsOptions = [
-    '약물 복용', '특별 식이', '물리치료', '정기 검진', '예방접종', '미용', '기타'
+  const petTypes = [
+    { id: 'dog', label: '강아지', icon: Dog },
+    { id: 'cat', label: '고양이', icon: Cat },
+    { id: 'rabbit', label: '토끼', icon: Rabbit },
+    { id: 'bird', label: '새', icon: Bird },
+    { id: 'fish', label: '물고기', icon: Fish },
+    { id: 'other', label: '기타', icon: Users }
   ]
+
   const activityTypes = [
-    '산책', '식사', '약물 복용', '놀이', '훈련', '미용', '병원 방문', '기타'
+    '산책', '식사', '약물 복용', '놀이', '훈련', '미용', '병원 방문', '양치질'
   ]
 
   useEffect(() => {
     const savedPets = localStorage.getItem('multiPetPets')
     const savedSchedules = localStorage.getItem('multiPetSchedules')
-    
+
     if (savedPets) {
       try {
         setPets(JSON.parse(savedPets))
-      } catch (e) {}
+      } catch (e) { }
     }
     if (savedSchedules) {
       try {
         setSchedules(JSON.parse(savedSchedules))
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [])
 
@@ -83,6 +89,17 @@ export default function MultiPetSchedulerPage() {
     }
     setPets([...pets, pet])
     setNewPet({ name: '', type: 'dog', age: '', specialNeeds: [] })
+    setActiveTab('pets')
+  }
+
+  const deletePet = (id: string) => {
+    const updated = pets.filter(p => p.id !== id)
+    setPets(updated)
+    localStorage.setItem('multiPetPets', JSON.stringify(updated))
+    // Also remove schedules for this pet
+    const updatedSchedules = schedules.filter(s => s.petId !== id)
+    setSchedules(updatedSchedules)
+    localStorage.setItem('multiPetSchedules', JSON.stringify(updatedSchedules))
   }
 
   const addSchedule = () => {
@@ -98,270 +115,325 @@ export default function MultiPetSchedulerPage() {
     setNewSchedule({ petId: '', time: '', activity: '', notes: '' })
   }
 
+  const deleteSchedule = (id: string) => {
+    const updated = schedules.filter(s => s.id !== id)
+    setSchedules(updated)
+    localStorage.setItem('multiPetSchedules', JSON.stringify(updated))
+  }
+
   const toggleSchedule = (scheduleId: string) => {
-    setSchedules(schedules.map(schedule => 
-      schedule.id === scheduleId 
+    setSchedules(schedules.map(schedule =>
+      schedule.id === scheduleId
         ? { ...schedule, completed: !schedule.completed }
         : schedule
     ))
   }
 
-  const toggleSpecialNeed = (need: string) => {
-    setNewPet({
-      ...newPet,
-      specialNeeds: newPet.specialNeeds.includes(need)
-        ? newPet.specialNeeds.filter(n => n !== need)
-        : [...newPet.specialNeeds, need]
-    })
+  const getPetName = (petId: string) => pets.find(p => p.id === petId)?.name || '알 수 없음'
+  const getPetType = (petId: string) => pets.find(p => p.id === petId)?.type || 'dog'
+
+  const getPetIcon = (type: string) => {
+    const found = petTypes.find(t => t.id === type)
+    const Icon = found ? found.icon : Users
+    return <Icon className="w-5 h-5" />
   }
 
-  const getPetName = (petId: string) => {
-    const pet = pets.find(p => p.id === petId)
-    return pet ? pet.name : '알 수 없음'
-  }
-
-  const getPetType = (petId: string) => {
-    const pet = pets.find(p => p.id === petId)
-    return pet ? pet.type : 'unknown'
-  }
-
-  const todaySchedules = schedules.filter(s => s.date === new Date().toISOString().split('T')[0])
-  const completedToday = todaySchedules.filter(s => s.completed).length
+  const todaySchedules = schedules
+    .filter(s => s.date === new Date().toISOString().split('T')[0])
+    .sort((a, b) => a.time.localeCompare(b.time))
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-green-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Users className="w-10 h-10 text-green-600 mr-3" />
-            다중 반려동물 일정 관리
-          </h1>
-          <p className="text-xl text-gray-600">여러 마리 반려동물의 일정을 통합 관리합니다</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-green-100 rounded-2xl text-green-600">
+              <Users className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">다둥이 스케줄러</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            여러 아이들의 일정을 한눈에 관리하세요.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Users className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{pets.length}마리</p>
-            <p className="text-sm text-gray-600">등록된 반려동물</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{todaySchedules.length}개</p>
-            <p className="text-sm text-gray-600">오늘 일정</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{completedToday}개</p>
-            <p className="text-sm text-gray-600">완료된 일정</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">반려동물 등록</h2>
-          <div className="space-y-4">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
-                <input
-                  type="text"
-                  value={newPet.name}
-                  onChange={(e) => setNewPet({...newPet, name: e.target.value})}
-                  placeholder="반려동물 이름"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">종류</label>
-                <select
-                  value={newPet.type}
-                  onChange={(e) => setNewPet({...newPet, type: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                >
-                  {petTypes.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">나이</label>
-                <input
-                  type="text"
-                  value={newPet.age}
-                  onChange={(e) => setNewPet({...newPet, age: e.target.value})}
-                  placeholder="예: 2세, 6개월"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">특별 관리 사항</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {specialNeedsOptions.map((need) => (
-                  <button
-                    key={need}
-                    onClick={() => toggleSpecialNeed(need)}
-                    className={`p-2 text-sm rounded-lg border transition-colors ${
-                      newPet.specialNeeds.includes(need)
-                        ? 'bg-green-100 border-green-400 text-green-700'
-                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {need}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={addPet}
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              반려동물 등록
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">일정 추가</h2>
-          <div className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">반려동물</label>
-                <select
-                  value={newSchedule.petId}
-                  onChange={(e) => setNewSchedule({...newSchedule, petId: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                >
-                  <option value="">반려동물 선택</option>
-                  {pets.map((pet) => (
-                    <option key={pet.id} value={pet.id}>{pet.name} ({pet.type})</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">시간</label>
-                <input
-                  type="time"
-                  value={newSchedule.time}
-                  onChange={(e) => setNewSchedule({...newSchedule, time: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">활동</label>
-              <select
-                value={newSchedule.activity}
-                onChange={(e) => setNewSchedule({...newSchedule, activity: e.target.value})}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Controls */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Tabs */}
+            <div className="flex p-1 bg-gray-100 rounded-xl">
+              <button
+                onClick={() => setActiveTab('schedule')}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === 'schedule'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                  }`}
               >
-                <option value="">활동 선택</option>
-                {activityTypes.map((activity) => (
-                  <option key={activity} value={activity}>{activity}</option>
-                ))}
-              </select>
+                일정 추가
+              </button>
+              <button
+                onClick={() => setActiveTab('pets')}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === 'pets'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                  }`}
+              >
+                반려동물 관리
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
-              <input
-                type="text"
-                value={newSchedule.notes}
-                onChange={(e) => setNewSchedule({...newSchedule, notes: e.target.value})}
-                placeholder="특별한 주의사항이나 세부사항"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <button
-              onClick={addSchedule}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              일정 추가
-            </button>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">등록된 반려동물</h2>
-          {pets.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              등록된 반려동물이 없습니다
-            </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {pets.map((pet) => (
-                <div key={pet.id} className="border-2 border-gray-200 rounded-lg p-4">
-                  <h3 className="font-bold text-gray-900 mb-2">{pet.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{pet.type} | {pet.age}</p>
-                  {pet.specialNeeds.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-xs text-gray-500 mb-1">특별 관리:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {pet.specialNeeds.map((need, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
-                            {need}
-                          </span>
+            {activeTab === 'schedule' ? (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-green-500" />
+                  새 일정 등록
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">누구의 일정인가요?</label>
+                    {pets.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {pets.map((pet) => (
+                          <button
+                            key={pet.id}
+                            onClick={() => setNewSchedule({ ...newSchedule, petId: pet.id })}
+                            className={`p-2 rounded-lg border text-sm flex items-center justify-center gap-2 transition-all ${newSchedule.petId === pet.id
+                                ? 'bg-green-50 border-green-500 text-green-700 font-bold'
+                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                              }`}
+                          >
+                            {getPetIcon(pet.type)}
+                            {pet.name}
+                          </button>
                         ))}
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">오늘의 일정</h2>
-          {todaySchedules.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              오늘 일정이 없습니다
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {todaySchedules.map((schedule) => (
-                <div key={schedule.id} className="border-2 border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-center">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="font-bold text-gray-900">{getPetName(schedule.petId)}</h3>
-                        <span className="text-sm text-gray-600">{schedule.time}</span>
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                          {schedule.activity}
-                        </span>
+                    ) : (
+                      <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg text-center">
+                        먼저 반려동물을 등록해주세요.
                       </div>
-                      {schedule.notes && (
-                        <p className="text-sm text-gray-500">메모: {schedule.notes}</p>
-                      )}
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">시간</label>
+                    <input
+                      type="time"
+                      value={newSchedule.time}
+                      onChange={(e) => setNewSchedule({ ...newSchedule, time: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">활동 종류</label>
+                    <div className="flex flex-wrap gap-2">
+                      {activityTypes.map((activity) => (
+                        <button
+                          key={activity}
+                          onClick={() => setNewSchedule({ ...newSchedule, activity })}
+                          className={`px-3 py-1.5 text-xs rounded-lg border transition-all ${newSchedule.activity === activity
+                              ? 'bg-green-500 border-green-500 text-white'
+                              : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                            }`}
+                        >
+                          {activity}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
+                    <input
+                      type="text"
+                      value={newSchedule.notes}
+                      onChange={(e) => setNewSchedule({ ...newSchedule, notes: e.target.value })}
+                      placeholder="특이사항 입력"
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <button
+                    onClick={addSchedule}
+                    disabled={!newSchedule.petId || !newSchedule.time || !newSchedule.activity}
+                    className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-all shadow-lg shadow-green-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    일정 추가하기
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                  <Plus className="w-5 h-5 mr-2 text-green-500" />
+                  반려동물 등록
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
+                    <input
+                      type="text"
+                      value={newPet.name}
+                      onChange={(e) => setNewPet({ ...newPet, name: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">종류</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {petTypes.map((type) => (
+                        <button
+                          key={type.id}
+                          onClick={() => setNewPet({ ...newPet, type: type.id })}
+                          className={`p-2 rounded-lg border flex flex-col items-center justify-center gap-1 transition-all ${newPet.type === type.id
+                              ? 'bg-green-50 border-green-500 text-green-700'
+                              : 'bg-white border-gray-200 text-gray-400 hover:bg-gray-50'
+                            }`}
+                        >
+                          <type.icon className="w-5 h-5" />
+                          <span className="text-xs">{type.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">나이</label>
+                    <input
+                      type="text"
+                      value={newPet.age}
+                      onChange={(e) => setNewPet({ ...newPet, age: e.target.value })}
+                      placeholder="예: 2살"
+                      className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+
+                  <button
+                    onClick={addPet}
+                    disabled={!newPet.name}
+                    className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-all shadow-lg shadow-green-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    등록하기
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Display */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Today's Schedule */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center">
+                  <Clock className="w-5 h-5 mr-2 text-green-500" />
+                  오늘의 일정 ({todaySchedules.length})
+                </h2>
+                <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  {new Date().toLocaleDateString()}
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {todaySchedules.length > 0 ? (
+                  todaySchedules.map((schedule) => (
+                    <div
+                      key={schedule.id}
+                      className={`flex items-center p-4 rounded-xl border transition-all ${schedule.completed
+                          ? 'bg-gray-50 border-gray-100 opacity-70'
+                          : 'bg-white border-green-100 shadow-sm hover:shadow-md'
+                        }`}
+                    >
+                      <button
+                        onClick={() => toggleSchedule(schedule.id)}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 transition-colors ${schedule.completed
+                            ? 'bg-green-500 border-green-500 text-white'
+                            : 'border-gray-300 hover:border-green-500'
+                          }`}
+                      >
+                        {schedule.completed && <CheckCircle className="w-4 h-4" />}
+                      </button>
+
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold text-green-600 w-16">{schedule.time}</span>
+                          <span className={`px-2 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-600`}>
+                            {schedule.activity}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center text-sm font-medium text-gray-900">
+                            <span className="mr-2 text-gray-400">{getPetIcon(getPetType(schedule.petId))}</span>
+                            {getPetName(schedule.petId)}
+                          </div>
+                          {schedule.notes && (
+                            <span className="text-sm text-gray-500 border-l pl-2 border-gray-200">
+                              {schedule.notes}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => deleteSchedule(schedule.id)}
+                        className="text-gray-300 hover:text-red-500 p-2 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-100 rounded-xl">
+                    오늘 예정된 일정이 없습니다.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Pet List */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Users className="w-5 h-5 mr-2 text-gray-400" />
+                우리 아이들 ({pets.length})
+              </h2>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                {pets.map((pet) => (
+                  <div key={pet.id} className="group relative flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:shadow-md transition-all">
+                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-green-600 shadow-sm mr-4">
+                      {getPetIcon(pet.type)}
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-900">{pet.name}</h3>
+                      <p className="text-sm text-gray-500">{pet.age}</p>
                     </div>
                     <button
-                      onClick={() => toggleSchedule(schedule.id)}
-                      className={`px-3 py-1 rounded text-sm transition-colors ${
-                        schedule.completed
-                          ? 'bg-green-600 text-white hover:bg-green-700'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
+                      onClick={() => deletePet(pet.id)}
+                      className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                     >
-                      {schedule.completed ? '완료' : '미완료'}
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
-              ))}
+                ))}
+                {pets.length === 0 && (
+                  <div className="col-span-2 text-center py-8 text-gray-400 text-sm">
+                    등록된 반려동물이 없습니다.
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-
-        <div className="bg-green-50 rounded-lg p-6 mt-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">💡 다중 반려동물 관리 팁</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 각 반려동물의 특별한 요구사항을 기록해두세요</li>
-            <li>• 일정을 겹치지 않도록 조정하세요</li>
-            <li>• 각 반려동물에게 충분한 개별 시간을 제공하세요</li>
-            <li>• 긴급상황을 대비해 연락처를 준비해두세요</li>
-            <li>• 정기적으로 일정을 검토하고 조정하세요</li>
-          </ul>
+          </div>
         </div>
       </div>
     </div>

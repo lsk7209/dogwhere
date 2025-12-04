@@ -2,23 +2,24 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, Calculator } from 'lucide-react'
+import { AlertTriangle, Calculator, ArrowLeft, Info, Activity, ShieldAlert } from 'lucide-react'
 
 interface BehaviorSymptom {
   id: string
   name: string
+  description: string
   severity: number
 }
 
 const behaviorSymptoms: BehaviorSymptom[] = [
-  { id: 'aggression', name: '공격성 (물기, 으르렁거림)', severity: 0 },
-  { id: 'barking', name: '과도한 짖음', severity: 0 },
-  { id: 'destruction', name: '파괴 행동', severity: 0 },
-  { id: 'anxiety', name: '불안 증상', severity: 0 },
-  { id: 'separation', name: '분리불안', severity: 0 },
-  { id: 'jumping', name: '사람에게 뛰어오르기', severity: 0 },
-  { id: 'pulling', name: '목줄 당기기', severity: 0 },
-  { id: 'chewing', name: '부적절한 물어뜯기', severity: 0 }
+  { id: 'aggression', name: '공격성', description: '물기, 으르렁거림, 위협적인 행동', severity: 0 },
+  { id: 'barking', name: '과도한 짖음', description: '지속적인 짖음, 통제 불가능한 소음', severity: 0 },
+  { id: 'destruction', name: '파괴 행동', description: '가구, 물건 훼손, 씹기', severity: 0 },
+  { id: 'anxiety', name: '불안 증상', description: '떨림, 숨기, 과도한 침 흘림', severity: 0 },
+  { id: 'separation', name: '분리불안', description: '혼자 있을 때의 불안, 하울링, 배변 실수', severity: 0 },
+  { id: 'jumping', name: '점프하기', description: '사람에게 뛰어오르는 행동', severity: 0 },
+  { id: 'pulling', name: '목줄 당기기', description: '산책 시 통제 불가능한 당김', severity: 0 },
+  { id: 'chewing', name: '이식증/물어뜯기', description: '먹지 못하는 것을 먹거나 씹는 행동', severity: 0 }
 ]
 
 export default function BehaviorSeverityCalculatorPage() {
@@ -28,6 +29,9 @@ export default function BehaviorSeverityCalculatorPage() {
     severityLevel: string
     recommendation: string
     urgentActions: string[]
+    color: string
+    bg: string
+    border: string
   } | null>(null)
 
   const updateSeverity = (id: string, severity: number) => {
@@ -44,143 +48,213 @@ export default function BehaviorSeverityCalculatorPage() {
     let severityLevel = ''
     let recommendation = ''
     const urgentActions: string[] = []
+    let color = ''
+    let bg = ''
+    let border = ''
 
     if (severityPercent >= 70) {
-      severityLevel = '매우 심각'
-      recommendation = '문제 행동이 매우 심각합니다. 즉시 전문가(수의사, 행동 전문가)와 상담하세요.'
-      urgentActions.push('즉시 전문가 상담', '안전 조치 취하기', '응급 상황 대비')
+      severityLevel = '매우 심각 (위험)'
+      recommendation = '즉각적인 전문가 개입이 필요한 상태입니다. 안전 사고의 위험이 높습니다.'
+      urgentActions.push('즉시 수의사/훈련사 상담', '안전 관리 강화', '자극원 차단')
+      color = 'text-red-600'
+      bg = 'bg-red-50'
+      border = 'border-red-200'
     } else if (severityPercent >= 50) {
-      severityLevel = '심각'
-      recommendation = '문제 행동이 심각합니다. 전문가 상담을 받고 훈련 계획을 수립하세요.'
-      urgentActions.push('전문가 상담', '훈련 계획 수립', '환경 개선')
+      severityLevel = '심각 (주의)'
+      recommendation = '전문적인 훈련 계획 수립이 필요합니다. 방치하면 더 악화될 수 있습니다.'
+      urgentActions.push('전문가 상담 권장', '체계적인 훈련 시작', '환경 재구성')
+      color = 'text-orange-600'
+      bg = 'bg-orange-50'
+      border = 'border-orange-200'
     } else if (severityPercent >= 30) {
-      severityLevel = '보통'
-      recommendation = '문제 행동이 있습니다. 기본 훈련과 환경 개선으로 개선할 수 있습니다.'
-      urgentActions.push('기본 훈련 시작', '환경 개선', '규칙적인 일상')
+      severityLevel = '보통 (관리 필요)'
+      recommendation = '지속적인 관리가 필요합니다. 보호자의 노력으로 개선할 수 있는 단계입니다.'
+      urgentActions.push('기본 복종 훈련 강화', '규칙적인 산책/운동', '스트레스 해소')
+      color = 'text-yellow-600'
+      bg = 'bg-yellow-50'
+      border = 'border-yellow-200'
     } else if (severityPercent >= 10) {
-      severityLevel = '경미'
-      recommendation = '문제 행동이 경미합니다. 기본 훈련으로 개선할 수 있습니다.'
-      urgentActions.push('기본 훈련', '일관된 규칙 적용')
+      severityLevel = '경미 (양호)'
+      recommendation = '가벼운 문제 행동이 있지만, 일상적인 훈련으로 충분히 교정 가능합니다.'
+      urgentActions.push('일관된 규칙 적용', '긍정 강화 훈련')
+      color = 'text-emerald-600'
+      bg = 'bg-emerald-50'
+      border = 'border-emerald-200'
     } else {
       severityLevel = '정상'
-      recommendation = '행동이 정상 범위입니다. 현재 상태를 유지하세요.'
-      urgentActions.push('정기적인 훈련 유지', '건강 관리')
+      recommendation = '문제 행동이 거의 없는 아주 모범적인 상태입니다.'
+      urgentActions.push('현재 상태 유지', '정기적인 건강 검진')
+      color = 'text-blue-600'
+      bg = 'bg-blue-50'
+      border = 'border-blue-200'
     }
 
     setResult({
       totalSeverity: severityPercent,
       severityLevel,
       recommendation,
-      urgentActions
+      urgentActions,
+      color,
+      bg,
+      border
     })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-red-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <AlertTriangle className="w-10 h-10 text-red-600 mr-3" />
-            문제 행동 심각도 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            문제 행동의 심각도를 평가합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-red-100 rounded-2xl text-red-600">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">문제 행동 심각도 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            반려견의 행동 문제를 자가 진단하고 심각도를 확인해보세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                각 증상의 심각도를 선택하세요 (0: 없음, 5: 매우 심각)
-              </label>
-              <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Assessment Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Activity className="w-5 h-5 mr-2 text-red-500" />
+                증상별 심각도 평가 (0~5점)
+              </h2>
+              <div className="space-y-6">
                 {symptoms.map((symptom) => (
-                  <div key={symptom.id} className="border-2 border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="font-medium text-gray-900">{symptom.name}</span>
-                      <span className="text-sm font-semibold text-red-600">{symptom.severity}/5</span>
+                  <div key={symptom.id} className="bg-gray-50 rounded-xl p-4 md:p-5">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                      <div>
+                        <h3 className="font-bold text-gray-900">{symptom.name}</h3>
+                        <p className="text-sm text-gray-500">{symptom.description}</p>
+                      </div>
+                      <span className={`text-sm font-bold px-3 py-1 rounded-full ${symptom.severity >= 4 ? 'bg-red-100 text-red-700' :
+                          symptom.severity >= 2 ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-blue-100 text-blue-700'
+                        }`}>
+                        {symptom.severity}점
+                      </span>
                     </div>
-                    <div className="flex space-x-2">
+
+                    <div className="flex gap-1">
                       {[0, 1, 2, 3, 4, 5].map((level) => (
                         <button
                           key={level}
                           onClick={() => updateSeverity(symptom.id, level)}
-                          className={`flex-1 py-2 px-3 rounded text-sm font-medium transition-colors ${
-                            symptom.severity === level
-                              ? 'bg-red-600 text-white'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
+                          className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${symptom.severity === level
+                              ? level >= 4 ? 'bg-red-500 text-white shadow-md shadow-red-200' :
+                                level >= 2 ? 'bg-yellow-500 text-white shadow-md shadow-yellow-200' :
+                                  'bg-blue-500 text-white shadow-md shadow-blue-200'
+                              : 'bg-white border border-gray-200 text-gray-400 hover:border-gray-300'
+                            }`}
                         >
                           {level}
                         </button>
                       ))}
                     </div>
+                    <div className="flex justify-between mt-2 text-xs text-gray-400 px-1">
+                      <span>없음</span>
+                      <span>심각함</span>
+                    </div>
                   </div>
                 ))}
               </div>
+
+              <button
+                onClick={calculate}
+                className="w-full mt-8 bg-red-600 text-white py-4 px-6 rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-200 font-bold text-lg flex items-center justify-center"
+              >
+                <Calculator className="w-6 h-6 mr-2" />
+                심각도 분석하기
+              </button>
             </div>
+          </div>
 
-            <button
-              onClick={calculate}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors font-medium text-lg"
-            >
-              심각도 평가하기
-            </button>
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {result ? (
+                <div className={`bg-white rounded-2xl shadow-lg border-2 overflow-hidden ${result.border}`}>
+                  <div className={`p-8 text-center ${result.bg}`}>
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">종합 심각도</span>
+                    <div className={`text-5xl font-black my-4 ${result.color}`}>
+                      {result.totalSeverity}%
+                    </div>
+                    <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/50 backdrop-blur-sm ${result.color}`}>
+                      {result.severityLevel}
+                    </div>
+                  </div>
 
-            {result && (
-              <div className={`border-2 rounded-lg p-6 space-y-4 ${
-                result.totalSeverity >= 70 ? 'bg-red-50 border-red-300' :
-                result.totalSeverity >= 50 ? 'bg-orange-50 border-orange-300' :
-                result.totalSeverity >= 30 ? 'bg-yellow-50 border-yellow-300' :
-                'bg-green-50 border-green-300'
-              }`}>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm text-gray-600 mb-1">전체 심각도</p>
-                  <p className="text-4xl font-bold text-red-700">{result.totalSeverity}%</p>
-                  <p className={`text-xl font-semibold mt-2 ${
-                    result.totalSeverity >= 70 ? 'text-red-700' :
-                    result.totalSeverity >= 50 ? 'text-orange-700' :
-                    result.totalSeverity >= 30 ? 'text-yellow-700' :
-                    'text-green-700'
-                  }`}>
-                    {result.severityLevel}
-                  </p>
-                </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">권장 조치</p>
-                  <p className="text-gray-700 mb-3">{result.recommendation}</p>
-                  <div className="space-y-2">
-                    {result.urgentActions.map((action, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <span className="text-red-600">•</span>
-                        <span className="text-gray-700">{action}</span>
-                      </div>
-                    ))}
+                  <div className="p-6">
+                    <h4 className="font-bold text-gray-900 mb-3">분석 결과</h4>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                      {result.recommendation}
+                    </p>
+
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <h4 className="font-bold text-gray-900 text-sm mb-3 flex items-center">
+                        <ShieldAlert className="w-4 h-4 mr-1.5 text-red-500" />
+                        권장 조치사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {result.urgentActions.map((action, index) => (
+                          <li key={index} className="flex items-start text-sm text-gray-600">
+                            <span className={`mr-2 ${result.color}`}>•</span>
+                            {action}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <Calculator className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    왼쪽의 항목들을 평가하고<br />분석하기 버튼을 눌러주세요.
+                  </p>
+                </div>
+              )}
 
-        <div className="bg-red-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 문제 행동 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 문제 행동은 조기에 발견하고 개선하는 것이 중요합니다</li>
-            <li>• 심각한 문제 행동은 전문가의 도움이 필요합니다</li>
-            <li>• 공격성이나 과도한 불안은 즉시 전문가와 상담하세요</li>
-            <li>• 문제 행동의 원인을 파악하는 것이 중요합니다</li>
-            <li>• 일관된 훈련과 긍정적 강화를 사용하세요</li>
-            <li>• 환경 개선과 규칙적인 일상이 도움이 됩니다</li>
-            <li>• 인내심을 가지고 꾸준히 개선하세요</li>
-          </ul>
+              {/* Guide Box */}
+              <div className="bg-emerald-900 rounded-2xl p-6 text-white shadow-lg">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <Info className="w-5 h-5 mr-2 text-emerald-400" />
+                  알아두세요
+                </h3>
+                <ul className="space-y-3 text-emerald-100 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    이 결과는 참고용이며, 정확한 진단은 전문가와 상담하세요.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    공격성이 있는 경우 안전을 최우선으로 해야 합니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    조기 발견과 대처가 문제 해결의 핵심입니다.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

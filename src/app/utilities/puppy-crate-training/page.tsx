@@ -2,420 +2,139 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Home, CheckCircle, Clock, AlertTriangle, Heart } from 'lucide-react'
+import { Home, CheckCircle, Clock, ArrowLeft, Lock, Unlock, Coffee, Play, Pause, RotateCcw, Info } from 'lucide-react'
 
-interface CrateTrainingTask {
-  id: string
-  name: string
-  description: string
-  category: 'introduction' | 'comfort' | 'duration' | 'independence' | 'routine'
-  importance: 'high' | 'medium' | 'low'
-  steps: string[]
+interface TrainingStep {
+  id: number
+  title: string
+  desc: string
   tips: string[]
   completed: boolean
-  date?: string
-  notes?: string
-}
-
-interface CrateTrainingRecord {
-  id: string
-  date: string
-  task: string
-  duration: number
-  result: 'excellent' | 'good' | 'fair' | 'poor'
-  notes: string
 }
 
 export default function PuppyCrateTrainingPage() {
-  const [tasks, setTasks] = useState<CrateTrainingTask[]>([])
-  const [records, setRecords] = useState<CrateTrainingRecord[]>([])
-  const [newRecord, setNewRecord] = useState({
-    date: new Date().toISOString().split('T')[0],
-    task: '',
-    duration: 15,
-    result: 'good' as 'excellent' | 'good' | 'fair' | 'poor',
-    notes: ''
-  })
-
-  const initialTasks: CrateTrainingTask[] = [
+  const [steps, setSteps] = useState<TrainingStep[]>([
     {
-      id: '1',
-      name: '켄넬 소개하기',
-      description: '강아지에게 켄넬을 소개하고 친숙하게 만들기',
-      category: 'introduction',
-      importance: 'high',
-      steps: [
-        '켄넬을 강아지가 보이는 곳에 두기',
-        '켄넬에 강아지가 좋아하는 것 넣기',
-        '강아지가 켄넬에 관심을 갖도록 하기',
-        '강아지가 켄넬에 접근하도록 하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 소개하세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 소개하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
+      id: 1,
+      title: '친해지기',
+      desc: '켄넬 문을 열어두고 간식을 안쪽에 던져주세요. 스스로 들어갔다 나오는 경험을 반복합니다.',
+      tips: ['억지로 밀어 넣지 마세요.', '가장 좋아하는 간식을 사용하세요.'],
       completed: false
     },
     {
-      id: '2',
-      name: '켄넬 내부 탐험하기',
-      description: '강아지가 켄넬 내부를 탐험하도록 하기',
-      category: 'introduction',
-      importance: 'high',
-      steps: [
-        '켄넬 문을 열어두기',
-        '강아지가 켄넬에 들어가도록 하기',
-        '강아지가 켄넬 내부를 탐험하도록 하기',
-        '강아지가 켄넬에서 나오도록 하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 탐험하세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 탐험하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
+      id: 2,
+      title: '식사하기',
+      desc: '밥그릇을 켄넬 안에 넣어주세요. 처음엔 문 근처, 점차 안쪽으로 이동합니다.',
+      tips: ['문은 계속 열어두세요.', '식사 중에는 방해하지 마세요.'],
       completed: false
     },
     {
-      id: '3',
-      name: '켄넬 내부에서 식사하기',
-      description: '강아지가 켄넬 내부에서 식사하도록 하기',
-      category: 'comfort',
-      importance: 'high',
-      steps: [
-        '켄넬 내부에 식사 그릇 놓기',
-        '강아지가 켄넬에서 식사하도록 하기',
-        '식사 후 켄넬에서 나오도록 하기',
-        '식사 후 켄넬 정리하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 식사하세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 켄넬에서 식사하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
+      id: 3,
+      title: '문 닫기 연습',
+      desc: '식사 중 문을 잠시 닫았다가, 다 먹기 전에 열어주세요. 점차 닫혀있는 시간을 늘립니다.',
+      tips: ['불안해하면 즉시 열어주세요.', '아주 짧은 시간부터 시작하세요.'],
       completed: false
     },
     {
-      id: '4',
-      name: '켄넬 내부에서 휴식하기',
-      description: '강아지가 켄넬 내부에서 휴식하도록 하기',
-      category: 'comfort',
-      importance: 'high',
-      steps: [
-        '켄넬 내부에 편안한 침구 놓기',
-        '강아지가 켄넬에서 휴식하도록 하기',
-        '휴식 후 켄넬에서 나오도록 하기',
-        '휴식 후 켄넬 정리하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 휴식하세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 켄넬에서 휴식하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
+      id: 4,
+      title: '기다리기',
+      desc: '간식 없이도 들어가서 문을 닫고 5분, 10분씩 기다리는 연습을 합니다.',
+      tips: ['낑낑거릴 때 열어주면 안 됩니다.', '조용해지면 보상하고 열어주세요.'],
       completed: false
     },
     {
-      id: '5',
-      name: '켄넬 문 닫기 연습',
-      description: '강아지가 켄넬 문이 닫혀도 편안해하도록 하기',
-      category: 'duration',
-      importance: 'high',
-      steps: [
-        '강아지가 켄넬에 들어가도록 하기',
-        '켄넬 문을 잠깐 닫기',
-        '강아지가 편안해하는지 확인하기',
-        '켄넬 문을 다시 열기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 연습하세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 연습하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
-      completed: false
-    },
-    {
-      id: '6',
-      name: '켄넬에서 시간 늘리기',
-      description: '강아지가 켄넬에서 더 오래 머물도록 하기',
-      category: 'duration',
-      importance: 'high',
-      steps: [
-        '강아지가 켄넬에 들어가도록 하기',
-        '켄넬 문을 닫고 시간을 점진적으로 늘리기',
-        '강아지가 편안해하는지 확인하기',
-        '시간을 늘린 후 켄넬 문을 열기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 시간을 늘리세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 시간을 늘리세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
-      completed: false
-    },
-    {
-      id: '7',
-      name: '켄넬에서 혼자 있기',
-      description: '강아지가 켄넬에서 혼자 있어도 편안해하도록 하기',
-      category: 'independence',
-      importance: 'medium',
-      steps: [
-        '강아지가 켄넬에 들어가도록 하기',
-        '켄넬 문을 닫고 강아지 혼자 두기',
-        '강아지가 편안해하는지 확인하기',
-        '강아지가 켄넬에서 나오도록 하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 혼자 두세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 혼자 두세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
-      completed: false
-    },
-    {
-      id: '8',
-      name: '켄넬 루틴 만들기',
-      description: '강아지가 켄넬 사용에 익숙해지도록 루틴 만들기',
-      category: 'routine',
-      importance: 'medium',
-      steps: [
-        '켄넬 사용 시간 정하기',
-        '켄넬 사용 방법 정하기',
-        '켄넬 사용 루틴 만들기',
-        '켄넬 사용 루틴 유지하기'
-      ],
-      tips: [
-        '강아지가 편안해하는 방법으로 루틴을 만드세요',
-        '과도한 자극을 피하세요',
-        '정기적으로 루틴을 유지하세요',
-        '필요시 전문가의 도움을 받으세요'
-      ],
+      id: 5,
+      title: '혼자 있기',
+      desc: '보호자가 방을 나가거나 외출하는 동안 켄넬에서 편안하게 쉬도록 합니다.',
+      tips: ['외출 전 충분한 산책을 시켜주세요.', '오래 씹는 간식을 넣어주세요.'],
       completed: false
     }
-  ]
+  ])
+
+  const [timer, setTimer] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem('crateTrainingTasks')
-    const savedRecords = localStorage.getItem('crateTrainingRecords')
-    
-    if (savedTasks) {
-      try {
-        setTasks(JSON.parse(savedTasks))
-      } catch (e) {
-        setTasks(initialTasks)
-      }
-    } else {
-      setTasks(initialTasks)
+    let interval: NodeJS.Timeout
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev + 1)
+      }, 1000)
     }
-    
-    if (savedRecords) {
-      try {
-        setRecords(JSON.parse(savedRecords))
-      } catch (e) {}
-    }
-  }, [])
+    return () => clearInterval(interval)
+  }, [isRunning])
 
-  useEffect(() => {
-    if (tasks.length > 0) {
-      localStorage.setItem('crateTrainingTasks', JSON.stringify(tasks))
-    }
-  }, [tasks])
-
-  useEffect(() => {
-    if (records.length > 0) {
-      localStorage.setItem('crateTrainingRecords', JSON.stringify(records))
-    }
-  }, [records])
-
-  const toggleTask = (taskId: string) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { 
-            ...task, 
-            completed: !task.completed,
-            date: !task.completed ? new Date().toISOString().split('T')[0] : undefined
-          } 
-        : task
-    ))
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  const addRecord = () => {
-    if (!newRecord.task) return
-
-    const record: CrateTrainingRecord = {
-      id: Date.now().toString(),
-      ...newRecord
-    }
-    setRecords([record, ...records])
-    setNewRecord({
-      date: new Date().toISOString().split('T')[0],
-      task: '',
-      duration: 15,
-      result: 'good',
-      notes: ''
-    })
+  const toggleStep = (id: number) => {
+    setSteps(steps.map(step => step.id === id ? { ...step, completed: !step.completed } : step))
   }
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'introduction': return 'text-blue-600 bg-blue-100'
-      case 'comfort': return 'text-green-600 bg-green-100'
-      case 'duration': return 'text-purple-600 bg-purple-100'
-      case 'independence': return 'text-orange-600 bg-orange-100'
-      case 'routine': return 'text-pink-600 bg-pink-100'
-      default: return 'text-gray-600 bg-gray-100'
-    }
-  }
-
-  const getCategoryText = (category: string) => {
-    switch (category) {
-      case 'introduction': return '소개'
-      case 'comfort': return '편안함'
-      case 'duration': return '지속시간'
-      case 'independence': return '독립성'
-      case 'routine': return '루틴'
-      default: return category
-    }
-  }
-
-  const getImportanceColor = (importance: string) => {
-    switch (importance) {
-      case 'high': return 'text-red-600 bg-red-100'
-      case 'medium': return 'text-yellow-600 bg-yellow-100'
-      case 'low': return 'text-green-600 bg-green-100'
-      default: return 'text-gray-600 bg-gray-100'
-    }
-  }
-
-  const getImportanceText = (importance: string) => {
-    switch (importance) {
-      case 'high': return '높음'
-      case 'medium': return '보통'
-      case 'low': return '낮음'
-      default: return importance
-    }
-  }
-
-  const getResultColor = (result: string) => {
-    switch (result) {
-      case 'excellent': return 'text-green-600 bg-green-100'
-      case 'good': return 'text-blue-600 bg-blue-100'
-      case 'fair': return 'text-yellow-600 bg-yellow-100'
-      case 'poor': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
-    }
-  }
-
-  const getResultText = (result: string) => {
-    switch (result) {
-      case 'excellent': return '매우 좋음'
-      case 'good': return '좋음'
-      case 'fair': return '보통'
-      case 'poor': return '나쁨'
-      default: return result
-    }
-  }
-
-  const completedTasks = tasks.filter(task => task.completed).length
-  const totalTasks = tasks.length
-  const highImportanceTasks = tasks.filter(task => task.importance === 'high').length
-  const excellentRecords = records.filter(record => record.result === 'excellent').length
-  const totalRecords = records.length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-amber-700 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Home className="w-10 h-10 text-blue-600 mr-3" />
-            켄넬 훈련 가이드
-          </h1>
-          <p className="text-xl text-gray-600">강아지 켄넬 적응 훈련 방법</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-amber-100 rounded-2xl text-amber-700">
+              <Home className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">켄넬(크레이트) 훈련</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            강아지에게 가장 안전하고 편안한 '나만의 방'을 선물해주세요.
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Home className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{totalTasks}개</p>
-            <p className="text-sm text-gray-600">훈련 단계</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">{completedTasks}개</p>
-            <p className="text-sm text-gray-600">완료된 단계</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-red-600">{highImportanceTasks}개</p>
-            <p className="text-sm text-gray-600">고우선순위</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Heart className="w-8 h-8 text-pink-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-pink-600">{excellentRecords}회</p>
-            <p className="text-sm text-gray-600">우수한 결과</p>
-          </div>
-        </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Steps */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <CheckCircle className="w-5 h-5 mr-2 text-amber-600" />
+                단계별 훈련 가이드
+              </h2>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">켄넬 훈련 단계</h2>
-              <div className="space-y-4">
-                {tasks.map((task) => (
-                  <div key={task.id} className="border-2 border-gray-200 rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900">{task.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{task.description}</p>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded text-xs ${getCategoryColor(task.category)}`}>
-                            {getCategoryText(task.category)}
-                          </span>
-                          <span className={`px-2 py-1 rounded text-xs ${getImportanceColor(task.importance)}`}>
-                            {getImportanceText(task.importance)}
-                          </span>
-                          {task.date && (
-                            <span className="text-green-600">완료: {task.date}</span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => toggleTask(task.id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          task.completed
-                            ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              <div className="relative pl-4 md:pl-8 space-y-8 before:absolute before:left-4 md:before:left-8 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100">
+                {steps.map((step, idx) => (
+                  <div key={step.id} className="relative pl-8">
+                    <div
+                      className={`absolute left-0 top-0 w-8 h-8 -translate-x-1/2 rounded-full border-4 flex items-center justify-center bg-white transition-colors cursor-pointer ${step.completed ? 'border-amber-500' : 'border-gray-200'
                         }`}
-                      >
-                        <CheckCircle className="w-6 h-6" />
-                      </button>
+                      onClick={() => toggleStep(step.id)}
+                    >
+                      {step.completed && <div className="w-3 h-3 bg-amber-500 rounded-full" />}
                     </div>
-                    
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">단계</h4>
-                        <ol className="text-sm text-gray-600 space-y-1">
-                          {task.steps.map((step, index) => (
-                            <li key={index}>{index + 1}. {step}</li>
-                          ))}
-                        </ol>
+
+                    <div
+                      className={`p-5 rounded-xl border-2 transition-all cursor-pointer ${step.completed
+                          ? 'border-amber-500 bg-amber-50/50'
+                          : 'border-gray-100 hover:border-amber-200 bg-white'
+                        }`}
+                      onClick={() => toggleStep(step.id)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className={`font-bold text-lg ${step.completed ? 'text-amber-800' : 'text-gray-900'}`}>
+                          Step {step.id}. {step.title}
+                        </h3>
+                        {step.completed && <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-full">완료</span>}
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">팁</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {task.tips.map((tip, index) => (
-                            <li key={index}>• {tip}</li>
-                          ))}
-                        </ul>
+                      <p className="text-gray-600 mb-4 leading-relaxed">{step.desc}</p>
+
+                      <div className="bg-white/50 rounded-lg p-3 text-sm text-gray-500 border border-gray-100/50">
+                        <strong className="text-amber-600 mr-2">Tip</strong>
+                        {step.tips.join(' ')}
                       </div>
                     </div>
                   </div>
@@ -424,127 +143,78 @@ export default function PuppyCrateTrainingPage() {
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">켄넬 훈련 기록</h2>
-              <div className="space-y-4 mb-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 날짜</label>
-                    <input
-                      type="date"
-                      value={newRecord.date}
-                      onChange={(e) => setNewRecord({...newRecord, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 단계</label>
-                    <select
-                      value={newRecord.task}
-                      onChange={(e) => setNewRecord({...newRecord, task: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    >
-                      <option value="">단계 선택</option>
-                      {tasks.map((task) => (
-                        <option key={task.id} value={task.name}>
-                          {task.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+          {/* Right Column: Timer & Info */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Timer Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Clock className="w-5 h-5 mr-2 text-amber-600" />
+                기다리기 연습 타이머
+              </h2>
+
+              <div className="text-center py-8 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
+                <div className="text-5xl font-black text-gray-900 font-mono tracking-wider mb-2">
+                  {formatTime(timer)}
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 시간 (분)</label>
-                    <input
-                      type="number"
-                      value={newRecord.duration}
-                      onChange={(e) => setNewRecord({...newRecord, duration: parseInt(e.target.value) || 0})}
-                      min="1"
-                      max="120"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">훈련 결과</label>
-                    <select
-                      value={newRecord.result}
-                      onChange={(e) => setNewRecord({...newRecord, result: e.target.value as 'excellent' | 'good' | 'fair' | 'poor'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    >
-                      <option value="excellent">매우 좋음</option>
-                      <option value="good">좋음</option>
-                      <option value="fair">보통</option>
-                      <option value="poor">나쁨</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
-                  <textarea
-                    value={newRecord.notes}
-                    onChange={(e) => setNewRecord({...newRecord, notes: e.target.value})}
-                    rows={3}
-                    placeholder="켄넬 훈련 과정이나 강아지 반응"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
+                <div className="text-sm text-gray-500">훈련 시간</div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 <button
-                  onClick={addRecord}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() => setIsRunning(!isRunning)}
+                  className={`py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${isRunning
+                      ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                      : 'bg-amber-600 text-white hover:bg-amber-700 shadow-lg shadow-amber-200'
+                    }`}
                 >
-                  훈련 기록 추가
+                  {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  {isRunning ? '일시정지' : '시작'}
+                </button>
+                <button
+                  onClick={() => {
+                    setIsRunning(false)
+                    setTimer(0)
+                  }}
+                  className="py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+                >
+                  <RotateCcw className="w-5 h-5" />
+                  리셋
                 </button>
               </div>
 
-              {records.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-900">최근 켄넬 훈련 기록</h3>
-                  {records.slice(0, 5).map((record) => (
-                    <div key={record.id} className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{record.task}</p>
-                          <p className="text-sm text-gray-600">{record.date}</p>
-                          <p className="text-sm text-gray-600">
-                            {record.duration}분
-                          </p>
-                          {record.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{record.notes}</p>
-                          )}
-                        </div>
-                        <span className={`px-2 py-1 text-xs rounded ${getResultColor(record.result)}`}>
-                          {getResultText(record.result)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="text-xs text-center text-gray-400">
+                문 닫기 연습 시 시간을 측정해보세요.
+              </p>
             </div>
-          </div>
-        </div>
 
-        <div className="bg-blue-50 rounded-lg p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">🏠 켄넬 훈련 가이드 핵심 포인트</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-            <div>
-              <h3 className="font-semibold mb-2">성공을 위한 원칙</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 강아지가 편안해하는 방법으로 훈련하세요</li>
-                <li>• 일관성 있게 훈련하세요</li>
-                <li>• 정기적으로 훈련하세요</li>
-                <li>• 전문가의 도움을 받으세요</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">주의사항</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 과도한 자극을 피하세요</li>
-                <li>• 강아지가 불안해하면 즉시 중단하세요</li>
-                <li>• 이상 증상이 있으면 즉시 수의사에게 연락하세요</li>
-                <li>• 실패해도 괜찮다고 안심시켜주세요</li>
+            {/* Why Crate? */}
+            <div className="bg-amber-900 rounded-2xl p-6 text-white shadow-lg">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <Info className="w-5 h-5 mr-2 text-amber-400" />
+                왜 켄넬 훈련이 필요한가요?
+              </h3>
+              <ul className="space-y-4 text-amber-100 text-sm">
+                <li className="flex items-start">
+                  <span className="mr-2 text-amber-400 font-bold">•</span>
+                  <span>
+                    <strong className="text-white">안정감</strong><br />
+                    강아지는 본능적으로 좁고 어두운 곳에서 안정을 느낍니다.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-amber-400 font-bold">•</span>
+                  <span>
+                    <strong className="text-white">분리불안 예방</strong><br />
+                    혼자 있는 시간을 편안하게 받아들이게 됩니다.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-amber-400 font-bold">•</span>
+                  <span>
+                    <strong className="text-white">이동 시 안전</strong><br />
+                    차량 이동이나 여행 시 필수적입니다.
+                  </span>
+                </li>
               </ul>
             </div>
           </div>

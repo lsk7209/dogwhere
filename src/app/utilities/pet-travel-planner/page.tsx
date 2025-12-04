@@ -2,15 +2,17 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Plane, Navigation, Home, MapPin, Calendar } from 'lucide-react'
-import type { TravelPlan } from '@/types/utilities'
+import { Plane, Navigation, Home, MapPin, Calendar, ArrowLeft, Sun, Cloud, Backpack, Car, Utensils, Camera, CheckCircle } from 'lucide-react'
 
 interface TravelPlanResult {
   distance: number
   duration: string
-  accommodations: Array<{ name: string; address: string; type: string }>
-  experiences: Array<{ name: string; type?: string; description?: string }>
-  tips: string[]
+  weather: { temp: number; condition: string }
+  itinerary: {
+    day: number
+    activities: { time: string; title: string; type: 'move' | 'eat' | 'play' | 'rest'; desc: string }[]
+  }[]
+  packingList: { category: string; items: string[] }[]
 }
 
 export default function PetTravelPlannerPage() {
@@ -18,181 +20,232 @@ export default function PetTravelPlannerPage() {
   const [destination, setDestination] = useState<string>('')
   const [duration, setDuration] = useState<number>(2)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [plan, setPlan] = useState<TravelPlanResult | null>(null)
 
   const generatePlan = useCallback(async () => {
-    if (!origin || !destination) {
-      setError('출발지와 목적지를 입력해주세요.')
-      return
-    }
+    if (!origin || !destination) return
 
     setLoading(true)
-    setError(null)
-    
-    try {
-      // 향후: Naver Directions API 또는 Kakao Directions API 연동
-      // 현재는 샘플 데이터 사용
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const samplePlan: TravelPlanResult = {
-        distance: 350,
-        duration: '약 4시간',
-        accommodations: [
-          { name: '펫 호텔 그랜드', address: '목적지 인근', type: 'hotel' },
-          { name: '반려견 펜션', address: '목적지 인근', type: 'pension' }
-        ],
-        experiences: [
-          { name: '강아지 공원', description: '목적지 인근 반려견 공원' },
-          { name: '반려견 카페', description: '동반 가능 카페' },
-          { name: '산책로 코스', description: '전용 산책로' }
-        ],
-        tips: [
-          '반려견 건강진단서를 미리 준비하세요',
-          '여행 중 충분한 휴식 시간을 확보하세요',
-          '비상 연락처를 미리 확인하세요'
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    const samplePlan: TravelPlanResult = {
+      distance: 150,
+      duration: '2시간 30분',
+      weather: { temp: 24, condition: 'sunny' },
+      itinerary: Array.from({ length: duration }, (_, i) => ({
+        day: i + 1,
+        activities: [
+          { time: '10:00', title: '출발/이동', type: 'move', desc: '휴게소 1회 정차 권장' },
+          { time: '12:30', title: '점심 식사', type: 'eat', desc: '애견 동반 식당 예약' },
+          { time: '14:00', title: '야외 활동', type: 'play', desc: '해변 산책 및 포토타임' },
+          { time: '17:00', title: '숙소 체크인', type: 'rest', desc: '짐 풀기 및 휴식' },
+          { time: '18:30', title: '저녁 식사', type: 'eat', desc: '바베큐 파티' }
         ]
-      }
-      setPlan(samplePlan)
-    } catch (err) {
-      setError('여행 계획을 생성하는 중 오류가 발생했습니다.')
-    } finally {
-      setLoading(false)
+      })),
+      packingList: [
+        { category: '필수품', items: ['사료/간식', '물그릇/밥그릇', '배변패드/봉투', '목줄/하네스'] },
+        { category: '의약품', items: ['멀미약', '심장사상충약', '기본 구급상자'] },
+        { category: '편의용품', items: ['애착 인형', '담요/방석', '물티슈', '수건'] }
+      ]
     }
+    setPlan(samplePlan)
+    setLoading(false)
   }, [origin, destination, duration])
 
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'move': return <Car className="w-4 h-4" />
+      case 'eat': return <Utensils className="w-4 h-4" />
+      case 'play': return <Camera className="w-4 h-4" />
+      case 'rest': return <Home className="w-4 h-4" />
+      default: return <MapPin className="w-4 h-4" />
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-orange-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Plane className="w-10 h-10 text-indigo-600 mr-3" />
-            펫 여행 일정 플래너
-          </h1>
-          <p className="text-xl text-gray-600">
-            출발지와 목적지를 입력하면 이동거리, 추천 숙소, 체험 루트를 자동 제안합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-orange-100 rounded-2xl text-orange-600">
+              <Plane className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">반려견 여행 플래너</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            완벽한 여행을 위한 맞춤형 일정과 체크리스트를 만들어드립니다.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6 mb-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                출발지
-              </label>
-              <input
-                type="text"
-                value={origin}
-                onChange={(e) => setOrigin(e.target.value)}
-                placeholder="예: 서울"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Input Section */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Navigation className="w-5 h-5 mr-2 text-orange-500" />
+                여행 정보
+              </h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">출발지</label>
+                  <input
+                    type="text"
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    placeholder="예: 서울 강남구"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">목적지</label>
+                  <input
+                    type="text"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    placeholder="예: 강원도 속초"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">여행 기간</label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="1"
+                      max="7"
+                      value={duration}
+                      onChange={(e) => setDuration(parseInt(e.target.value))}
+                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-600"
+                    />
+                    <span className="font-bold text-orange-600 w-12 text-right">{duration}박</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={generatePlan}
+                  disabled={loading || !origin || !destination}
+                  className="w-full bg-orange-600 text-white py-4 rounded-xl hover:bg-orange-700 transition-all shadow-lg shadow-orange-200 font-bold flex items-center justify-center disabled:opacity-70"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Calendar className="w-5 h-5 mr-2" />
+                      일정 생성하기
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                목적지
-              </label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="예: 제주"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                여행 기간 (일)
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            <button
-              onClick={generatePlan}
-              disabled={loading}
-              className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
-            >
-              {loading ? '일정 생성 중...' : '여행 일정 만들기'}
-            </button>
           </div>
 
-          {loading && (
-            <div className="text-center py-12">
-              <p className="text-gray-600">여행 일정을 생성하는 중...</p>
-            </div>
-          )}
-
-          {!loading && plan && (
-            <div className="space-y-6">
-              {/* 이동 정보 */}
-              <div className="bg-indigo-50 rounded-lg p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Navigation className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-xl font-bold text-gray-900">이동 정보</h3>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">이동 거리</p>
-                    <p className="text-2xl font-bold text-indigo-700">{plan.distance}km</p>
+          {/* Result Section */}
+          <div className="lg:col-span-2 space-y-8">
+            {plan ? (
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {/* Overview Card */}
+                <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-8 text-white shadow-lg">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2">{destination} 여행</h2>
+                      <p className="text-orange-100 flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {origin} 출발 · {plan.distance}km
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center justify-end gap-2 mb-1">
+                        {plan.weather.condition === 'sunny' ? <Sun className="w-6 h-6" /> : <Cloud className="w-6 h-6" />}
+                        <span className="text-2xl font-bold">{plan.weather.temp}°C</span>
+                      </div>
+                      <span className="text-sm text-orange-100">여행하기 좋은 날씨예요!</span>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">소요 시간</p>
-                    <p className="text-2xl font-bold text-indigo-700">{plan.duration}</p>
-                  </div>
                 </div>
-              </div>
 
-              {/* 추천 숙소 */}
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Home className="w-5 h-5 text-green-600" />
-                  <h3 className="text-xl font-bold text-gray-900">추천 숙소</h3>
-                </div>
-                <div className="space-y-3">
-                  {plan.accommodations.map((acc: any, idx: number) => (
-                    <div key={idx} className="border-2 border-gray-200 rounded-lg p-4">
-                      <h4 className="font-bold text-gray-900">{acc.name}</h4>
-                      <p className="text-sm text-gray-600">{acc.address}</p>
+                {/* Itinerary */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                    <Calendar className="w-6 h-6 mr-2 text-orange-500" />
+                    추천 일정
+                  </h3>
+                  {plan.itinerary.map((day) => (
+                    <div key={day.day} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                      <h4 className="font-bold text-lg text-gray-900 mb-4 border-b border-gray-100 pb-2">
+                        Day {day.day}
+                      </h4>
+                      <div className="space-y-6 relative before:absolute before:left-[4.5rem] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                        {day.activities.map((activity, idx) => (
+                          <div key={idx} className="flex gap-6 relative">
+                            <div className="w-14 pt-1 text-right text-sm font-bold text-gray-500">
+                              {activity.time}
+                            </div>
+                            <div className="absolute left-[4.5rem] top-2 w-3 h-3 rounded-full bg-white border-2 border-orange-500 -translate-x-[5px] z-10"></div>
+                            <div className="flex-1 pt-0.5">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className={`p-1.5 rounded-lg bg-orange-50 text-orange-600`}>
+                                  {getActivityIcon(activity.type)}
+                                </span>
+                                <span className="font-bold text-gray-900">{activity.title}</span>
+                              </div>
+                              <p className="text-sm text-gray-600 pl-9">{activity.desc}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              {/* 체험 코스 */}
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <MapPin className="w-5 h-5 text-purple-600" />
-                  <h3 className="text-xl font-bold text-gray-900">체험 코스</h3>
-                </div>
-                <div className="space-y-3">
-                  {plan.experiences.map((exp: any, idx: number) => (
-                    <div key={idx} className="border-2 border-gray-200 rounded-lg p-4">
-                      <h4 className="font-bold text-gray-900">{exp.name}</h4>
-                      <p className="text-sm text-gray-600">{exp.description}</p>
-                    </div>
-                  ))}
+                {/* Packing List */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <Backpack className="w-6 h-6 mr-2 text-orange-500" />
+                    체크리스트
+                  </h3>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {plan.packingList.map((category, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-xl p-4">
+                        <h4 className="font-bold text-gray-900 mb-3">{category.category}</h4>
+                        <ul className="space-y-2">
+                          {category.items.map((item, i) => (
+                            <li key={i} className="flex items-center text-sm text-gray-600">
+                              <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-indigo-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">💡 안내사항</h2>
-          <p className="text-gray-700">
-            실제 운영 시 Naver Directions API 또는 Kakao Directions API와 한국관광공사 반려동물 여행 데이터를 결합하여 실시간 추천을 제공합니다.
-          </p>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-center p-12 bg-white rounded-2xl border border-dashed border-gray-200">
+                <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6 text-orange-200">
+                  <MapPin className="w-12 h-12" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">여행 계획을 시작해보세요</h3>
+                <p className="text-gray-500 max-w-md">
+                  출발지와 목적지를 입력하면 이동 경로, 맛집, 숙소, 관광지까지
+                  반려견과 함께할 수 있는 완벽한 코스를 제안해드립니다.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Zap, CheckCircle, AlertTriangle, Clock, Heart } from 'lucide-react'
+import { Zap, CheckCircle, AlertTriangle, Clock, Heart, ArrowLeft, Shield, Search, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
 
 interface AllergySymptom {
   id: string
@@ -15,7 +15,6 @@ interface AllergySymptom {
   treatments: string[]
   completed: boolean
   date?: string
-  notes?: string
 }
 
 interface AllergyRecord {
@@ -31,6 +30,7 @@ interface AllergyRecord {
 export default function DogAllergyTrackerPage() {
   const [symptoms, setSymptoms] = useState<AllergySymptom[]>([])
   const [records, setRecords] = useState<AllergyRecord[]>([])
+  const [expandedSymptom, setExpandedSymptom] = useState<string | null>(null)
   const [newRecord, setNewRecord] = useState({
     date: new Date().toISOString().split('T')[0],
     symptom: '',
@@ -44,181 +44,34 @@ export default function DogAllergyTrackerPage() {
     {
       id: '1',
       name: '음식 알레르기',
-      description: '특정 음식에 대한 알레르기 반응',
+      description: '특정 단백질원(닭고기, 소고기 등)에 대한 과민 반응',
       severity: 'moderate',
       category: 'food',
-      triggers: [
-        '닭고기',
-        '소고기',
-        '생선',
-        '계란',
-        '유제품',
-        '밀가루'
-      ],
-      symptoms: [
-        '가려움증',
-        '피부 발진',
-        '구토',
-        '설사',
-        '귀 감염',
-        '발가락 핥기'
-      ],
-      treatments: [
-        '알레르기 원인 음식 제거',
-        '수의사 상담',
-        '항히스타민제 복용',
-        '저자극 사료 급여'
-      ],
+      triggers: ['닭고기', '소고기', '유제품', '밀가루'],
+      symptoms: ['피부 발진', '눈물 자국', '귀 염증', '설사/구토'],
+      treatments: ['가수분해 사료 급여', '단일 단백질 식단', '간식 중단'],
       completed: false
     },
     {
       id: '2',
-      name: '환경 알레르기',
-      description: '환경 요인에 대한 알레르기 반응',
+      name: '환경 알레르기 (아토피)',
+      description: '집먼지 진드기, 꽃가루 등 환경 요인에 의한 반응',
       severity: 'moderate',
       category: 'environmental',
-      triggers: [
-        '꽃가루',
-        '먼지',
-        '곰팡이',
-        '풀',
-        '나무',
-        '잡초'
-      ],
-      symptoms: [
-        '가려움증',
-        '눈물',
-        '재채기',
-        '기침',
-        '피부 발진',
-        '귀 감염'
-      ],
-      treatments: [
-        '알레르기 원인 환경 회피',
-        '수의사 상담',
-        '항히스타민제 복용',
-        '정기적인 목욕'
-      ],
+      triggers: ['꽃가루', '먼지 진드기', '곰팡이'],
+      symptoms: ['발 핥기', '전신 가려움', '재채기', '결막염'],
+      treatments: ['산책 후 발 씻기', '공기청정기 사용', '약용 샴푸'],
       completed: false
     },
     {
       id: '3',
-      name: '접촉 알레르기',
-      description: '특정 물질과 접촉 시 발생하는 알레르기',
+      name: '접촉성 알레르기',
+      description: '특정 물질이 피부에 닿았을 때 발생하는 반응',
       severity: 'mild',
       category: 'contact',
-      triggers: [
-        '세제',
-        '샴푸',
-        '플라스틱',
-        '금속',
-        '고무',
-        '합성 섬유'
-      ],
-      symptoms: [
-        '피부 발진',
-        '가려움증',
-        '붉은 반점',
-        '부종',
-        '피부 두꺼워짐',
-        '털 빠짐'
-      ],
-      treatments: [
-        '알레르기 원인 물질 회피',
-        '수의사 상담',
-        '국소 스테로이드 사용',
-        '저자극 제품 사용'
-      ],
-      completed: false
-    },
-    {
-      id: '4',
-      name: '흡입 알레르기',
-      description: '공기 중 알레르기 물질에 대한 반응',
-      severity: 'moderate',
-      category: 'inhalant',
-      triggers: [
-        '꽃가루',
-        '먼지 진드기',
-        '곰팡이 포자',
-        '담배 연기',
-        '향수',
-        '공기 청정제'
-      ],
-      symptoms: [
-        '기침',
-        '재채기',
-        '콧물',
-        '눈물',
-        '호흡 곤란',
-        '가려움증'
-      ],
-      treatments: [
-        '알레르기 원인 물질 회피',
-        '수의사 상담',
-        '항히스타민제 복용',
-        '공기 청정기 사용'
-      ],
-      completed: false
-    },
-    {
-      id: '5',
-      name: '약물 알레르기',
-      description: '특정 약물에 대한 알레르기 반응',
-      severity: 'severe',
-      category: 'contact',
-      triggers: [
-        '항생제',
-        '진통제',
-        '백신',
-        '마취제',
-        '비타민',
-        '보충제'
-      ],
-      symptoms: [
-        '피부 발진',
-        '붉은 반점',
-        '부종',
-        '호흡 곤란',
-        '구토',
-        '설사'
-      ],
-      treatments: [
-        '약물 복용 중단',
-        '즉시 수의사 연락',
-        '응급 처치',
-        '대체 약물 사용'
-      ],
-      completed: false
-    },
-    {
-      id: '6',
-      name: '벌레 물림 알레르기',
-      description: '벌레 물림에 대한 알레르기 반응',
-      severity: 'severe',
-      category: 'contact',
-      triggers: [
-        '벌',
-        '말벌',
-        '개미',
-        '모기',
-        '진드기',
-        '벼룩'
-      ],
-      symptoms: [
-        '부종',
-        '가려움증',
-        '붉은 반점',
-        '호흡 곤란',
-        '구토',
-        '설사'
-      ],
-      treatments: [
-        '즉시 수의사 연락',
-        '응급 처치',
-        '항히스타민제 복용',
-        '부종 완화'
-      ],
+      triggers: ['플라스틱 식기', '합성 섬유', '세제/샴푸'],
+      symptoms: ['접촉 부위 발적', '부종', '탈모'],
+      treatments: ['원인 물질 제거', '스테인리스 식기 교체', '저자극 세제'],
       completed: false
     }
   ]
@@ -226,7 +79,7 @@ export default function DogAllergyTrackerPage() {
   useEffect(() => {
     const savedSymptoms = localStorage.getItem('allergySymptoms')
     const savedRecords = localStorage.getItem('allergyRecords')
-    
+
     if (savedSymptoms) {
       try {
         setSymptoms(JSON.parse(savedSymptoms))
@@ -236,11 +89,11 @@ export default function DogAllergyTrackerPage() {
     } else {
       setSymptoms(initialSymptoms)
     }
-    
+
     if (savedRecords) {
       try {
         setRecords(JSON.parse(savedRecords))
-      } catch (e) {}
+      } catch (e) { }
     }
   }, [])
 
@@ -255,18 +108,6 @@ export default function DogAllergyTrackerPage() {
       localStorage.setItem('allergyRecords', JSON.stringify(records))
     }
   }, [records])
-
-  const toggleSymptom = (symptomId: string) => {
-    setSymptoms(symptoms.map(symptom => 
-      symptom.id === symptomId 
-        ? { 
-            ...symptom, 
-            completed: !symptom.completed,
-            date: !symptom.completed ? new Date().toISOString().split('T')[0] : undefined
-          } 
-        : symptom
-    ))
-  }
 
   const addRecord = () => {
     if (!newRecord.symptom) return
@@ -286,284 +127,267 @@ export default function DogAllergyTrackerPage() {
     })
   }
 
+  const deleteRecord = (id: string) => {
+    const updated = records.filter(r => r.id !== id)
+    setRecords(updated)
+    localStorage.setItem('allergyRecords', JSON.stringify(updated))
+  }
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'mild': return 'text-green-600 bg-green-100'
-      case 'moderate': return 'text-yellow-600 bg-yellow-100'
-      case 'severe': return 'text-red-600 bg-red-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'mild': return 'text-green-600 bg-green-50 border-green-100'
+      case 'moderate': return 'text-amber-600 bg-amber-50 border-amber-100'
+      case 'severe': return 'text-red-600 bg-red-50 border-red-100'
+      default: return 'text-gray-600 bg-gray-50 border-gray-100'
     }
   }
 
   const getSeverityText = (severity: string) => {
     switch (severity) {
-      case 'mild': return '경미'
+      case 'mild': return '경미함'
       case 'moderate': return '보통'
-      case 'severe': return '심각'
+      case 'severe': return '심각함'
       default: return severity
     }
   }
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'food': return 'text-red-600 bg-red-100'
-      case 'environmental': return 'text-blue-600 bg-blue-100'
-      case 'contact': return 'text-green-600 bg-green-100'
-      case 'inhalant': return 'text-purple-600 bg-purple-100'
-      default: return 'text-gray-600 bg-gray-100'
+  const getCategoryBadge = (category: string) => {
+    const styles = {
+      food: 'bg-orange-100 text-orange-700',
+      environmental: 'bg-blue-100 text-blue-700',
+      contact: 'bg-purple-100 text-purple-700',
+      inhalant: 'bg-cyan-100 text-cyan-700'
     }
-  }
-
-  const getCategoryText = (category: string) => {
-    switch (category) {
-      case 'food': return '음식'
-      case 'environmental': return '환경'
-      case 'contact': return '접촉'
-      case 'inhalant': return '흡입'
-      default: return category
+    const labels = {
+      food: '음식',
+      environmental: '환경',
+      contact: '접촉',
+      inhalant: '흡입'
     }
+    return (
+      <span className={`px-2 py-0.5 rounded text-xs font-medium ${styles[category as keyof typeof styles] || 'bg-gray-100 text-gray-700'}`}>
+        {labels[category as keyof typeof labels] || category}
+      </span>
+    )
   }
-
-  const completedSymptoms = symptoms.filter(symptom => symptom.completed).length
-  const totalSymptoms = symptoms.length
-  const severeSymptoms = symptoms.filter(symptom => symptom.severity === 'severe').length
-  const totalRecords = records.length
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-amber-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Zap className="w-10 h-10 text-yellow-600 mr-3" />
-            알레르기 증상 추적기
-          </h1>
-          <p className="text-xl text-gray-600">음식, 환경 알레르기 증상을 상세히 기록하고 관리</p>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Zap className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{totalSymptoms}개</p>
-            <p className="text-sm text-gray-600">알레르기 유형</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-amber-100 rounded-2xl text-amber-600">
+              <Shield className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">알레르기 트래커</h1>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">{completedSymptoms}개</p>
-            <p className="text-sm text-gray-600">해결된 알레르기</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-red-600">{severeSymptoms}개</p>
-            <p className="text-sm text-gray-600">심각한 알레르기</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <Heart className="w-8 h-8 text-pink-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-pink-600">{totalRecords}회</p>
-            <p className="text-sm text-gray-600">기록된 증상</p>
-          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            반려견의 알레르기 반응을 기록하고 원인을 찾아보세요.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left Column: Symptom Guide */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">알레르기 유형</h2>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Search className="w-5 h-5 mr-2 text-amber-500" />
+                주요 알레르기 정보
+              </h2>
               <div className="space-y-4">
                 {symptoms.map((symptom) => (
-                  <div key={symptom.id} className="border-2 border-gray-200 rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900">{symptom.name}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{symptom.description}</p>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span className={`px-2 py-1 rounded text-xs ${getSeverityColor(symptom.severity)}`}>
-                            {getSeverityText(symptom.severity)}
-                          </span>
-                          <span className={`px-2 py-1 rounded text-xs ${getCategoryColor(symptom.category)}`}>
-                            {getCategoryText(symptom.category)}
-                          </span>
-                          {symptom.date && (
-                            <span className="text-green-600">해결: {symptom.date}</span>
-                          )}
+                  <div
+                    key={symptom.id}
+                    className="border-2 border-gray-100 rounded-xl bg-white overflow-hidden transition-all hover:border-amber-200"
+                  >
+                    <div
+                      className="p-4 cursor-pointer flex items-start justify-between"
+                      onClick={() => setExpandedSymptom(expandedSymptom === symptom.id ? null : symptom.id)}
+                    >
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-bold text-gray-900">{symptom.name}</h3>
+                          {getCategoryBadge(symptom.category)}
+                        </div>
+                        <p className="text-sm text-gray-600">{symptom.description}</p>
+                      </div>
+                      {expandedSymptom === symptom.id ? (
+                        <ChevronUp className="w-5 h-5 text-gray-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+
+                    {expandedSymptom === symptom.id && (
+                      <div className="px-4 pb-4 pt-0 border-t border-gray-100 bg-gray-50/50">
+                        <div className="mt-4 grid grid-cols-1 gap-4 text-sm">
+                          <div>
+                            <span className="font-bold text-gray-900 block mb-1">주요 증상</span>
+                            <p className="text-gray-600">{symptom.symptoms.join(', ')}</p>
+                          </div>
+                          <div>
+                            <span className="font-bold text-gray-900 block mb-1">흔한 원인</span>
+                            <p className="text-gray-600">{symptom.triggers.join(', ')}</p>
+                          </div>
+                          <div>
+                            <span className="font-bold text-gray-900 block mb-1">관리 방법</span>
+                            <p className="text-gray-600">{symptom.treatments.join(', ')}</p>
+                          </div>
                         </div>
                       </div>
-                      <button
-                        onClick={() => toggleSymptom(symptom.id)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          symptom.completed
-                            ? 'bg-green-100 text-green-600 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        <CheckCircle className="w-6 h-6" />
-                      </button>
-                    </div>
-                    
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">유발 요인</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {symptom.triggers.map((trigger, index) => (
-                            <li key={index}>• {trigger}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">증상</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {symptom.symptoms.map((symptomItem, index) => (
-                            <li key={index}>• {symptomItem}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">치료법</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
-                          {symptom.treatments.map((treatment, index) => (
-                            <li key={index}>• {treatment}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
+
+            {/* Guide Box */}
+            <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100">
+              <h3 className="font-bold text-amber-800 mb-3 flex items-center">
+                <Zap className="w-4 h-4 mr-2" />
+                알레르기 관리 팁
+              </h3>
+              <ul className="space-y-2 text-sm text-amber-700">
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  새로운 간식은 한 번에 한 종류씩만 급여하며 반응을 살피세요.
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  산책 후에는 발을 깨끗이 닦아 외부 알레르겐을 제거해주세요.
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2">•</span>
+                  증상이 심하거나 호흡 곤란이 오면 즉시 병원에 가야 합니다.
+                </li>
+              </ul>
+            </div>
           </div>
 
+          {/* Right Column: Record Form & History */}
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">알레르기 증상 기록</h2>
-              <div className="space-y-4 mb-6">
-                <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Plus className="w-5 h-5 mr-2 text-amber-500" />
+                증상 기록하기
+              </h2>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">기록 날짜</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">날짜</label>
                     <input
                       type="date"
                       value={newRecord.date}
-                      onChange={(e) => setNewRecord({...newRecord, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, date: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">알레르기 유형</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">의심 유형</label>
                     <select
                       value={newRecord.symptom}
-                      onChange={(e) => setNewRecord({...newRecord, symptom: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, symptom: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
-                      <option value="">유형 선택</option>
-                      {symptoms.map((symptom) => (
-                        <option key={symptom.id} value={symptom.name}>
-                          {symptom.name}
-                        </option>
+                      <option value="">선택하세요</option>
+                      {symptoms.map((s) => (
+                        <option key={s.id} value={s.name}>{s.name}</option>
                       ))}
+                      <option value="기타">기타 / 불확실</option>
                     </select>
                   </div>
                 </div>
-                <div className="grid md:grid-cols-2 gap-4">
+
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">심각도</label>
                     <select
                       value={newRecord.severity}
-                      onChange={(e) => setNewRecord({...newRecord, severity: e.target.value as 'mild' | 'moderate' | 'severe'})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      onChange={(e) => setNewRecord({ ...newRecord, severity: e.target.value as any })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
-                      <option value="mild">경미</option>
-                      <option value="moderate">보통</option>
-                      <option value="severe">심각</option>
+                      <option value="mild">경미함 (약간 긁음)</option>
+                      <option value="moderate">보통 (피부 발적)</option>
+                      <option value="severe">심각함 (상처/탈모)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">지속 시간 (분)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">추정 원인</label>
                     <input
-                      type="number"
-                      value={newRecord.duration}
-                      onChange={(e) => setNewRecord({...newRecord, duration: parseInt(e.target.value) || 0})}
-                      min="1"
-                      max="120"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      type="text"
+                      value={newRecord.trigger}
+                      onChange={(e) => setNewRecord({ ...newRecord, trigger: e.target.value })}
+                      placeholder="예: 닭가슴살 간식"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">유발 요인</label>
-                  <input
-                    type="text"
-                    value={newRecord.trigger}
-                    onChange={(e) => setNewRecord({...newRecord, trigger: e.target.value})}
-                    placeholder="알레르기를 유발한 구체적인 요인"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">메모</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">상세 증상 메모</label>
                   <textarea
                     value={newRecord.notes}
-                    onChange={(e) => setNewRecord({...newRecord, notes: e.target.value})}
-                    rows={3}
-                    placeholder="알레르기 증상의 상세한 상황이나 강아지 반응"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                    onChange={(e) => setNewRecord({ ...newRecord, notes: e.target.value })}
+                    rows={2}
+                    placeholder="구체적인 증상이나 특이사항을 기록해주세요"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
                   />
                 </div>
+
                 <button
                   onClick={addRecord}
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                  disabled={!newRecord.symptom}
+                  className="w-full bg-amber-600 text-white py-3 rounded-xl hover:bg-amber-700 transition-all shadow-lg shadow-amber-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  알레르기 증상 기록 추가
+                  기록 저장
                 </button>
               </div>
 
-              {records.length > 0 && (
+              <div className="mt-8">
+                <h3 className="font-bold text-gray-900 mb-4 text-sm">최근 기록</h3>
                 <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-900">최근 알레르기 증상 기록</h3>
                   {records.slice(0, 5).map((record) => (
-                    <div key={record.id} className="p-4 bg-gray-50 rounded-lg">
+                    <div key={record.id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all group relative">
                       <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900">{record.symptom}</p>
-                          <p className="text-sm text-gray-600">{record.date}</p>
-                          <p className="text-sm text-gray-600">
-                            {record.duration}분 - {record.trigger}
-                          </p>
-                          {record.notes && (
-                            <p className="text-sm text-gray-600 mt-1">{record.notes}</p>
-                          )}
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getSeverityColor(record.severity)}`}>
+                            {getSeverityText(record.severity)}
+                          </span>
+                          <span className="text-xs text-gray-400">{record.date}</span>
                         </div>
-                        <span className={`px-2 py-1 text-xs rounded ${getSeverityColor(record.severity)}`}>
-                          {getSeverityText(record.severity)}
-                        </span>
+                        <button
+                          onClick={() => deleteRecord(record.id)}
+                          className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all absolute top-4 right-4"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
+
+                      <h4 className="font-bold text-gray-900 mb-1">{record.symptom}</h4>
+                      {record.trigger && (
+                        <p className="text-sm text-amber-600 mb-1">원인: {record.trigger}</p>
+                      )}
+                      {record.notes && (
+                        <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded mt-2">{record.notes}</p>
+                      )}
                     </div>
                   ))}
+                  {records.length === 0 && (
+                    <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                      <p className="text-gray-500 text-sm">아직 기록된 증상이 없습니다.</p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 rounded-lg p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">⚡ 알레르기 증상 추적 핵심 포인트</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-            <div>
-              <h3 className="font-semibold mb-2">성공을 위한 원칙</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 일관성 있게 증상을 관찰하세요</li>
-                <li>• 유발 요인을 파악하고 회피하세요</li>
-                <li>• 전문가의 도움을 받으세요</li>
-                <li>• 강아지가 편안해하는 환경을 제공하세요</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">주의사항</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 심각한 증상이 있으면 즉시 수의사에게 연락하세요</li>
-                <li>• 알레르기 원인 물질을 즉시 제거하세요</li>
-                <li>• 강아지가 불안해하면 즉시 중단하세요</li>
-                <li>• 실패해도 괜찮다고 안심시켜주세요</li>
-              </ul>
+              </div>
             </div>
           </div>
         </div>

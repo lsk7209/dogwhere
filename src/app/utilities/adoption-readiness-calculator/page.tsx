@@ -2,23 +2,24 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle, Calculator } from 'lucide-react'
+import { CheckCircle, Calculator, ArrowLeft, AlertCircle, Check, Info } from 'lucide-react'
 
 interface ReadinessItem {
   id: string
   name: string
+  description: string
   checked: boolean
 }
 
 const readinessItems: ReadinessItem[] = [
-  { id: 'time', name: '충분한 시간 확보', checked: false },
-  { id: 'space', name: '적절한 생활 공간', checked: false },
-  { id: 'budget', name: '충분한 예산 준비', checked: false },
-  { id: 'knowledge', name: '반려견 지식 습득', checked: false },
-  { id: 'family', name: '가족 동의', checked: false },
-  { id: 'lifestyle', name: '라이프스타일 조정 가능', checked: false },
-  { id: 'emergency', name: '응급 상황 대비', checked: false },
-  { id: 'commitment', name: '장기적 책임 수용', checked: false }
+  { id: 'time', name: '충분한 시간 확보', description: '매일 산책, 놀이, 훈련에 투자할 시간이 있나요?', checked: false },
+  { id: 'space', name: '적절한 생활 공간', description: '반려견이 편안하게 지낼 수 있는 공간이 마련되었나요?', checked: false },
+  { id: 'budget', name: '충분한 예산 준비', description: '사료, 병원비, 용품 등 매달 발생하는 비용을 감당할 수 있나요?', checked: false },
+  { id: 'knowledge', name: '반려견 지식 습득', description: '견종 특성, 훈련법, 건강 관리에 대해 충분히 공부했나요?', checked: false },
+  { id: 'family', name: '가족 동의', description: '함께 사는 모든 가족 구성원이 입양에 동의했나요?', checked: false },
+  { id: 'lifestyle', name: '라이프스타일 조정', description: '여행, 외출 등 생활 패턴을 반려견에 맞춰 조정할 수 있나요?', checked: false },
+  { id: 'emergency', name: '응급 상황 대비', description: '갑작스러운 질병이나 사고 시 대처할 수 있는 준비가 되었나요?', checked: false },
+  { id: 'commitment', name: '평생 책임', description: '15년 이상 반려견의 평생을 책임질 각오가 되었나요?', checked: false }
 ]
 
 export default function AdoptionReadinessCalculatorPage() {
@@ -31,7 +32,7 @@ export default function AdoptionReadinessCalculatorPage() {
   } | null>(null)
 
   const toggleItem = (id: string) => {
-    setItems(items.map(item => 
+    setItems(items.map(item =>
       item.id === id ? { ...item, checked: !item.checked } : item
     ))
   }
@@ -46,17 +47,17 @@ export default function AdoptionReadinessCalculatorPage() {
     let recommendation = ''
 
     if (readiness >= 90) {
-      level = '매우 준비됨'
-      recommendation = '반려견 입양 준비가 매우 잘 되어 있습니다! 입양을 진행해도 좋습니다.'
+      level = '준비 완료!'
+      recommendation = '반려견을 맞이할 준비가 완벽합니다. 행복한 반려생활이 기대되네요!'
     } else if (readiness >= 75) {
       level = '준비됨'
-      recommendation = '반려견 입양 준비가 잘 되어 있습니다. 부족한 부분을 보완하면 입양할 수 있습니다.'
+      recommendation = '대부분의 준비가 되었습니다. 부족한 부분만 조금 더 보완하면 훌륭한 보호자가 될 수 있어요.'
     } else if (readiness >= 50) {
       level = '부분 준비됨'
-      recommendation = '일부 준비가 되어 있지만, 더 준비가 필요합니다. 부족한 항목을 완료하세요.'
+      recommendation = '아직 준비가 더 필요합니다. 체크하지 않은 항목들을 꼼꼼히 다시 생각해보세요.'
     } else {
-      level = '준비 부족'
-      recommendation = '반려견 입양 준비가 부족합니다. 충분히 준비한 후 입양을 고려하세요.'
+      level = '준비 필요'
+      recommendation = '지금은 입양하기에 이른 시기일 수 있습니다. 충분한 시간을 두고 신중하게 고민해보세요.'
     }
 
     setResult({
@@ -68,118 +69,162 @@ export default function AdoptionReadinessCalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-4xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-emerald-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <CheckCircle className="w-10 h-10 text-green-600 mr-3" />
-            입양 준비도 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            반려견 입양 준비 상태를 평가합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-emerald-100 rounded-2xl text-emerald-600">
+              <CheckCircle className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">입양 준비도 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            반려견을 맞이할 준비가 되셨나요? 체크리스트를 통해 확인해보세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                준비된 항목을 체크하세요
-              </label>
-              <div className="space-y-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Checklist Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Info className="w-5 h-5 mr-2 text-emerald-500" />
+                체크리스트
+              </h2>
+              <div className="space-y-4">
                 {items.map((item) => (
-                  <label
+                  <div
                     key={item.id}
-                    className="flex items-center space-x-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+                    onClick={() => toggleItem(item.id)}
+                    className={`group relative flex items-start p-4 rounded-xl border-2 transition-all cursor-pointer ${item.checked
+                        ? 'border-emerald-500 bg-emerald-50/30'
+                        : 'border-gray-100 hover:border-emerald-200 hover:bg-gray-50'
+                      }`}
                   >
-                    <input
-                      type="checkbox"
-                      checked={item.checked}
-                      onChange={() => toggleItem(item.id)}
-                      className="w-5 h-5 text-green-600 rounded"
-                    />
-                    <span className={item.checked ? 'text-gray-900 font-medium' : 'text-gray-700'}>
-                      {item.name}
-                    </span>
-                  </label>
+                    <div className={`flex-shrink-0 mt-0.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${item.checked
+                        ? 'bg-emerald-500 border-emerald-500'
+                        : 'border-gray-300 group-hover:border-emerald-400'
+                      }`}>
+                      {item.checked && <Check className="w-4 h-4 text-white" />}
+                    </div>
+                    <div className="ml-4">
+                      <h3 className={`font-bold text-base mb-1 transition-colors ${item.checked ? 'text-emerald-900' : 'text-gray-900'
+                        }`}>
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
                 ))}
               </div>
+
+              <button
+                onClick={calculate}
+                className="w-full mt-8 bg-emerald-600 text-white py-4 px-6 rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 font-bold text-lg flex items-center justify-center"
+              >
+                <Calculator className="w-6 h-6 mr-2" />
+                결과 확인하기
+              </button>
             </div>
-
-            <button
-              onClick={calculate}
-              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg"
-            >
-              평가하기
-            </button>
-
-            {result && (
-              <div className={`border-2 rounded-lg p-6 space-y-4 ${
-                result.readiness >= 75 ? 'bg-green-50 border-green-300' :
-                result.readiness >= 50 ? 'bg-yellow-50 border-yellow-300' :
-                'bg-red-50 border-red-300'
-              }`}>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm text-gray-600 mb-1">준비도</p>
-                  <p className={`text-4xl font-bold ${
-                    result.readiness >= 75 ? 'text-green-700' :
-                    result.readiness >= 50 ? 'text-yellow-700' :
-                    'text-red-700'
-                  }`}>
-                    {result.readiness}%
-                  </p>
-                  <p className="text-lg font-semibold mt-2">{result.level}</p>
-                  <div className="mt-3 w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className={`h-3 rounded-full ${
-                        result.readiness >= 75 ? 'bg-green-600' :
-                        result.readiness >= 50 ? 'bg-yellow-600' :
-                        'bg-red-600'
-                      }`}
-                      style={{ width: `${result.readiness}%` }}
-                    />
-                  </div>
-                </div>
-                {result.missingItems.length > 0 && (
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-3">부족한 항목</p>
-                    <ul className="space-y-2">
-                      {result.missingItems.map((item, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <span className="text-red-600">•</span>
-                          <span className="text-gray-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">권장사항</p>
-                  <p className="text-gray-700">{result.recommendation}</p>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
 
-        <div className="bg-green-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 입양 준비 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 충분한 시간과 에너지를 확보하세요</li>
-            <li>• 적절한 생활 공간을 준비하세요</li>
-            <li>• 반려견 비용(사료, 병원, 미용 등)을 예산에 포함하세요</li>
-            <li>• 반려견에 대한 지식을 충분히 습득하세요</li>
-            <li>• 가족 구성원 모두의 동의를 받으세요</li>
-            <li>• 라이프스타일을 조정할 준비를 하세요</li>
-            <li>• 응급 상황에 대비하세요</li>
-            <li>• 장기적인 책임을 수용할 준비를 하세요</li>
-          </ul>
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {result ? (
+                <div className={`bg-white rounded-2xl shadow-lg border-2 overflow-hidden ${result.readiness >= 75 ? 'border-emerald-100' :
+                    result.readiness >= 50 ? 'border-yellow-100' :
+                      'border-red-100'
+                  }`}>
+                  <div className={`p-6 text-center ${result.readiness >= 75 ? 'bg-emerald-50' :
+                      result.readiness >= 50 ? 'bg-yellow-50' :
+                        'bg-red-50'
+                    }`}>
+                    <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">준비도 점수</span>
+                    <div className={`text-5xl font-black my-4 ${result.readiness >= 75 ? 'text-emerald-600' :
+                        result.readiness >= 50 ? 'text-yellow-600' :
+                          'text-red-600'
+                      }`}>
+                      {result.readiness}%
+                    </div>
+                    <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold ${result.readiness >= 75 ? 'bg-emerald-200 text-emerald-800' :
+                        result.readiness >= 50 ? 'bg-yellow-200 text-yellow-800' :
+                          'bg-red-200 text-red-800'
+                      }`}>
+                      {result.level}
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <p className="text-gray-600 text-sm leading-relaxed mb-6 text-center">
+                      {result.recommendation}
+                    </p>
+
+                    {result.missingItems.length > 0 && (
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <h4 className="font-bold text-gray-900 text-sm mb-3 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1.5 text-red-500" />
+                          보완이 필요한 항목
+                        </h4>
+                        <ul className="space-y-2">
+                          {result.missingItems.map((item, index) => (
+                            <li key={index} className="flex items-start text-sm text-gray-600">
+                              <span className="mr-2 text-red-400">•</span>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <Calculator className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    왼쪽의 체크리스트를 작성하고<br />결과 확인하기 버튼을 눌러주세요.
+                  </p>
+                </div>
+              )}
+
+              {/* Guide Box */}
+              <div className="bg-emerald-900 rounded-2xl p-6 text-white shadow-lg">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-emerald-400" />
+                  입양 전 체크포인트
+                </h3>
+                <ul className="space-y-3 text-emerald-100 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    가족 모두의 동의가 있었나요?
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    경제적 부담을 고려하셨나요?
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-emerald-400">•</span>
+                    반려견과 함께할 시간이 충분한가요?
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

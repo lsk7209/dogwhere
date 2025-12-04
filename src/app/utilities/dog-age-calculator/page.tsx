@@ -1,15 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Metadata } from 'next'
-import { Calendar, Dog, Share2, Copy, Check } from 'lucide-react'
 import Link from 'next/link'
+import { Calendar, Dog, Share2, Copy, Check, ArrowLeft, Info, Baby, User, UserCheck } from 'lucide-react'
 
 // 견종별 환산 계수
 const breedMultipliers: Record<string, number> = {
-  'small': 7,    // 소형견 (푸들, 치와와, 요크셔테리어 등)
-  'medium': 6.5, // 중형견 (비글, 코커스패니얼, 샤페이 등)
-  'large': 6     // 대형견 (골든리트리버, 라布拉도르, 허스키 등)
+  'small': 7,    // 소형견
+  'medium': 6.5, // 중형견
+  'large': 6     // 대형견
 }
 
 export default function DogAgeCalculatorPage() {
@@ -18,33 +17,56 @@ export default function DogAgeCalculatorPage() {
   const [humanAge, setHumanAge] = useState<number>(0)
   const [copied, setCopied] = useState(false)
 
-  const calculateHumanAge = () => {
-    if (dogAge <= 0) {
+  const breedSizes = [
+    { id: 'small', label: '소형견', desc: '10kg 미만' },
+    { id: 'medium', label: '중형견', desc: '10-25kg' },
+    { id: 'large', label: '대형견', desc: '25kg 이상' }
+  ]
+
+  const calculateHumanAge = (age: number, size: string) => {
+    if (age <= 0) {
       setHumanAge(0)
       return
     }
-    
-    const multiplier = breedMultipliers[breedSize] || 7
-    const calculatedAge = Math.round(dogAge * multiplier * 10) / 10
-    setHumanAge(calculatedAge)
+
+    // 더 정교한 계산식 (AVMA 기준 참고)
+    // 첫 1년은 15세, 2년은 24세, 그 이후는 크기별로 다름
+    let calculatedAge = 0;
+    if (age <= 1) {
+      calculatedAge = age * 15;
+    } else if (age <= 2) {
+      calculatedAge = 15 + (age - 1) * 9;
+    } else {
+      const baseAge = 24;
+      const extraYears = age - 2;
+      let multiplier = 5; // 소형/중형 평균
+
+      if (size === 'small') multiplier = 4; // 소형견은 노화가 느림
+      else if (size === 'medium') multiplier = 5;
+      else if (size === 'large') multiplier = 6; // 대형견은 노화가 빠름
+
+      calculatedAge = baseAge + (extraYears * multiplier);
+    }
+
+    setHumanAge(Math.round(calculatedAge * 10) / 10)
   }
 
   const handleDogAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const age = parseFloat(e.target.value) || 0
     setDogAge(age)
-    calculateHumanAge()
+    calculateHumanAge(age, breedSize)
   }
 
-  const handleBreedSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setBreedSize(e.target.value)
-    calculateHumanAge()
+  const handleBreedSizeChange = (size: string) => {
+    setBreedSize(size)
+    calculateHumanAge(dogAge, size)
   }
 
   const shareResult = () => {
     if (humanAge === 0) return
-    
-    const text = `우리 강아지(${dogAge}살, ${breedSize === 'small' ? '소형견' : breedSize === 'medium' ? '중형견' : '대형견'})는 사람 나이로 약 ${humanAge}세입니다! 🐕`
-    
+
+    const text = `우리 강아지(${dogAge}살)는 사람 나이로 약 ${humanAge}세입니다! 🐕`
+
     if (navigator.share) {
       navigator.share({
         title: '반려견 나이 계산 결과',
@@ -58,146 +80,175 @@ export default function DogAgeCalculatorPage() {
     }
   }
 
+  const getLifeStage = (age: number) => {
+    if (age < 1) return { label: '퍼피 (Puppy)', desc: '호기심이 왕성하고 사회화가 중요한 시기', icon: Baby }
+    if (age < 3) return { label: '청년기 (Young Adult)', desc: '에너지가 넘치고 신체 능력이 최고조인 시기', icon: User }
+    if (age < 7) return { label: '성견 (Adult)', desc: '성격이 안정되고 건강 관리가 필요한 시기', icon: UserCheck }
+    return { label: '노령견 (Senior)', desc: '관절과 치아 등 세심한 건강 관리가 필요한 시기', icon: User }
+  }
+
+  const lifeStage = getLifeStage(dogAge)
+  const StageIcon = lifeStage.icon
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        {/* 헤더 */}
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link 
+          <Link
             href="/utilities"
-            className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center"
+            className="inline-flex items-center text-gray-500 hover:text-blue-600 mb-6 transition-colors"
           >
-            ← 유틸리티 목록으로
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Calendar className="w-10 h-10 text-blue-600 mr-3" />
-            반려견 나이 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            강아지의 나이와 견종을 입력하면 사람 나이로 환산해드립니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-100 rounded-2xl text-blue-600">
+              <Calendar className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">반려견 나이 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            우리 강아지의 시간은 사람과 다르게 흐릅니다. 정확한 나이를 확인해보세요.
           </p>
         </div>
 
-        {/* 계산기 카드 */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  견종 크기
-                </label>
-                <select
-                  value={breedSize}
-                  onChange={handleBreedSizeChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="small">소형견 (푸들, 치와와, 요크셔테리어 등)</option>
-                  <option value="medium">중형견 (비글, 코커스패니얼, 샤페이 등)</option>
-                  <option value="large">대형견 (골든리트리버, 라布拉도르, 허스키 등)</option>
-                </select>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Input Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Dog className="w-5 h-5 mr-2 text-blue-500" />
+                기본 정보 입력
+              </h2>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  강아지 나이 (살)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={dogAge || ''}
-                  onChange={handleDogAgeChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                  placeholder="예: 3"
-                />
+              <div className="space-y-8">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">견종 크기</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {breedSizes.map((size) => (
+                      <button
+                        key={size.id}
+                        onClick={() => handleBreedSizeChange(size.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-center ${breedSize === size.id
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-100 hover:border-blue-200 text-gray-600'
+                          }`}
+                      >
+                        <div className="font-bold mb-1">{size.label}</div>
+                        <div className="text-xs opacity-70">{size.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">강아지 나이 (살)</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      step="0.1"
+                      value={dogAge || ''}
+                      onChange={handleDogAgeChange}
+                      className="w-full pl-4 pr-12 py-3 border border-gray-200 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      placeholder="0"
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">살</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* 결과 영역 */}
-            <div className="flex flex-col justify-center">
+            {/* Life Stage Info */}
+            {dogAge > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-blue-50 rounded-full text-blue-600">
+                    <StageIcon className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">{lifeStage.label}</h3>
+                    <p className="text-gray-600">{lifeStage.desc}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
               {humanAge > 0 ? (
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 border-2 border-blue-200">
-                  <div className="text-center">
-                    <Dog className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                    <p className="text-sm text-gray-600 mb-2">사람 나이로 환산하면</p>
-                    <p className="text-5xl font-bold text-blue-700 mb-2">{humanAge}세</p>
-                    <p className="text-sm text-gray-500">
-                      {breedSize === 'small' ? '소형견' : breedSize === 'medium' ? '중형견' : '대형견'} 기준
-                    </p>
-                    
+                <div className="bg-white rounded-2xl shadow-lg border border-blue-100 overflow-hidden">
+                  <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-8 text-center text-white">
+                    <span className="text-sm font-semibold text-blue-100 uppercase tracking-wider">사람 나이 환산</span>
+                    <div className="text-5xl font-black my-4 flex items-end justify-center leading-none">
+                      {humanAge}
+                      <span className="text-2xl ml-2 font-medium text-blue-200 mb-1">세</span>
+                    </div>
+                    <div className="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
+                      약 {Math.floor(humanAge / 10) * 10}대 {humanAge % 10 < 5 ? '초반' : '후반'}
+                    </div>
+                  </div>
+
+                  <div className="p-6">
                     <button
                       onClick={shareResult}
-                      className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                      className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 px-4 rounded-xl transition-colors flex items-center justify-center font-medium border border-gray-200"
                     >
                       {copied ? (
                         <>
-                          <Check className="w-4 h-4" />
-                          <span>복사됨!</span>
+                          <Check className="w-4 h-4 mr-2 text-green-500" />
+                          복사되었습니다!
                         </>
                       ) : (
                         <>
-                          <Share2 className="w-4 h-4" />
-                          <span>결과 공유하기</span>
+                          <Share2 className="w-4 h-4 mr-2" />
+                          결과 공유하기
                         </>
                       )}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300 text-center">
-                  <p className="text-gray-500">강아지 나이를 입력해주세요</p>
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <User className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    강아지 나이를 입력하면<br />사람 나이로 계산해드립니다.
+                  </p>
                 </div>
               )}
+
+              {/* Guide Box */}
+              <div className="bg-indigo-900 rounded-2xl p-6 text-white shadow-lg">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <Info className="w-5 h-5 mr-2 text-indigo-400" />
+                  알아두세요
+                </h3>
+                <ul className="space-y-3 text-indigo-100 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    소형견은 대형견보다 노화가 느리게 진행됩니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    첫 2년 동안은 급격하게 성장하여 성견이 됩니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    이 계산은 평균적인 수치이며 개체 차이가 있습니다.
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* 안내 정보 */}
-        <div className="bg-blue-50 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 계산 방법</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li className="flex items-start">
-              <span className="mr-2">•</span>
-              <span><strong>소형견:</strong> 강아지 나이 × 7배 (예: 3살 → 약 21세)</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">•</span>
-              <span><strong>중형견:</strong> 강아지 나이 × 6.5배 (예: 3살 → 약 19.5세)</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">•</span>
-              <span><strong>대형견:</strong> 강아지 나이 × 6배 (예: 3살 → 약 18세)</span>
-            </li>
-          </ul>
-          <p className="mt-4 text-sm text-gray-600">
-            * 이 계산은 일반적인 기준이며, 개별 강아지의 건강 상태와 견종에 따라 차이가 있을 수 있습니다.
-          </p>
-        </div>
-
-        {/* 견종별 성장 특징 */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h3 className="font-bold text-gray-900 mb-2">소형견</h3>
-            <p className="text-sm text-gray-600">
-              작은 크기로 인해 성장이 빠르고 노화도 빨라지는 경향이 있습니다.
-            </p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h3 className="font-bold text-gray-900 mb-2">중형견</h3>
-            <p className="text-sm text-gray-600">
-              균형잡힌 성장 속도를 보이며 소형견보다 노화가 느립니다.
-            </p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h3 className="font-bold text-gray-900 mb-2">대형견</h3>
-            <p className="text-sm text-gray-600">
-              성장이 오래 걸리지만 일반적으로 더 오래 살 수 있습니다.
-            </p>
           </div>
         </div>
       </div>
     </div>
   )
 }
-

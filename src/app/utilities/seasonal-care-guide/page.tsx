@@ -1,434 +1,227 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Sun, Snowflake, Leaf, Cloud, Thermometer, Droplets, Shield } from 'lucide-react'
+import { Sun, CloudRain, Wind, Snowflake, ArrowLeft, Thermometer, Droplets, Umbrella, Heart, Scissors, Activity } from 'lucide-react'
 
-interface SeasonalCare {
-  season: string
-  icon: string
-  temperature: string
-  careTips: {
-    category: string
-    tips: string[]
-  }[]
-  warnings: string[]
-  activities: string[]
+interface SeasonData {
+  id: string
+  name: string
+  icon: any
+  color: string
+  bg: string
+  desc: string
+  tips: {
+    health: string[]
+    grooming: string[]
+    activity: string[]
+  }
 }
 
 export default function SeasonalCareGuidePage() {
   const [selectedSeason, setSelectedSeason] = useState<string>('spring')
-  const [currentWeather, setCurrentWeather] = useState({
-    temperature: 20,
-    humidity: 60,
-    condition: 'sunny'
-  })
+  const [temperature, setTemperature] = useState<number>(20)
 
-  const seasonalCareData: { [key: string]: SeasonalCare } = {
-    spring: {
-      season: '봄',
-      icon: '🌸',
-      temperature: '10-20°C',
-      careTips: [
-        {
-          category: '털 관리',
-          tips: [
-            '겨울털이 빠지므로 빗질을 자주 해주세요',
-            '털갈이로 인한 피부 자극을 주의하세요',
-            '정기적인 목욕으로 깨끗하게 유지하세요'
-          ]
-        },
-        {
-          category: '운동',
-          tips: [
-            '날씨가 좋아져 산책 시간을 늘려주세요',
-            '알레르기 물질이 많으니 주의하세요',
-            '점진적으로 활동량을 늘려가세요'
-          ]
-        },
-        {
-          category: '건강 관리',
-          tips: [
-            '기생충 예방약을 정기적으로 투여하세요',
-            '알레르기 증상이 있으면 수의사와 상담하세요',
-            '정기적인 건강 검진을 받으세요'
-          ]
-        }
-      ],
-      warnings: [
-        '꽃가루 알레르기 주의',
-        '기생충 활동 증가',
-        '급격한 온도 변화'
-      ],
-      activities: [
-        '공원 산책',
-        '털갈이 관리',
-        '알레르기 체크',
-        '기생충 예방'
-      ]
+  const seasons: SeasonData[] = [
+    {
+      id: 'spring',
+      name: '봄',
+      icon: Wind,
+      color: 'text-pink-600',
+      bg: 'bg-pink-50',
+      desc: '따뜻한 바람과 함께 찾아오는 털갈이와 알레르기의 계절',
+      tips: {
+        health: ['심장사상충 예방 시작하기', '꽃가루 알레르기 체크', '진드기 방지 목걸이 착용'],
+        grooming: ['죽은 털 빗질해주기 (털갈이)', '산책 후 발 닦기', '눈물 자국 관리'],
+        activity: ['산책 시간 점차 늘리기', '새로운 산책 코스 탐험', '노즈워크로 스트레스 해소']
+      }
     },
-    summer: {
-      season: '여름',
-      icon: '☀️',
-      temperature: '25-35°C',
-      careTips: [
-        {
-          category: '온도 관리',
-          tips: [
-            '실내 온도를 24-26°C로 유지하세요',
-            '에어컨을 사용할 때는 직접적인 바람을 피하세요',
-            '충분한 음수를 제공하세요'
-          ]
-        },
-        {
-          category: '산책 관리',
-          tips: [
-            '아침이나 저녁 시간대에 산책하세요',
-            '뜨거운 아스팔트를 피하세요',
-            '그늘에서 충분히 휴식을 취하세요'
-          ]
-        },
-        {
-          category: '피부 관리',
-          tips: [
-            '정기적인 목욕으로 시원하게 해주세요',
-            '발가락 사이를 자주 확인하세요',
-            '햇빛 화상에 주의하세요'
-          ]
-        }
-      ],
-      warnings: [
-        '열사병 위험',
-        '뜨거운 아스팔트 화상',
-        '탈수 위험'
-      ],
-      activities: [
-        '이른 아침 산책',
-        '수영장 놀이',
-        '시원한 곳에서 휴식',
-        '충분한 수분 섭취'
-      ]
+    {
+      id: 'summer',
+      name: '여름',
+      icon: Sun,
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
+      desc: '뜨거운 태양 아래 열사병과 탈수를 조심해야 하는 계절',
+      tips: {
+        health: ['열사병 증상 미리 알기', '충분한 수분 섭취', '자외선 차단제 바르기'],
+        grooming: ['발바닥 털 짧게 정리', '잦은 목욕보다는 물수건', '쿨링 조끼 착용'],
+        activity: ['이른 아침/늦은 밤 산책', '수영이나 물놀이', '실내 에어컨 놀이']
+      }
     },
-    autumn: {
-      season: '가을',
-      icon: '🍂',
-      temperature: '10-20°C',
-      careTips: [
-        {
-          category: '털 관리',
-          tips: [
-            '겨울털이 자라므로 영양 관리가 중요합니다',
-            '정기적인 빗질로 털을 건강하게 유지하세요',
-            '피부 건조를 방지하세요'
-          ]
-        },
-        {
-          category: '운동',
-          tips: [
-            '선선한 날씨에 충분한 운동을 시켜주세요',
-            '활동량을 점진적으로 늘려가세요',
-            '실내외 활동을 균형있게 하세요'
-          ]
-        },
-        {
-          category: '건강 관리',
-          tips: [
-            '면역력 강화를 위한 영양 관리',
-            '정기적인 건강 검진',
-            '추위에 대비한 준비'
-          ]
-        }
-      ],
-      warnings: [
-        '급격한 온도 변화',
-        '피부 건조',
-        '활동량 감소'
-      ],
-      activities: [
-        '가을 산책',
-        '털 관리',
-        '영양 보충',
-        '실내 놀이'
-      ]
+    {
+      id: 'autumn',
+      name: '가을',
+      icon: CloudRain,
+      color: 'text-amber-700',
+      bg: 'bg-amber-50',
+      desc: '선선한 날씨에 살찌기 쉽고 피부가 건조해지는 계절',
+      tips: {
+        health: ['체중 관리 신경 쓰기', '환절기 감기 조심', '종합 백신 접종 확인'],
+        grooming: ['보습제 발라주기', '겨울 털 준비 빗질', '발톱 관리'],
+        activity: ['등산이나 긴 산책', '어질리티 도전', '낙엽 밟기 놀이']
+      }
     },
-    winter: {
-      season: '겨울',
-      icon: '❄️',
-      temperature: '-5-10°C',
-      careTips: [
-        {
-          category: '보온 관리',
-          tips: [
-            '실내 온도를 20-22°C로 유지하세요',
-            '따뜻한 침구를 제공하세요',
-            '바닥에 매트를 깔아주세요'
-          ]
-        },
-        {
-          category: '산책 관리',
-          tips: [
-            '추운 날씨에는 짧은 산책을 하세요',
-            '방한복을 입혀주세요',
-            '눈이나 얼음을 피하세요'
-          ]
-        },
-        {
-          category: '피부 관리',
-          tips: [
-            '실내 습도를 적절히 유지하세요',
-            '발가락 사이를 자주 확인하세요',
-            '건조한 피부를 보습해주세요'
-          ]
-        }
-      ],
-      warnings: [
-        '저체온증 위험',
-        '눈과 얼음 화상',
-        '활동량 감소로 인한 비만'
-      ],
-      activities: [
-        '실내 놀이',
-        '짧은 산책',
-        '따뜻한 휴식',
-        '영양 관리'
-      ]
+    {
+      id: 'winter',
+      name: '겨울',
+      icon: Snowflake,
+      color: 'text-sky-600',
+      bg: 'bg-sky-50',
+      desc: '추위와 염화칼슘으로부터 발바닥을 지켜야 하는 계절',
+      tips: {
+        health: ['실내 온도/습도 유지', '관절염 주의 (미끄럼)', '저체온증 예방'],
+        grooming: ['발바닥 보습 밤 바르기', '정전기 방지 스프레이', '따뜻한 옷 입히기'],
+        activity: ['짧고 굵은 산책', '실내 터그 놀이', '염화칼슘 피해서 걷기']
+      }
     }
+  ]
+
+  const currentSeason = seasons.find(s => s.id === selectedSeason)!
+
+  const getTempAdvice = (temp: number) => {
+    if (temp >= 30) return { text: '위험! 야외 활동을 자제하세요.', color: 'text-red-600', bg: 'bg-red-100' }
+    if (temp >= 25) return { text: '주의! 그늘 위주로 짧게 산책하세요.', color: 'text-orange-600', bg: 'bg-orange-100' }
+    if (temp <= -5) return { text: '위험! 방한복 필수, 짧게 산책하세요.', color: 'text-blue-600', bg: 'bg-blue-100' }
+    if (temp <= 5) return { text: '주의! 옷을 입히고 체온 유지에 신경 쓰세요.', color: 'text-sky-600', bg: 'bg-sky-100' }
+    return { text: '산책하기 딱 좋은 날씨입니다!', color: 'text-green-600', bg: 'bg-green-100' }
   }
 
-  const weatherIcons = {
-    sunny: '☀️',
-    cloudy: '☁️',
-    rainy: '🌧️',
-    snowy: '❄️'
-  }
-
-  const getWeatherIcon = (condition: string) => {
-    return weatherIcons[condition as keyof typeof weatherIcons] || '☀️'
-  }
-
-  const getTemperatureColor = (temp: number) => {
-    if (temp < 0) return 'text-blue-600'
-    if (temp < 10) return 'text-blue-500'
-    if (temp < 20) return 'text-green-500'
-    if (temp < 30) return 'text-yellow-500'
-    return 'text-red-500'
-  }
-
-  const getTemperatureAdvice = (temp: number) => {
-    if (temp < 0) return '매우 추운 날씨입니다. 실내 활동을 권장합니다.'
-    if (temp < 10) return '추운 날씨입니다. 짧은 산책을 권장합니다.'
-    if (temp < 20) return '적당한 날씨입니다. 일반적인 활동이 가능합니다.'
-    if (temp < 30) return '따뜻한 날씨입니다. 충분한 수분을 제공하세요.'
-    return '매우 더운 날씨입니다. 실내 활동을 권장합니다.'
-  }
+  const advice = getTempAdvice(temperature)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Sun className="w-10 h-10 text-orange-600 mr-3" />
-            계절별 케어 가이드
-          </h1>
-          <p className="text-xl text-gray-600">봄, 여름, 가을, 겨울별 반려견 케어 방법을 제공합니다</p>
+          <div className="flex items-center gap-4 mb-4">
+            <div className={`p-3 rounded-2xl ${currentSeason.bg} ${currentSeason.color}`}>
+              <currentSeason.icon className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">계절별 케어 가이드</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            사계절 내내 건강하고 행복하게, 시기별 맞춤 관리법을 확인하세요.
+          </p>
+        </div>
+
+        {/* Season Selector */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {seasons.map((season) => (
+            <button
+              key={season.id}
+              onClick={() => setSelectedSeason(season.id)}
+              className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedSeason === season.id
+                  ? `${season.bg} ${season.color} border-current`
+                  : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'
+                }`}
+            >
+              <season.icon className="w-8 h-8" />
+              <span className="font-bold">{season.name}</span>
+            </button>
+          ))}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Care Tips */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">계절 선택</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(seasonalCareData).map(([key, data]) => (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedSeason(key)}
-                    className={`p-4 rounded-lg border-2 transition-colors ${
-                      selectedSeason === key
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="text-3xl mb-2">{data.icon}</div>
-                    <div className="font-semibold text-gray-900">{data.season}</div>
-                    <div className="text-sm text-gray-600">{data.temperature}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className={`text-xl font-bold mb-2 ${currentSeason.color}`}>
+                {currentSeason.name}철 건강 관리
+              </h2>
+              <p className="text-gray-600 mb-8">{currentSeason.desc}</p>
 
-            {selectedSeason && (
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <div className="flex items-center mb-6">
-                  <span className="text-4xl mr-4">{seasonalCareData[selectedSeason].icon}</span>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{seasonalCareData[selectedSeason].season} 케어 가이드</h2>
-                    <p className="text-gray-600">온도: {seasonalCareData[selectedSeason].temperature}</p>
-                  </div>
+              <div className="space-y-8">
+                <div>
+                  <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    건강 체크포인트
+                  </h3>
+                  <ul className="space-y-3">
+                    {currentSeason.tips.health.map((tip, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-gray-700 bg-gray-50 p-3 rounded-lg">
+                        <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentSeason.bg.replace('bg-', 'bg-slate-400')}`} />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="space-y-6">
-                  {seasonalCareData[selectedSeason].careTips.map((category, index) => (
-                    <div key={index} className="border-l-4 border-blue-500 pl-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">{category.category}</h3>
-                      <ul className="space-y-2">
-                        {category.tips.map((tip, tipIndex) => (
-                          <li key={tipIndex} className="flex items-start">
-                            <span className="text-green-500 mr-2 mt-1">✓</span>
-                            <span className="text-gray-700">{tip}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                <div>
+                  <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+                    <Scissors className="w-5 h-5 text-blue-500" />
+                    미용 및 위생
+                  </h3>
+                  <ul className="space-y-3">
+                    {currentSeason.tips.grooming.map((tip, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-gray-700 bg-gray-50 p-3 rounded-lg">
+                        <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentSeason.bg.replace('bg-', 'bg-slate-400')}`} />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="mt-8 grid md:grid-cols-2 gap-6">
-                  <div className="bg-red-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-red-900 mb-3 flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      주의사항
-                    </h3>
-                    <ul className="space-y-2">
-                      {seasonalCareData[selectedSeason].warnings.map((warning, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-red-500 mr-2 mt-1">⚠️</span>
-                          <span className="text-red-700">{warning}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-green-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-green-900 mb-3">추천 활동</h3>
-                    <ul className="space-y-2">
-                      {seasonalCareData[selectedSeason].activities.map((activity, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-green-500 mr-2 mt-1">🎯</span>
-                          <span className="text-green-700">{activity}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                <div>
+                  <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-4">
+                    <Activity className="w-5 h-5 text-green-500" />
+                    활동 및 산책
+                  </h3>
+                  <ul className="space-y-3">
+                    {currentSeason.tips.activity.map((tip, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-gray-700 bg-gray-50 p-3 rounded-lg">
+                        <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${currentSeason.bg.replace('bg-', 'bg-slate-400')}`} />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">현재 날씨</h2>
-              <div className="space-y-4">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">{getWeatherIcon(currentWeather.condition)}</div>
-                  <div className={`text-3xl font-bold ${getTemperatureColor(currentWeather.temperature)}`}>
-                    {currentWeather.temperature}°C
-                  </div>
-                  <div className="text-sm text-gray-600">습도: {currentWeather.humidity}%</div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">온도</label>
-                    <input
-                      type="range"
-                      min="-10"
-                      max="40"
-                      value={currentWeather.temperature}
-                      onChange={(e) => setCurrentWeather({...currentWeather, temperature: parseInt(e.target.value)})}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>-10°C</span>
-                      <span>40°C</span>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">습도</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={currentWeather.humidity}
-                      onChange={(e) => setCurrentWeather({...currentWeather, humidity: parseInt(e.target.value)})}
-                      className="w-full"
-                    />
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
-                      <span>0%</span>
-                      <span>100%</span>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">날씨</label>
-                    <select
-                      value={currentWeather.condition}
-                      onChange={(e) => setCurrentWeather({...currentWeather, condition: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    >
-                      <option value="sunny">맑음</option>
-                      <option value="cloudy">흐림</option>
-                      <option value="rainy">비</option>
-                      <option value="snowy">눈</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    {getTemperatureAdvice(currentWeather.temperature)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">계절별 체크리스트</h2>
-              <div className="space-y-4">
-                {Object.entries(seasonalCareData).map(([key, data]) => (
-                  <div key={key} className="border-2 border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center mb-3">
-                      <span className="text-2xl mr-3">{data.icon}</span>
-                      <h3 className="font-semibold text-gray-900">{data.season}</h3>
-                    </div>
-                    <div className="space-y-2">
-                      {data.activities.slice(0, 3).map((activity, index) => (
-                        <div key={index} className="flex items-center text-sm text-gray-600">
-                          <span className="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
-                          {activity}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-orange-50 rounded-lg p-6 mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">🌡️ 계절별 케어 핵심 포인트</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-            <div>
-              <h3 className="font-semibold mb-2">봄/가을</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 털갈이 관리와 정기적인 빗질</li>
-                <li>• 알레르기 물질 주의</li>
-                <li>• 기생충 예방 관리</li>
-                <li>• 적절한 운동량 유지</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">여름/겨울</h3>
-              <ul className="space-y-1 text-sm">
-                <li>• 온도 관리와 실내 환경 조성</li>
-                <li>• 충분한 수분 공급</li>
-                <li>• 산책 시간 조절</li>
-                <li>• 피부 건강 관리</li>
-              </ul>
+          {/* Right Column: Weather Simulator */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Thermometer className="w-5 h-5 mr-2 text-gray-500" />
+                오늘의 산책 지수
+              </h2>
+
+              <div className="text-center py-8 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
+                <div className="text-5xl font-black text-gray-900 mb-2">
+                  {temperature}°C
+                </div>
+                <div className="text-sm text-gray-500">현재 기온</div>
+              </div>
+
+              <div className="mb-6">
+                <input
+                  type="range"
+                  min="-20"
+                  max="40"
+                  value={temperature}
+                  onChange={(e) => setTemperature(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-900"
+                />
+                <div className="flex justify-between text-xs text-gray-400 mt-2">
+                  <span>-20°C</span>
+                  <span>0°C</span>
+                  <span>20°C</span>
+                  <span>40°C</span>
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-xl text-sm font-bold text-center leading-relaxed ${advice.bg} ${advice.color}`}>
+                {advice.text}
+              </div>
             </div>
           </div>
         </div>

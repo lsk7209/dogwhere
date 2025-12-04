@@ -2,180 +2,210 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Plane, Calculator } from 'lucide-react'
+import { Plane, Calculator, ArrowLeft, Hotel, Car, Utensils, DollarSign, Wallet, AlertCircle } from 'lucide-react'
 
 export default function TravelCostCalculatorPage() {
-  const [travelType, setTravelType] = useState<string>('domestic')
-  const [duration, setDuration] = useState<number>(2)
-  const [accommodationType, setAccommodationType] = useState<string>('petFriendly')
-  const [result, setResult] = useState<{
-    totalCost: number
-    breakdown: Array<{ item: string; cost: number }>
-    recommendation: string
-  } | null>(null)
+  const [days, setDays] = useState<number>(2)
+  const [people, setPeople] = useState<number>(2)
+  const [transport, setTransport] = useState<'car' | 'train' | 'flight'>('car')
+  const [stay, setStay] = useState<'pension' | 'hotel' | 'camping'>('pension')
 
   const calculate = () => {
-    if (duration <= 0) return
+    let total = 0
 
-    const breakdown: Array<{ item: string; cost: number }> = []
-    let totalCost = 0
+    // Transport (Round trip)
+    const transportCost = transport === 'car' ? 50000 : transport === 'train' ? 80000 * people : 200000 * people
 
-    // 교통비
-    if (travelType === 'domestic') {
-      const transportCost = 50000 // 국내 여행 교통비 (렌터카 등)
-      breakdown.push({ item: '교통비', cost: transportCost })
-      totalCost += transportCost
-    } else {
-      const transportCost = 200000 // 해외 여행 교통비 (항공료 등)
-      breakdown.push({ item: '교통비 (항공료)', cost: transportCost })
-      totalCost += transportCost
-    }
+    // Stay (Per night)
+    const stayCost = (stay === 'pension' ? 150000 : stay === 'hotel' ? 250000 : 80000) * days
 
-    // 숙소비
-    let accommodationCost = 0
-    if (accommodationType === 'petFriendly') {
-      accommodationCost = 100000 * duration // 펫프렌들리 숙소
-    } else if (accommodationType === 'hotel') {
-      accommodationCost = 150000 * duration // 펫 동반 호텔
-    } else {
-      accommodationCost = 80000 * duration // 펜션
-    }
-    breakdown.push({ item: `숙소비 (${duration}박)`, cost: accommodationCost })
-    totalCost += accommodationCost
+    // Pet Fee (Per night)
+    const petFee = (stay === 'hotel' ? 30000 : 20000) * days
 
-    // 식비
-    const foodCost = 50000 * duration
-    breakdown.push({ item: '식비', cost: foodCost })
-    totalCost += foodCost
+    // Food (Per person per day)
+    const foodCost = 40000 * people * days
 
-    // 기타 비용 (입장료, 간식 등)
-    const otherCost = 30000 * duration
-    breakdown.push({ item: '기타 비용', cost: otherCost })
-    totalCost += otherCost
+    total = transportCost + stayCost + petFee + foodCost
 
-    let recommendation = ''
-    if (travelType === 'domestic') {
-      recommendation = '국내 여행은 비교적 저렴하게 즐길 수 있습니다. 펫프렌들리 숙소를 미리 예약하세요.'
-    } else {
-      recommendation = '해외 여행은 추가 서류와 검역 비용이 필요합니다. 충분한 준비와 예산을 확보하세요.'
-    }
-
-    setResult({
-      totalCost,
-      breakdown,
-      recommendation
-    })
+    return { total, transportCost, stayCost, petFee, foodCost }
   }
 
+  const costs = calculate()
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-green-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Plane className="w-10 h-10 text-indigo-600 mr-3" />
-            여행 비용 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            강아지 동반 여행 비용을 계산합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-green-100 rounded-2xl text-green-600">
+              <Plane className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">여행 예산 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            설레는 여행, 예산부터 꼼꼼하게 챙겨보세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  여행 종류
-                </label>
-                <select
-                  value={travelType}
-                  onChange={(e) => setTravelType(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="domestic">국내 여행</option>
-                  <option value="international">해외 여행</option>
-                </select>
-              </div>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Input */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Calculator className="w-5 h-5 mr-2 text-green-500" />
+                여행 정보
+              </h2>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  여행 기간 (박)
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={duration || ''}
-                  onChange={(e) => setDuration(parseInt(e.target.value) || 1)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                숙소 종류
-              </label>
-              <select
-                value={accommodationType}
-                onChange={(e) => setAccommodationType(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-              >
-                <option value="petFriendly">펫프렌들리 숙소</option>
-                <option value="hotel">펫 동반 호텔</option>
-                <option value="pension">펜션</option>
-              </select>
-            </div>
-
-            <button
-              onClick={calculate}
-              className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-lg"
-            >
-              계산하기
-            </button>
-
-            {result && (
-              <div className="bg-indigo-50 border-2 border-indigo-200 rounded-lg p-6 space-y-4">
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm text-gray-600 mb-1">총 예상 비용</p>
-                  <p className="text-4xl font-bold text-indigo-700">{result.totalCost.toLocaleString()}원</p>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">여행 기간 ({days}박 {days + 1}일)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="14"
+                    value={days}
+                    onChange={(e) => setDays(parseInt(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+                  />
                 </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">비용 내역</p>
-                  <div className="space-y-2">
-                    {result.breakdown.map((item, index) => (
-                      <div key={index} className="flex justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-gray-700">{item.item}</span>
-                        <span className="font-semibold text-indigo-700">{item.cost.toLocaleString()}원</span>
-                      </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">인원 ({people}명)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="6"
+                    value={people}
+                    onChange={(e) => setPeople(parseInt(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">이동 수단</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: 'car', label: '자차', icon: Car },
+                      { id: 'train', label: '기차', icon: Calculator }, // Using Calculator as placeholder for Train
+                      { id: 'flight', label: '비행기', icon: Plane },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setTransport(item.id as any)}
+                        className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${transport === item.id
+                            ? 'border-green-500 bg-green-50 text-green-700'
+                            : 'border-gray-100 hover:border-green-200 text-gray-600'
+                          }`}
+                      >
+                        <item.icon className="w-6 h-6" />
+                        <span className="font-bold text-xs">{item.label}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">권장사항</p>
-                  <p className="text-gray-700">{result.recommendation}</p>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">숙소 유형</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { id: 'pension', label: '펜션' },
+                      { id: 'hotel', label: '호텔' },
+                      { id: 'camping', label: '캠핑' },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setStay(item.id as any)}
+                        className={`py-3 rounded-xl border-2 transition-all font-bold text-sm ${stay === item.id
+                            ? 'border-green-500 bg-green-50 text-green-700'
+                            : 'border-gray-100 hover:border-green-200 text-gray-600'
+                          }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        <div className="bg-indigo-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 여행 비용 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 국내 여행은 해외 여행보다 저렴합니다</li>
-            <li>• 펫프렌들리 숙소는 일반 숙소보다 비쌀 수 있습니다</li>
-            <li>• 해외 여행은 항공료와 검역 비용이 추가됩니다</li>
-            <li>• 여행 기간이 길수록 비용이 증가합니다</li>
-            <li>• 시즌별로 숙소 가격이 달라질 수 있습니다</li>
-            <li>• 여행 보험 가입을 고려하세요</li>
-            <li>• 응급 상황을 대비한 예비 비용을 준비하세요</li>
-          </ul>
+          {/* Right Column: Receipt */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 relative overflow-hidden">
+              {/* Receipt Decoration */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-teal-500" />
+
+              <h2 className="text-lg font-bold text-gray-900 mb-8 flex items-center justify-between">
+                <span className="flex items-center">
+                  <Wallet className="w-5 h-5 mr-2 text-green-500" />
+                  예상 견적서
+                </span>
+                <span className="text-sm text-gray-400 font-normal">
+                  {new Date().toLocaleDateString()} 기준
+                </span>
+              </h2>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Car className="w-5 h-5 text-gray-400" />
+                    <span className="font-medium text-gray-700">교통비</span>
+                  </div>
+                  <span className="font-bold text-gray-900">{costs.transportCost.toLocaleString()}원</span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Hotel className="w-5 h-5 text-gray-400" />
+                    <span className="font-medium text-gray-700">숙박비 ({days}박)</span>
+                  </div>
+                  <span className="font-bold text-gray-900">{costs.stayCost.toLocaleString()}원</span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-green-50 rounded-xl border border-green-100">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-5 h-5 text-green-500" />
+                    <span className="font-medium text-green-700">반려견 추가 요금</span>
+                  </div>
+                  <span className="font-bold text-green-700">{costs.petFee.toLocaleString()}원</span>
+                </div>
+
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <Utensils className="w-5 h-5 text-gray-400" />
+                    <span className="font-medium text-gray-700">식비 및 기타</span>
+                  </div>
+                  <span className="font-bold text-gray-900">{costs.foodCost.toLocaleString()}원</span>
+                </div>
+              </div>
+
+              <div className="border-t-2 border-dashed border-gray-200 pt-6 flex justify-between items-end">
+                <span className="text-gray-500 font-medium">총 예상 비용</span>
+                <span className="text-4xl font-black text-green-600">
+                  {costs.total.toLocaleString()}
+                  <span className="text-lg text-gray-400 ml-1 font-normal">원</span>
+                </span>
+              </div>
+
+              <div className="mt-6 flex items-start gap-2 text-sm text-gray-500 bg-gray-50 p-4 rounded-xl">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <p>
+                  성수기/비수기에 따라 숙박비와 항공권 가격이 크게 달라질 수 있습니다.
+                  위 견적은 평균적인 비용을 기준으로 계산되었습니다.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

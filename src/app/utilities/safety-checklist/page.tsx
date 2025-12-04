@@ -1,267 +1,272 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Shield, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Shield, CheckCircle, AlertTriangle, ArrowLeft, Utensils, Sofa, Bath, TreePine, Home, Info, ChevronDown, ChevronUp } from 'lucide-react'
 
 interface SafetyItem {
   id: string
-  category: string
-  item: string
+  text: string
+  desc: string
   checked: boolean
   priority: 'high' | 'medium' | 'low'
-  notes: string
+}
+
+interface Category {
+  id: string
+  name: string
+  icon: any
+  items: SafetyItem[]
 }
 
 export default function SafetyChecklistPage() {
-  const [items, setItems] = useState<SafetyItem[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-
-  const safetyCategories = {
-    indoor: {
-      name: '실내 안전',
+  const [categories, setCategories] = useState<Category[]>([
+    {
+      id: 'kitchen',
+      name: '주방',
+      icon: Utensils,
       items: [
-        { item: '전선과 코드가 강아지가 닿지 않는 곳에 있는가?', priority: 'high' },
-        { item: '위험한 화학물질이 잠겨있거나 높은 곳에 있는가?', priority: 'high' },
-        { item: '작은 물건들이 바닥에 떨어져 있지 않은가?', priority: 'high' },
-        { item: '쓰레기통이 강아지가 열 수 없도록 되어 있는가?', priority: 'medium' },
-        { item: '화장실 문이 항상 닫혀있는가?', priority: 'medium' },
-        { item: '가구 모서리가 안전하게 처리되어 있는가?', priority: 'low' }
+        { id: 'k1', text: '쓰레기통 뚜껑', desc: '쉽게 열 수 없는 뚜껑이 있는 쓰레기통 사용', checked: false, priority: 'high' },
+        { id: 'k2', text: '위험 음식 보관', desc: '초콜릿, 포도, 양파 등은 닿지 않는 곳에 보관', checked: false, priority: 'high' },
+        { id: 'k3', text: '세제 및 화학물질', desc: '하부장 잠금장치 설치 또는 높은 곳 보관', checked: false, priority: 'high' },
+        { id: 'k4', text: '날카로운 도구', desc: '칼, 가위 등은 사용 후 즉시 정리', checked: false, priority: 'medium' }
       ]
     },
-    outdoor: {
-      name: '실외 안전',
+    {
+      id: 'living',
+      name: '거실/방',
+      icon: Sofa,
       items: [
-        { item: '울타리가 안전하고 탈출할 구멍이 없는가?', priority: 'high' },
-        { item: '독성 식물이 없는가?', priority: 'high' },
-        { item: '연못이나 수영장이 안전하게 막혀있는가?', priority: 'high' },
-        { item: '야외 화학물질이 안전하게 보관되어 있는가?', priority: 'medium' },
-        { item: '그늘진 곳이 충분한가?', priority: 'medium' },
-        { item: '야외 전기 시설이 안전한가?', priority: 'low' }
+        { id: 'l1', text: '전선 정리', desc: '전선 보호관 사용 또는 숨김 처리', checked: false, priority: 'high' },
+        { id: 'l2', text: '작은 물건', desc: '동전, 액세서리, 장난감 부품 등 삼킴 위험 제거', checked: false, priority: 'high' },
+        { id: 'l3', text: '식물 확인', desc: '백합, 튤립 등 독성 식물 치우기', checked: false, priority: 'medium' },
+        { id: 'l4', text: '가구 틈새', desc: '끼일 수 있는 좁은 틈새 막기', checked: false, priority: 'low' }
       ]
     },
-    food: {
-      name: '음식 안전',
+    {
+      id: 'bathroom',
+      name: '욕실',
+      icon: Bath,
       items: [
-        { item: '강아지에게 위험한 음식이 접근 불가능한가?', priority: 'high' },
-        { item: '사료가 신선하고 적절히 보관되어 있는가?', priority: 'medium' },
-        { item: '물 그릇이 깨끗하고 신선한가?', priority: 'medium' },
-        { item: '간식이 적절한 양으로 제공되는가?', priority: 'low' }
+        { id: 'b1', text: '변기 뚜껑', desc: '익사 사고 및 세균 감염 방지', checked: false, priority: 'medium' },
+        { id: 'b2', text: '욕실 용품', desc: '샴푸, 면도기 등은 선반 위에 보관', checked: false, priority: 'medium' },
+        { id: 'b3', text: '바닥 미끄럼', desc: '미끄럼 방지 매트 설치', checked: false, priority: 'low' }
       ]
     },
-    emergency: {
-      name: '응급 대비',
+    {
+      id: 'outdoor',
+      name: '현관/베란다',
+      icon: TreePine,
       items: [
-        { item: '응급 연락처가 준비되어 있는가?', priority: 'high' },
-        { item: '응급처치용품이 준비되어 있는가?', priority: 'high' },
-        { item: '강아지의 의료 기록이 준비되어 있는가?', priority: 'medium' },
-        { item: '탈출 시 대비책이 있는가?', priority: 'medium' }
+        { id: 'o1', text: '중문/안전문', desc: '갑작스러운 뛰쳐나감 방지', checked: false, priority: 'high' },
+        { id: 'o2', text: '방충망 확인', desc: '찢어진 곳이나 쉽게 열리는지 확인', checked: false, priority: 'high' },
+        { id: 'o3', text: '신발 정리', desc: '신발 씹기 방지 및 이물질 섭취 예방', checked: false, priority: 'medium' }
       ]
     }
-  }
+  ])
 
-  useEffect(() => {
-    const saved = localStorage.getItem('safetyChecklist')
-    if (saved) {
-      try {
-        setItems(JSON.parse(saved))
-      } catch (e) {
-        initializeItems()
+  const [expandedCategory, setExpandedCategory] = useState<string | null>('kitchen')
+
+  const toggleItem = (categoryId: string, itemId: string) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          items: cat.items.map(item =>
+            item.id === itemId ? { ...item, checked: !item.checked } : item
+          )
+        }
       }
-    } else {
-      initializeItems()
-    }
-  }, [])
-
-  useEffect(() => {
-    if (items.length > 0) {
-      localStorage.setItem('safetyChecklist', JSON.stringify(items))
-    }
-  }, [items])
-
-  const initializeItems = () => {
-    const allItems: SafetyItem[] = []
-    Object.entries(safetyCategories).forEach(([categoryKey, category]) => {
-      category.items.forEach((item, index) => {
-        allItems.push({
-          id: `${categoryKey}-${index}`,
-          category: categoryKey,
-          item: item.item,
-          checked: false,
-          priority: item.priority as 'high' | 'medium' | 'low',
-          notes: ''
-        })
-      })
-    })
-    setItems(allItems)
-  }
-
-  const toggleItem = (itemId: string) => {
-    setItems(items.map(item => 
-      item.id === itemId 
-        ? { ...item, checked: !item.checked }
-        : item
-    ))
-  }
-
-  const updateNotes = (itemId: string, notes: string) => {
-    setItems(items.map(item => 
-      item.id === itemId 
-        ? { ...item, notes }
-        : item
-    ))
+      return cat
+    }))
   }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'text-red-600 bg-red-100'
-      case 'medium': return 'text-yellow-600 bg-yellow-100'
-      case 'low': return 'text-green-600 bg-green-100'
+      case 'high': return 'text-red-600 bg-red-100 border-red-200'
+      case 'medium': return 'text-amber-600 bg-amber-100 border-amber-200'
+      case 'low': return 'text-blue-600 bg-blue-100 border-blue-200'
       default: return 'text-gray-600 bg-gray-100'
     }
   }
 
-  const getPriorityText = (priority: string) => {
+  const getPriorityLabel = (priority: string) => {
     switch (priority) {
-      case 'high': return '높음'
-      case 'medium': return '보통'
-      case 'low': return '낮음'
-      default: return priority
+      case 'high': return '필수'
+      case 'medium': return '권장'
+      case 'low': return '참고'
+      default: return ''
     }
   }
 
-  const filteredItems = selectedCategory === 'all' 
-    ? items 
-    : items.filter(item => item.category === selectedCategory)
-
-  const completedCount = filteredItems.filter(item => item.checked).length
-  const totalCount = filteredItems.length
-  const highPriorityUnchecked = filteredItems.filter(item => item.priority === 'high' && !item.checked).length
+  const totalItems = categories.reduce((acc, cat) => acc + cat.items.length, 0)
+  const checkedItems = categories.reduce((acc, cat) => acc + cat.items.filter(i => i.checked).length, 0)
+  const progress = Math.round((checkedItems / totalItems) * 100)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-red-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Shield className="w-10 h-10 text-blue-600 mr-3" />
-            안전 체크리스트
-          </h1>
-          <p className="text-xl text-gray-600">집안 안전사항을 정기적으로 점검하고 관리합니다</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-900">{completedCount}/{totalCount}</p>
-            <p className="text-sm text-gray-600">완료된 항목</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-2xl font-bold text-gray-900">
-              {totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0}%
-            </p>
-            <p className="text-sm text-gray-600">완료율</p>
-          </div>
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-2xl font-bold text-red-600">{highPriorityUnchecked}</p>
-            <p className="text-sm text-gray-600">높은 우선순위 미완료</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">카테고리 선택</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`p-3 rounded-lg border transition-colors ${
-                selectedCategory === 'all'
-                  ? 'border-blue-400 bg-blue-50 text-blue-700'
-                  : 'border-gray-300 bg-white hover:bg-gray-50'
-              }`}
-            >
-              전체
-            </button>
-            {Object.entries(safetyCategories).map(([key, category]) => (
-              <button
-                key={key}
-                onClick={() => setSelectedCategory(key)}
-                className={`p-3 rounded-lg border transition-colors ${
-                  selectedCategory === key
-                    ? 'border-blue-400 bg-blue-50 text-blue-700'
-                    : 'border-gray-300 bg-white hover:bg-gray-50'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {highPriorityUnchecked > 0 && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-6">
-            <div className="flex items-center space-x-2 mb-4">
-              <AlertTriangle className="w-6 h-6 text-red-600" />
-              <h2 className="text-xl font-bold text-red-800">높은 우선순위 미완료 항목</h2>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-red-100 rounded-2xl text-red-600">
+              <Shield className="w-8 h-8" />
             </div>
-            <p className="text-red-700">
-              {highPriorityUnchecked}개의 높은 우선순위 안전 항목이 아직 완료되지 않았습니다. 
-              이 항목들을 우선적으로 점검해주세요.
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">우리집 안전 체크리스트</h1>
           </div>
-        )}
+          <p className="text-xl text-gray-600 leading-relaxed">
+            호기심 많은 강아지에게 집은 위험한 놀이터일 수 있습니다.
+          </p>
+        </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            {selectedCategory === 'all' ? '전체 안전 체크리스트' : safetyCategories[selectedCategory as keyof typeof safetyCategories]?.name}
-          </h2>
-          <div className="space-y-4">
-            {filteredItems.map((item) => (
-              <div key={item.id} className="border-2 border-gray-200 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <button
-                    onClick={() => toggleItem(item.id)}
-                    className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                      item.checked
-                        ? 'bg-green-600 border-green-600 text-white'
-                        : 'border-gray-300 hover:border-green-400'
-                    }`}
-                  >
-                    {item.checked && <CheckCircle className="w-4 h-4" />}
-                  </button>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <p className={`font-medium ${item.checked ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                        {item.item}
-                      </p>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(item.priority)}`}>
-                        {getPriorityText(item.priority)}
-                      </span>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Checklist */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Home className="w-5 h-5 mr-2 text-red-500" />
+                구역별 점검
+              </h2>
+
+              <div className="space-y-4">
+                {categories.map((category) => {
+                  const isExpanded = expandedCategory === category.id
+                  const categoryChecked = category.items.filter(i => i.checked).length
+                  const categoryTotal = category.items.length
+                  const isComplete = categoryChecked === categoryTotal
+
+                  return (
+                    <div key={category.id} className={`border rounded-xl overflow-hidden transition-all ${isComplete ? 'border-green-200 bg-green-50/30' : 'border-gray-200 bg-white'
+                      }`}>
+                      <button
+                        onClick={() => setExpandedCategory(isExpanded ? null : category.id)}
+                        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={`p-2 rounded-lg ${isComplete ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'}`}>
+                            <category.icon className="w-6 h-6" />
+                          </div>
+                          <div className="text-left">
+                            <div className="font-bold text-gray-900">{category.name}</div>
+                            <div className="text-xs text-gray-500">
+                              {categoryChecked}/{categoryTotal} 완료
+                            </div>
+                          </div>
+                        </div>
+                        {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+                      </button>
+
+                      {isExpanded && (
+                        <div className="border-t border-gray-100 p-4 space-y-3 animate-in slide-in-from-top-2">
+                          {category.items.map((item) => (
+                            <div
+                              key={item.id}
+                              onClick={() => toggleItem(category.id, item.id)}
+                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer group"
+                            >
+                              <div className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${item.checked
+                                  ? 'bg-green-500 border-green-500'
+                                  : 'border-gray-300 group-hover:border-green-400'
+                                }`}>
+                                {item.checked && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`text-xs px-1.5 py-0.5 rounded border font-bold ${getPriorityColor(item.priority)}`}>
+                                    {getPriorityLabel(item.priority)}
+                                  </span>
+                                  <span className={`font-medium ${item.checked ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+                                    {item.text}
+                                  </span>
+                                </div>
+                                <p className={`text-sm ${item.checked ? 'text-gray-300' : 'text-gray-500'}`}>
+                                  {item.desc}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <textarea
-                      value={item.notes}
-                      onChange={(e) => updateNotes(item.id, e.target.value)}
-                      placeholder="메모나 특이사항을 입력하세요"
-                      rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Stats & Info */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Safety Score Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">안전 점수</h2>
+              <div className="flex items-center justify-center py-6">
+                <div className="relative w-40 h-40">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="none"
+                      stroke="#f3f4f6"
+                      strokeWidth="12"
                     />
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r="70"
+                      fill="none"
+                      stroke={progress === 100 ? '#22c55e' : '#ef4444'}
+                      strokeWidth="12"
+                      strokeDasharray={2 * Math.PI * 70}
+                      strokeDashoffset={2 * Math.PI * 70 * (1 - progress / 100)}
+                      className="transition-all duration-1000 ease-out rounded-full"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className={`text-4xl font-black ${progress === 100 ? 'text-green-600' : 'text-gray-900'}`}>
+                      {progress}
+                    </span>
+                    <span className="text-sm text-gray-500">점</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+              <p className="text-center text-sm text-gray-500">
+                {progress === 100 ? '완벽합니다! 안전한 집이에요.' : '아직 위험 요소가 남아있습니다.'}
+              </p>
+            </div>
 
-        <div className="bg-blue-50 rounded-lg p-6 mt-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">💡 안전 관리 팁</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 정기적으로 안전 체크리스트를 점검하세요</li>
-            <li>• 높은 우선순위 항목을 우선적으로 확인하세요</li>
-            <li>• 강아지가 성장하면서 새로운 위험 요소가 생길 수 있습니다</li>
-            <li>• 계절에 따라 안전 관리 항목이 달라질 수 있습니다</li>
-            <li>• 문제가 발견되면 즉시 해결하세요</li>
-          </ul>
+            {/* Info Card */}
+            <div className="bg-red-900 rounded-2xl p-6 text-white shadow-lg">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2 text-red-400" />
+                긴급 상황 대비
+              </h3>
+              <ul className="space-y-4 text-red-100 text-sm">
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-400 font-bold">•</span>
+                  <span>
+                    <strong className="text-white">24시 동물병원</strong><br />
+                    가장 가까운 24시 병원 전화번호를 저장해두세요.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="mr-2 text-red-400 font-bold">•</span>
+                  <span>
+                    <strong className="text-white">이물질 섭취 시</strong><br />
+                    억지로 토하게 하지 말고 즉시 병원으로 가세요.
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>

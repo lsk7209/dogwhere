@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Scissors, Droplet, Brush, Sparkles } from 'lucide-react'
+import { Scissors, Droplet, Brush, Sparkles, ArrowLeft, Dog, Check, AlertCircle, Info } from 'lucide-react'
 
 const groomingData: Record<string, {
   name: string
@@ -11,161 +11,222 @@ const groomingData: Record<string, {
   brushingFrequency: string
   tips: string[]
   specialCare: string[]
+  description: string
 }> = {
   'poodle': {
     name: '푸들',
-    coatType: '곱슬털',
+    coatType: '곱슬털 (Single Coat)',
     bathFrequency: '2-4주마다',
     brushingFrequency: '매일',
-    tips: ['곱슬털은 매일 빗질 필수', '털이 길어지면 매트 현상 발생', '정기적인 커트 필요'],
-    specialCare: ['전문적인 그루밍 필요', '털이 빠지지 않음']
+    description: '털이 계속 자라며 잘 빠지지 않지만, 엉키기 쉬워 세심한 관리가 필요합니다.',
+    tips: ['슬리커 브러쉬로 속털까지 빗어주세요.', '귀 속 털을 정기적으로 정리해야 합니다.', '미용실 방문 주기는 4-6주가 적당합니다.'],
+    specialCare: ['털 엉킴(매트) 주의', '귀 염증 예방', '눈물 자국 관리']
   },
   'golden': {
     name: '골든리트리버',
-    coatType: '이중모',
-    bathFrequency: '1-2개월마다',
-    brushingFrequency: '주 2-3회',
-    tips: ['계절별 털갈이 관리 중요', '속털 관리 필수', '물을 좋아하지만 자주 목욕 금지'],
-    specialCare: ['털갈이 시기 (봄/가을) 집중 관리', '귀와 발가락 사이털 정기 정리']
+    coatType: '이중모 (Double Coat)',
+    bathFrequency: '4-6주마다',
+    brushingFrequency: '주 3-4회',
+    description: '풍성한 황금빛 털이 매력적이지만, 털 빠짐이 심하고 방수성 속털을 가집니다.',
+    tips: ['핀 브러쉬와 코트킹을 사용하세요.', '털갈이 시기에는 죽은 털 제거가 필수입니다.', '목욕 후 속털까지 완벽히 말려주세요.'],
+    specialCare: ['피부병 주의 (습기)', '발바닥 털 정리', '꼬리 털 엉킴 방지']
   },
   'shiba': {
     name: '시바견',
     coatType: '단단한 이중모',
     bathFrequency: '2-3개월마다',
     brushingFrequency: '주 2회',
-    tips: ['털갈이 시기 (봄/가을) 집중 관리', '과도한 목욕은 피부 건조 유발', '자기 정리 능력이 뛰어남'],
-    specialCare: ['계절별 집중 털갈이 관리', '목욕 후 완전 건조 필수']
+    description: '깔끔한 성격으로 스스로 털 관리를 잘하지만, 털갈이 시기에는 엄청난 양이 빠집니다.',
+    tips: ['실리콘 브러쉬나 죽은 털 제거기를 사용하세요.', '피부가 예민할 수 있어 저자극 샴푸를 추천합니다.', '스트레스를 받지 않게 짧게 자주 빗어주세요.'],
+    specialCare: ['털갈이 폭탄 대비', '피부 건조 주의', '발톱 관리']
   },
   'chihuahua': {
     name: '치와와',
-    coatType: '매끄러운 단모 또는 장모',
+    coatType: '단모/장모',
     bathFrequency: '3-4주마다',
-    brushingFrequency: '장모: 주 2-3회, 단모: 주 1회',
-    tips: ['작은 크기에 맞는 소형 빗 사용', '추위에 민감하므로 빠른 건조', '작은 크기에 맞는 그루밍 도구 필요'],
-    specialCare: ['사이즈에 맞는 전용 도구 사용', '온도 관리 중요']
+    brushingFrequency: '주 1-2회',
+    description: '작은 체구라 관리가 쉽지만, 추위에 약하고 피부가 민감할 수 있습니다.',
+    tips: ['부드러운 천연모 브러쉬를 사용하세요.', '목욕 후 체온 유지에 신경 써주세요.', '눈 주변을 매일 닦아주세요.'],
+    specialCare: ['체온 유지', '눈물 관리', '두개골(천문) 주의']
   },
   'beagle': {
     name: '비글',
     coatType: '짧은 단모',
-    bathFrequency: '1-2개월마다',
+    bathFrequency: '4-6주마다',
     brushingFrequency: '주 1-2회',
-    tips: ['단모라서 관리가 쉬움', '털빠짐이 있지만 적당한 수준', '목욕 후 완전 건조'],
-    specialCare: ['귀 관리 중요 (드랍 이어)', '발가락 사이털 정리']
+    description: '방수성 털을 가지고 있어 때가 잘 타지 않지만, 특유의 체취가 있을 수 있습니다.',
+    tips: ['고무 브러쉬로 마사지하듯 빗어주세요.', '귀가 덮여있어 통풍과 청소가 중요합니다.', '산책 후 발 관리를 꼼꼼히 해주세요.'],
+    specialCare: ['귀 염증(외이염) 주의', '비만 관리', '발톱 마모 확인']
   },
   'husky': {
     name: '시베리안 허스키',
     coatType: '두꺼운 이중모',
     bathFrequency: '2-3개월마다',
     brushingFrequency: '주 3-4회',
-    tips: ['털갈이 시기 집중 관리 (매우 많음)', '과도한 목욕 금지', '자기 정리 능력 뛰어남'],
-    specialCare: ['연중 털갈이 관리', '서늘한 환경 선호']
+    description: '추위에 강한 두꺼운 털을 가졌으며, 털갈이 시기에는 털 뭉치가 빠집니다.',
+    tips: ['언더코트 레이크로 죽은 털을 긁어내세요.', '여름철 체온 조절을 위해 빗질이 중요합니다.', '털을 빡빡 미는 것은 피해주세요 (체온 조절 불가).'],
+    specialCare: ['여름철 열사병 주의', '피부 통풍', '운동 후 발바닥 관리']
   }
 }
 
 export default function GroomingGuidePage() {
-  const [selectedBreed, setSelectedBreed] = useState<string>('golden')
-
+  const [selectedBreed, setSelectedBreed] = useState<string>('poodle')
   const breed = groomingData[selectedBreed]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-purple-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Scissors className="w-10 h-10 text-purple-600 mr-3" />
-            털 관리 가이드
-          </h1>
-          <p className="text-xl text-gray-600">
-            견종별 털 관리 방법, 목욕 주기, 빗질 가이드를 제공합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-purple-100 rounded-2xl text-purple-600">
+              <Scissors className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">견종별 털 관리 가이드</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            우리 강아지의 털 특성에 맞는 올바른 관리법을 알아보세요.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">견종 선택</h2>
-              <select
-                value={selectedBreed}
-                onChange={(e) => setSelectedBreed(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-              >
+        <div className="grid lg:grid-cols-12 gap-8">
+          {/* Sidebar: Breed Selection */}
+          <div className="lg:col-span-3 space-y-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-8">
+              <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center px-2">
+                <Dog className="w-4 h-4 mr-2 text-purple-500" />
+                견종 선택
+              </h2>
+              <div className="space-y-1">
                 {Object.keys(groomingData).map((key) => (
-                  <option key={key} value={key}>{groomingData[key].name}</option>
+                  <button
+                    key={key}
+                    onClick={() => setSelectedBreed(key)}
+                    className={`w-full text-left px-4 py-3 rounded-xl transition-all font-medium text-sm ${selectedBreed === key
+                        ? 'bg-purple-50 text-purple-700 shadow-sm ring-1 ring-purple-100'
+                        : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                  >
+                    {groomingData[key].name}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">{breed.name} 털 관리 가이드</h2>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-purple-50 rounded-lg p-6">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Droplet className="w-6 h-6 text-purple-600" />
-                    <h3 className="text-xl font-bold text-gray-900">목욕 주기</h3>
-                  </div>
-                  <p className="text-2xl font-bold text-purple-700">{breed.bathFrequency}</p>
-                  <p className="text-sm text-gray-600 mt-2">털 종류: {breed.coatType}</p>
+          {/* Main Content */}
+          <div className="lg:col-span-9 space-y-6">
+            {/* Overview Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">{breed.name}</h2>
+                  <p className="text-gray-600">{breed.description}</p>
                 </div>
-
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Brush className="w-6 h-6 text-blue-600" />
-                    <h3 className="text-xl font-bold text-gray-900">빗질 주기</h3>
-                  </div>
-                  <p className="text-2xl font-bold text-blue-700">{breed.brushingFrequency}</p>
+                <div className="px-4 py-2 bg-purple-50 rounded-lg text-purple-700 text-sm font-bold whitespace-nowrap self-start">
+                  {breed.coatType}
                 </div>
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Sparkles className="w-5 h-5 text-yellow-600" />
-                  <h3 className="text-xl font-bold text-gray-900">관리 팁</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-white rounded-lg text-blue-600 shadow-sm">
+                      <Droplet className="w-5 h-5" />
+                    </div>
+                    <span className="font-bold text-gray-900">목욕 주기</span>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-700 pl-1">{breed.bathFrequency}</p>
                 </div>
-                <ul className="space-y-2">
+
+                <div className="bg-pink-50 rounded-xl p-5 border border-pink-100">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-white rounded-lg text-pink-600 shadow-sm">
+                      <Brush className="w-5 h-5" />
+                    </div>
+                    <span className="font-bold text-gray-900">빗질 주기</span>
+                  </div>
+                  <p className="text-2xl font-bold text-pink-700 pl-1">{breed.brushingFrequency}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tips & Care */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
+                  관리 꿀팁
+                </h3>
+                <ul className="space-y-4">
                   {breed.tips.map((tip, idx) => (
                     <li key={idx} className="flex items-start">
-                      <span className="mr-2 text-purple-600">✓</span>
-                      <span className="text-gray-700">{tip}</span>
+                      <div className="w-5 h-5 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 mt-0.5 mr-3">
+                        <Check className="w-3 h-3 text-yellow-600" />
+                      </div>
+                      <span className="text-gray-600 text-sm leading-relaxed">{tip}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Scissors className="w-5 h-5 text-purple-600" />
-                  <h3 className="text-xl font-bold text-gray-900">특별 관리 사항</h3>
-                </div>
-                <ul className="space-y-2">
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2 text-red-500" />
+                  특별 주의사항
+                </h3>
+                <ul className="space-y-4">
                   {breed.specialCare.map((care, idx) => (
-                    <li key={idx} className="flex items-start bg-yellow-50 p-3 rounded-lg">
-                      <span className="mr-2 text-yellow-600 font-bold">!</span>
-                      <span className="text-gray-700">{care}</span>
+                    <li key={idx} className="flex items-start">
+                      <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5 mr-3">
+                        <Info className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span className="text-gray-600 text-sm leading-relaxed">{care}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="bg-purple-50 rounded-lg p-6 mt-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">💡 일반적인 털 관리 원칙</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 정기적인 빗질은 매트 현상을 예방하고 피부 건강을 유지합니다</li>
-            <li>• 과도한 목욕은 피부의 자연 오일을 제거해 건조를 유발할 수 있습니다</li>
-            <li>• 목욕 후에는 완전히 건조시켜 피부 질환을 예방하세요</li>
-            <li>• 견종에 맞는 전용 그루밍 도구를 사용하는 것이 좋습니다</li>
-          </ul>
+            {/* General Guide */}
+            <div className="bg-purple-900 rounded-2xl p-6 md:p-8 text-white shadow-lg">
+              <h3 className="font-bold text-lg mb-4 flex items-center">
+                <Info className="w-5 h-5 mr-2 text-purple-300" />
+                알아두세요
+              </h3>
+              <div className="grid md:grid-cols-2 gap-6 text-purple-100 text-sm">
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-purple-400">•</span>
+                    빗질은 혈액순환을 돕고 유대감을 높여줍니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-purple-400">•</span>
+                    목욕 전 빗질로 엉킨 털을 풀어주는 것이 좋습니다.
+                  </li>
+                </ul>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-purple-400">•</span>
+                    사람용 샴푸는 강아지 피부에 자극적이니 피해주세요.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-purple-400">•</span>
+                    드라이기 사용 시 뜨거운 바람은 화상 위험이 있습니다.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

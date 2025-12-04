@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Pill, Calendar } from 'lucide-react'
+import { Pill, Calendar, ArrowLeft, Shield, AlertCircle, Clock, Check } from 'lucide-react'
 
 export default function DewormingScheduleCalculatorPage() {
   const [lastDeworming, setLastDeworming] = useState<string>('')
@@ -13,14 +13,20 @@ export default function DewormingScheduleCalculatorPage() {
     schedule: Array<{ date: string; type: string }>
   } | null>(null)
 
+  const dewormingTypes = [
+    { id: 'puppy', label: '퍼피 (2주 간격)', desc: '생후 2주~2개월' },
+    { id: 'monthly', label: '심장사상충 (월 1회)', desc: '매월 정기 예방' },
+    { id: 'quarterly', label: '종합구충 (3개월)', desc: '내부 기생충' }
+  ]
+
   const calculate = () => {
     if (!lastDeworming) return
 
     const lastDate = new Date(lastDeworming)
     const today = new Date()
-    
+
     let nextDate = new Date(lastDate)
-    let intervalDays = 30 // 기본값 (월간)
+    let intervalDays = 30
 
     if (dewormingType === 'monthly') {
       intervalDays = 30
@@ -42,7 +48,7 @@ export default function DewormingScheduleCalculatorPage() {
       currentDate.setDate(currentDate.getDate() + intervalDays)
       schedule.push({
         date: currentDate.toISOString().split('T')[0],
-        type: dewormingType === 'puppy' ? '강아지 구충제' : dewormingType === 'monthly' ? '월간 구충제' : '분기별 구충제'
+        type: dewormingType === 'puppy' ? '강아지 구충제' : dewormingType === 'monthly' ? '심장사상충 예방' : '종합 구충제'
       })
     }
 
@@ -54,104 +60,149 @@ export default function DewormingScheduleCalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-purple-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Pill className="w-10 h-10 text-purple-600 mr-3" />
-            구충제 투여 주기 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            구충제 투여 주기와 다음 투여일을 계산합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-purple-100 rounded-2xl text-purple-600">
+              <Pill className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">구충제 투여 주기 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            잊기 쉬운 구충제 투여일, 미리 계산하고 챙겨주세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  마지막 구충제 투여일
-                </label>
-                <input
-                  type="date"
-                  value={lastDeworming}
-                  onChange={(e) => setLastDeworming(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Input Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-purple-500" />
+                투여 정보 입력
+              </h2>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  구충제 종류
-                </label>
-                <select
-                  value={dewormingType}
-                  onChange={(e) => setDewormingType(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                >
-                  <option value="puppy">강아지 구충제 (2주마다)</option>
-                  <option value="monthly">월간 구충제 (1개월마다)</option>
-                  <option value="quarterly">분기별 구충제 (3개월마다)</option>
-                </select>
-              </div>
-            </div>
-
-            <button
-              onClick={calculate}
-              className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg hover:bg-purple-700 transition-colors font-medium text-lg"
-            >
-              계산하기
-            </button>
-
-            {result && (
-              <div className="space-y-4">
-                <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600">다음 구충제 투여일</p>
-                      <p className="text-2xl font-bold text-purple-700">{result.nextDate}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600">남은 일수</p>
-                      <p className="text-2xl font-bold text-purple-700">{result.daysLeft}일</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">향후 6개월 일정</h3>
-                  <div className="space-y-2">
-                    {result.schedule.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                        <span className="font-medium text-gray-900">{item.type}</span>
-                        <span className="text-purple-700 font-semibold">{item.date}</span>
-                      </div>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">구충제 종류</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {dewormingTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => setDewormingType(type.id)}
+                        className={`p-4 rounded-xl border-2 transition-all text-left ${dewormingType === type.id
+                            ? 'border-purple-500 bg-purple-50 text-purple-700'
+                            : 'border-gray-100 hover:border-purple-200 text-gray-600'
+                          }`}
+                      >
+                        <div className="font-bold mb-1">{type.label}</div>
+                        <div className="text-xs opacity-70">{type.desc}</div>
+                      </button>
                     ))}
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
 
-        <div className="bg-purple-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 구충제 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 강아지는 생후 2주부터 2주마다 구충제를 투여합니다</li>
-            <li>• 성견은 일반적으로 1개월마다 구충제를 투여합니다</li>
-            <li>• 실외 활동이 많은 강아지는 더 자주 구충제가 필요할 수 있습니다</li>
-            <li>• 내부 기생충과 외부 기생충(벼룩, 진드기) 모두 예방하세요</li>
-            <li>• 구충제는 수의사와 상담하여 적절한 제품을 선택하세요</li>
-            <li>• 구충제 투여 후 이상 반응이 있으면 즉시 수의사에게 연락하세요</li>
-            <li>• 정기적인 구충제 투여로 기생충 감염을 예방하세요</li>
-          </ul>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">마지막 투여일</label>
+                  <input
+                    type="date"
+                    value={lastDeworming}
+                    onChange={(e) => setLastDeworming(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={calculate}
+                disabled={!lastDeworming}
+                className="w-full mt-8 bg-purple-600 text-white py-4 px-6 rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200 font-bold text-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Clock className="w-5 h-5 mr-2" />
+                다음 투여일 확인하기
+              </button>
+            </div>
+          </div>
+
+          {/* Result Section */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8 space-y-6">
+              {result ? (
+                <div className="bg-white rounded-2xl shadow-lg border border-purple-100 overflow-hidden">
+                  <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-8 text-center text-white">
+                    <span className="text-sm font-semibold text-purple-100 uppercase tracking-wider">다음 투여 예정일</span>
+                    <div className="text-3xl font-black my-4">
+                      {result.nextDate}
+                    </div>
+                    <div className="inline-block px-4 py-1.5 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
+                      {result.daysLeft > 0 ? `${result.daysLeft}일 남음` : result.daysLeft === 0 ? '오늘입니다!' : `${Math.abs(result.daysLeft)}일 지났습니다`}
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <h4 className="font-bold text-gray-900 mb-4 text-sm flex items-center">
+                      <Calendar className="w-4 h-4 mr-2 text-purple-500" />
+                      향후 일정 미리보기
+                    </h4>
+                    <div className="space-y-3 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                      {result.schedule.slice(0, 4).map((item, idx) => (
+                        <div key={idx} className="relative flex items-center pl-8">
+                          <div className="absolute left-4 w-2.5 h-2.5 rounded-full bg-purple-200 border-2 border-white shadow-sm transform -translate-x-1/2"></div>
+                          <div className="flex-1 bg-gray-50 rounded-lg p-3 text-sm">
+                            <div className="font-bold text-gray-900">{item.date}</div>
+                            <div className="text-gray-500 text-xs">{item.type}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                    <Shield className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">결과 대기중</h3>
+                  <p className="text-sm text-gray-500">
+                    마지막 투여일을 입력하고<br />계산하기 버튼을 눌러주세요.
+                  </p>
+                </div>
+              )}
+
+              {/* Guide Box */}
+              <div className="bg-indigo-900 rounded-2xl p-6 text-white shadow-lg">
+                <h3 className="font-bold text-lg mb-4 flex items-center">
+                  <AlertCircle className="w-5 h-5 mr-2 text-indigo-400" />
+                  주의사항
+                </h3>
+                <ul className="space-y-3 text-indigo-100 text-sm">
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    심장사상충 예방은 매달 꾸준히 하는 것이 가장 중요합니다.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    체중 변화에 따라 약 용량이 달라질 수 있으니 확인하세요.
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2 text-indigo-400">•</span>
+                    투여 후 구토나 이상 반응이 없는지 관찰해주세요.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-

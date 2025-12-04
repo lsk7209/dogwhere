@@ -2,169 +2,189 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Stethoscope, Calculator } from 'lucide-react'
+import { Stethoscope, Calculator, ArrowLeft, DollarSign, Shield, PieChart, CheckCircle, Info } from 'lucide-react'
 
-interface VetService {
+interface Service {
+  id: string
   name: string
-  frequency: string
   cost: number
+  category: 'prevention' | 'checkup' | 'treatment'
+  frequency: string
 }
 
-const vetServices: VetService[] = [
-  { name: '종합 건강검진', frequency: '연 1회', cost: 100000 },
-  { name: '예방접종 (종합백신)', frequency: '연 1회', cost: 50000 },
-  { name: '예방접종 (켄넬코프)', frequency: '연 1회', cost: 30000 },
-  { name: '광견병 예방접종', frequency: '1-3년마다', cost: 20000 },
-  { name: '구충제', frequency: '월 1회', cost: 15000 },
-  { name: '치과 검진 및 스케일링', frequency: '연 1-2회', cost: 150000 },
-  { name: '혈액 검사', frequency: '연 1회', cost: 80000 },
-  { name: 'X-ray 촬영', frequency: '필요시', cost: 100000 },
-]
-
 export default function VetCostCalculatorPage() {
-  const [selectedServices, setSelectedServices] = useState<Record<string, boolean>>({})
-  const [result, setResult] = useState<{
-    annualCost: number
-    monthlyCost: number
-    services: Array<{ name: string; cost: number; frequency: string }>
-  } | null>(null)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [hasInsurance, setHasInsurance] = useState(false)
+  const [insuranceRate, setInsuranceRate] = useState(70) // 70% coverage
 
-  const toggleService = (index: number) => {
-    setSelectedServices(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }))
+  const services: Service[] = [
+    { id: 'vaccine', name: '종합백신 (연 1회)', cost: 50000, category: 'prevention', frequency: 'yearly' },
+    { id: 'heartworm', name: '심장사상충 (연간)', cost: 180000, category: 'prevention', frequency: 'yearly' },
+    { id: 'checkup', name: '종합 건강검진', cost: 300000, category: 'checkup', frequency: 'yearly' },
+    { id: 'scaling', name: '스케일링', cost: 150000, category: 'treatment', frequency: 'yearly' },
+    { id: 'blood', name: '혈액 검사', cost: 80000, category: 'checkup', frequency: 'yearly' },
+    { id: 'xray', name: 'X-ray 촬영', cost: 50000, category: 'checkup', frequency: 'yearly' },
+    { id: 'neutering', name: '중성화 수술', cost: 400000, category: 'treatment', frequency: 'once' },
+  ]
+
+  const toggleService = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
   }
 
-  const calculate = () => {
-    const selected = vetServices
-      .map((service, index) => selectedServices[index] ? service : null)
-      .filter(Boolean) as VetService[]
+  const totalCost = services
+    .filter(s => selectedIds.includes(s.id))
+    .reduce((acc, s) => acc + s.cost, 0)
 
-    if (selected.length === 0) return
-
-    let annualCost = 0
-    const services = selected.map(service => {
-      let cost = service.cost
-      if (service.frequency.includes('월')) {
-        cost = service.cost * 12
-      } else if (service.frequency.includes('연')) {
-        cost = service.cost
-      } else if (service.frequency.includes('1-3년')) {
-        cost = service.cost / 2 // 평균 2년마다
-      }
-      annualCost += cost
-      return {
-        name: service.name,
-        cost: Math.round(cost),
-        frequency: service.frequency
-      }
-    })
-
-    const monthlyCost = Math.round(annualCost / 12)
-
-    setResult({
-      annualCost: Math.round(annualCost),
-      monthlyCost,
-      services
-    })
-  }
+  const insuranceSavings = hasInsurance ? Math.round(totalCost * (insuranceRate / 100)) : 0
+  const finalCost = totalCost - insuranceSavings
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
+    <div className="min-h-screen bg-gray-50/50 py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header */}
         <div className="mb-8">
-          <Link href="/utilities" className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center">
-            ← 유틸리티 목록으로
+          <Link
+            href="/utilities"
+            className="inline-flex items-center text-gray-500 hover:text-blue-600 mb-6 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            유틸리티 목록으로
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 flex items-center">
-            <Stethoscope className="w-10 h-10 text-red-600 mr-3" />
-            병원비 계산기
-          </h1>
-          <p className="text-xl text-gray-600">
-            예방접종, 검진 등 병원비 예상을 계산합니다
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-100 rounded-2xl text-blue-600">
+              <Calculator className="w-8 h-8" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">병원비 계산기</h1>
+          </div>
+          <p className="text-xl text-gray-600 leading-relaxed">
+            예상되는 의료비를 미리 계산하고 대비하세요.
           </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                받을 서비스 선택
-              </label>
-              <div className="space-y-2">
-                {vetServices.map((service, index) => (
-                  <label
-                    key={index}
-                    className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Left Column: Selection */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <Stethoscope className="w-5 h-5 mr-2 text-blue-500" />
+                진료 항목 선택
+              </h2>
+
+              <div className="space-y-3">
+                {services.map((service) => (
+                  <div
+                    key={service.id}
+                    onClick={() => toggleService(service.id)}
+                    className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer ${selectedIds.includes(service.id)
+                        ? 'border-blue-500 bg-blue-50/50'
+                        : 'border-gray-100 hover:border-blue-200 bg-white'
+                      }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedServices[index] || false}
-                        onChange={() => toggleService(index)}
-                        className="w-5 h-5 text-red-600 rounded"
-                      />
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${selectedIds.includes(service.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                        }`}>
+                        {selectedIds.includes(service.id) && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                      </div>
                       <div>
-                        <p className="font-medium text-gray-900">{service.name}</p>
-                        <p className="text-sm text-gray-600">{service.frequency}</p>
+                        <div className="font-bold text-gray-900">{service.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {service.category === 'prevention' ? '예방접종' :
+                            service.category === 'checkup' ? '검진' : '치료/수술'}
+                        </div>
                       </div>
                     </div>
-                    <p className="font-semibold text-gray-900">{service.cost.toLocaleString()}원</p>
-                  </label>
+                    <div className="font-bold text-gray-900">
+                      {service.cost.toLocaleString()}원
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
 
-            <button
-              onClick={calculate}
-              className="w-full bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors font-medium text-lg"
-            >
-              계산하기
-            </button>
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="font-bold text-blue-900 mb-4 flex items-center">
+                <Info className="w-5 h-5 mr-2" />
+                참고하세요
+              </h3>
+              <ul className="space-y-2 text-sm text-blue-800">
+                <li>• 위 비용은 평균적인 금액이며 병원마다 다를 수 있습니다.</li>
+                <li>• 응급 진료나 야간 진료 시 추가 비용이 발생할 수 있습니다.</li>
+                <li>• 몸무게에 따라 약값이나 검사비가 달라질 수 있습니다.</li>
+              </ul>
+            </div>
+          </div>
 
-            {result && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">연간 예상 비용</p>
-                    <p className="text-3xl font-bold text-red-700">{result.annualCost.toLocaleString()}원</p>
+          {/* Right Column: Summary */}
+          <div className="lg:col-span-1 space-y-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                <PieChart className="w-5 h-5 mr-2 text-gray-500" />
+                예상 비용
+              </h2>
+
+              <div className="space-y-6">
+                {/* Insurance Toggle */}
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-bold text-gray-700 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      보험 적용
+                    </span>
+                    <button
+                      onClick={() => setHasInsurance(!hasInsurance)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${hasInsurance ? 'bg-blue-500' : 'bg-gray-300'
+                        }`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${hasInsurance ? 'left-7' : 'left-1'
+                        }`} />
+                    </button>
                   </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <p className="text-sm text-gray-600 mb-1">월간 예상 비용</p>
-                    <p className="text-3xl font-bold text-red-700">{result.monthlyCost.toLocaleString()}원</p>
+                  {hasInsurance && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range"
+                        min="30"
+                        max="90"
+                        step="10"
+                        value={insuranceRate}
+                        onChange={(e) => setInsuranceRate(parseInt(e.target.value))}
+                        className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                      />
+                      <span className="text-sm font-bold text-blue-600 w-12 text-right">{insuranceRate}%</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-gray-100">
+                  <div className="flex justify-between text-gray-600">
+                    <span>총 진료비</span>
+                    <span>{totalCost.toLocaleString()}원</span>
+                  </div>
+                  {hasInsurance && (
+                    <div className="flex justify-between text-blue-600">
+                      <span>보험 혜택 ({insuranceRate}%)</span>
+                      <span>-{insuranceSavings.toLocaleString()}원</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-end pt-4 border-t border-gray-100">
+                    <span className="font-bold text-lg text-gray-900">예상 본인부담금</span>
+                    <span className="font-black text-3xl text-blue-600">
+                      {finalCost.toLocaleString()}
+                      <span className="text-sm font-normal text-gray-500 ml-1">원</span>
+                    </span>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">선택한 서비스</p>
-                  <div className="space-y-2">
-                    {result.services.map((service, index) => (
-                      <div key={index} className="flex justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-gray-700">{service.name}</span>
-                        <span className="font-semibold text-red-700">{service.cost.toLocaleString()}원/년</span>
-                      </div>
-                    ))}
-                  </div>
+
+                <div className="text-xs text-gray-400 text-center">
+                  * 실제 청구 금액과 차이가 있을 수 있습니다.
                 </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
-
-        <div className="bg-red-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📌 병원비 가이드</h2>
-          <ul className="space-y-2 text-gray-700">
-            <li>• 예방접종은 필수이며 정기적으로 받아야 합니다</li>
-            <li>• 종합 건강검진은 연 1회 권장됩니다</li>
-            <li>• 구충제는 월 1회 정기적으로 투여해야 합니다</li>
-            <li>• 치과 관리도 중요하므로 정기 검진을 받으세요</li>
-            <li>• 응급 상황 시 추가 비용이 발생할 수 있습니다</li>
-            <li>• 반려동물 보험 가입을 고려하세요</li>
-            <li>• 지역별, 병원별 가격 차이가 있을 수 있습니다</li>
-          </ul>
         </div>
       </div>
     </div>
   )
 }
-
