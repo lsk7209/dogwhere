@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Luggage, Map, Backpack, Utensils, FirstAidKit, Tent, Sun, Snowflake, ArrowLeft, CheckCircle, Circle, Palmtree, Building2 } from 'lucide-react'
+import { Luggage, Map, Backpack, Utensils, Stethoscope, Tent, Sun, Snowflake, ArrowLeft, CheckCircle, Circle, Palmtree, Building2 } from 'lucide-react'
 
 interface PackingItem {
   id: string
@@ -68,7 +68,7 @@ export default function TravelPackingListPage() {
   const categories = [
     { id: 'essential', name: '필수품', icon: Backpack, color: 'text-red-600', bg: 'bg-red-50' },
     { id: 'food', name: '식사/간식', icon: Utensils, color: 'text-orange-600', bg: 'bg-orange-50' },
-    { id: 'health', name: '건강/위생', icon: FirstAidKit, color: 'text-green-600', bg: 'bg-green-50' },
+    { id: 'health', name: '건강/위생', icon: Stethoscope, color: 'text-green-600', bg: 'bg-green-50' },
     { id: 'comfort', name: '휴식/안정', icon: Tent, color: 'text-purple-600', bg: 'bg-purple-50' },
     { id: 'activity', name: '활동/놀이', icon: Sun, color: 'text-blue-600', bg: 'bg-blue-50' },
   ]
@@ -118,8 +118,8 @@ export default function TravelPackingListPage() {
                         key={type.id}
                         onClick={() => setTripType(type.id as any)}
                         className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${tripType === type.id
-                            ? 'border-green-500 bg-green-50 text-green-700'
-                            : 'border-gray-100 hover:border-green-200 text-gray-600'
+                          ? 'border-green-500 bg-green-50 text-green-700'
+                          : 'border-gray-100 hover:border-green-200 text-gray-600'
                           }`}
                       >
                         <type.icon className="w-6 h-6" />
@@ -203,8 +203,8 @@ export default function TravelPackingListPage() {
                             key={item.id}
                             onClick={() => toggleItem(item.id)}
                             className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer ${item.checked
-                                ? 'border-green-200 bg-green-50/50'
-                                : 'border-gray-100 hover:border-green-200 bg-white'
+                              ? 'border-green-200 bg-green-50/50'
+                              : 'border-gray-100 hover:border-green-200 bg-white'
                               }`}
                           >
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${item.checked ? 'bg-green-500 border-green-500' : 'border-gray-300'
