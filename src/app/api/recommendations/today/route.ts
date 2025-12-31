@@ -4,6 +4,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { getAllPlaces, getVerifiedPlaces, getPlacesByRegion } from '@/lib/database/simple-places'
 import type { SimplePlace } from '@/types/simple-place'
+import { handleApiError } from '@/lib/api-error'
 
 // 오늘의 추천 장소 API
 export async function GET(request: NextRequest) {
@@ -217,10 +218,6 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Recommendations API error:', error)
-    return NextResponse.json(
-      { success: false, error: 'Internal server error' },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 }

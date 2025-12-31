@@ -4,7 +4,7 @@ import { josa, josaFunctions } from './josa'
  * 템플릿 변수 인터페이스
  */
 export interface TemplateVariables {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 /**
@@ -125,9 +125,11 @@ export class TemplateRenderer {
   /**
    * 중첩된 객체에서 값을 가져옵니다.
    */
-  private getNestedValue(obj: any, path: string): any {
+  private getNestedValue(obj: unknown, path: string): unknown {
     return path.split('.').reduce((current, key) => {
-      return current && current[key] !== undefined ? current[key] : undefined
+      return current && typeof current === 'object' && current !== null && key in current
+        ? (current as Record<string, unknown>)[key]
+        : undefined
     }, obj)
   }
 
@@ -192,7 +194,7 @@ export class TemplateRenderer {
   /**
    * 값이 참인지 확인
    */
-  private isTruthy(value: any): boolean {
+  private isTruthy(value: unknown): boolean {
     if (value === null || value === undefined) return false
     if (typeof value === 'boolean') return value
     if (typeof value === 'number') return value !== 0
@@ -243,14 +245,14 @@ export class TemplateRenderer {
   /**
    * JSON-LD에서 빈 값들을 제거합니다.
    */
-  private cleanJSONLD(obj: any): any {
+  private cleanJSONLD(obj: unknown): unknown {
     if (Array.isArray(obj)) {
       return obj.map(item => this.cleanJSONLD(item)).filter(item => item !== null && item !== undefined)
     }
     
     if (obj && typeof obj === 'object') {
-      const cleaned: any = {}
-      Object.entries(obj).forEach(([key, value]) => {
+      const cleaned: Record<string, unknown> = {}
+      Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
         if (value !== null && value !== undefined && value !== '') {
           cleaned[key] = this.cleanJSONLD(value)
         }

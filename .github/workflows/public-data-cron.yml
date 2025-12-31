@@ -1,0 +1,135 @@
+name: Public Data Collection & Regeneration
+
+on:
+  schedule:
+    # 매일 한국시간 자정에 데이터 수집
+    - cron: '0 15 * * *'  # UTC 15:00 = KST 00:00
+    # 매시간 재생성 및 발행 (내부 로직에서 설정된 간격 체크)
+    - cron: '0 * * * *'  # 매 정시 실행
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  collect:
+    name: Collect Public Data
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Collect public data (incremental)
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+          # 공공데이터포털 API 키 (예시)
+          PUBLIC_DATA_API_KEY: ${{ secrets.PUBLIC_DATA_API_KEY }}
+        run: |
+          # 공공데이터 증분 수집 API 호출 (매일 자정)
+          # incremental: true로 설정하여 새로 추가된 데이터만 수집
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/public-data/collect" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "source": "data.go.kr",
+              "incremental": true,
+              "config": {
+                "apiKey": "${{ secrets.PUBLIC_DATA_API_KEY }}",
+                "baseUrl": "https://apis.data.go.kr",
+                "endpoint": "/B551011/KorService1/searchKeyword",
+                "params": {
+                  "keyword": "강아지 동반"
+                }
+              }
+            }' \
+            --fail --show-error --max-time 1800
+
+  regenerate:
+    name: Regenerate Content with Gemini
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: collect
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Add to regeneration queue
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 재생성된 컨텐츠가 없는 데이터만 큐에 추가
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/public-data/queue" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"batch": true, "limit": 10}' \
+            --fail --show-error --max-time 300
+
+      - name: Regenerate content
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 배치 재생성 (최대 10개)
+          # 재생성 완료 시 즉시 사이트맵에 포함 (기존 페이지 업데이트 개념)
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/public-data/regenerate" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"batch": true}' \
+            --fail --show-error --max-time 3600
+
+      - name: Generate AI Blog Post
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 신규 AI 블로그 생성 호출 (내부 간격 체크 로직 포함)
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/admin/blog/generate" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            --fail --show-error --max-time 300
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Public Data Job Failed',
+              body: `The public data collection/regeneration job failed at ${new Date().toISOString()}\n\nCheck the workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              labels: ['bug', 'public-data']
+            })
+

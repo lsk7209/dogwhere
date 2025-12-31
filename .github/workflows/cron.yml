@@ -1,0 +1,99 @@
+name: Scheduled Cron Jobs
+
+on:
+  schedule:
+    # 매일 한국시간 오전 6시, 정오, 오후 6시, 자정에 실행
+    # UTC 기준: 21:00, 03:00, 09:00, 15:00
+    - cron: '0 21,3,9,15 * * *'  # UTC 시간 기준
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  data-collection:
+    name: Data Collection Job
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run data collection
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          GOOGLE_PLACES_KEY: ${{ secrets.GOOGLE_PLACES_KEY }}
+          KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 데이터 수집 API 호출
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/jobs/simple-collect" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"region": {"sido": "서울특별시"}, "sources": ["google", "kakao"]}' \
+            --fail --show-error --max-time 1800
+
+      - name: Update statistics
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 통계 업데이트 API 호출 (있는 경우)
+          curl -X POST "${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}/api/jobs/update-stats" \
+            -H "Authorization: Bearer ${{ secrets.INTERNAL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --fail --show-error --max-time 300 || echo "Statistics update endpoint not available"
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Cron Job Failed: Data Collection',
+              body: `The scheduled data collection job failed at ${new Date().toISOString()}\n\nCheck the workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+              labels: ['bug', 'cron']
+            })
+
+  cleanup:
+    name: Cleanup Job
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run cleanup tasks
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          INTERNAL_TOKEN: ${{ secrets.INTERNAL_TOKEN }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL || 'https://dogwhere.vercel.app' }}
+        run: |
+          # 오래된 데이터 정리 (예: 30일 이상 된 미검증 장소)
+          echo "Running cleanup tasks..."
+          # 실제 정리 로직은 API 엔드포인트로 구현하거나 스크립트로 실행
+

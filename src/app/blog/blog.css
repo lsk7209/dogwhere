@@ -1,0 +1,110 @@
+/* 블로그 본문 전용 스타일 */
+.blog-content {
+  line-height: 1.8;
+  color: #374151;
+}
+
+.blog-content h2 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #111827;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+  letter-spacing: -0.025em;
+}
+
+.blog-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.blog-content h3::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 1.25rem;
+  background-color: #10b981;
+  margin-right: 0.75rem;
+  border-radius: 2px;
+}
+
+.blog-content p {
+  margin-bottom: 1.25rem;
+}
+
+.blog-content ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 2rem;
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+}
+
+.blog-content ul li {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.blog-content ul li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.blog-content strong {
+  color: #065f46;
+  font-weight: 700;
+}
+
+/* FAQ 섹션 스타일 */
+.blog-content .faq-section {
+  margin-top: 4rem;
+  padding: 2rem;
+  background-color: #ecfdf5;
+  border-radius: 1.5rem;
+  border: 1px solid #d1fae5;
+}
+
+.blog-content .faq-item {
+  margin-bottom: 1.5rem;
+}
+
+.blog-content .faq-question {
+  font-weight: 800;
+  color: #064e3b;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.blog-content .faq-answer {
+  color: #065f46;
+}
+
+/* 요약 박스 */
+.blog-excerpt-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  margin-bottom: 3rem;
+  border: 1px solid #bbf7d0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.blog-excerpt-text {
+  font-size: 1.125rem;
+  color: #166534;
+  font-weight: 500;
+  line-height: 1.6;
+}

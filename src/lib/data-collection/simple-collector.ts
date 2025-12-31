@@ -1,5 +1,5 @@
 import { SimplePlace, CollectionResult } from '@/types/simple-place'
-import { addPlace, findDuplicate, getAllPlaces, updatePlace } from '@/lib/database/simple-places'
+import { PlaceRepository } from '@/lib/database/turso-repository'
 
 // Google Places API 타입 (간단화)
 interface GooglePlaceResult {
@@ -29,16 +29,16 @@ interface KakaoPlaceResult {
 // Google Places API 호출
 export async function collectFromGoogle(query: string, region?: { latitude: number; longitude: number; radius: number }): Promise<SimplePlace[]> {
   const apiKey = process.env.GOOGLE_PLACES_KEY
-  
+
   if (!apiKey) {
-    console.warn('Google Places API key not found. Using mock data.')
-    return getMockGooglePlaces()
+    console.warn('Google Places API key not found. Returning empty list.')
+    return []
   }
 
   try {
     const searchQuery = encodeURIComponent(query)
     const location = region ? `&location=${region.latitude},${region.longitude}&radius=${region.radius}` : ''
-    
+
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${searchQuery}${location}&key=${apiKey}`,
       {
@@ -51,29 +51,26 @@ export async function collectFromGoogle(query: string, region?: { latitude: numb
     }
 
     const data = await response.json()
-    
+
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
       throw new Error(`Google Places API error: ${data.status}`)
     }
 
     const googlePlaces: GooglePlaceResult[] = data.results || []
-    console.log(`Found ${googlePlaces.length} places from Google Places API`)
-    
     return googlePlaces.map(normalizeGooglePlace)
   } catch (error) {
     console.error('Google Places API error:', error)
-    console.log('Falling back to mock data')
-    return getMockGooglePlaces()
+    return []
   }
 }
 
 // 카카오맵 API 호출
 export async function collectFromKakao(query: string, region?: { latitude: number; longitude: number; radius: number }): Promise<SimplePlace[]> {
   const apiKey = process.env.KAKAO_API_KEY
-  
+
   if (!apiKey) {
-    console.warn('Kakao API key not found. Using mock data.')
-    return getMockKakaoPlaces()
+    console.warn('Kakao API key not found. Returning empty list.')
+    return []
   }
 
   try {
@@ -98,13 +95,11 @@ export async function collectFromKakao(query: string, region?: { latitude: numbe
 
     const data = await response.json()
     const kakaoPlaces: KakaoPlaceResult[] = data.documents || []
-    console.log(`Found ${kakaoPlaces.length} places from Kakao API`)
-    
+
     return kakaoPlaces.map(normalizeKakaoPlace)
   } catch (error) {
     console.error('Kakao API error:', error)
-    console.log('Falling back to mock data')
-    return getMockKakaoPlaces()
+    return []
   }
 }
 
@@ -114,7 +109,6 @@ function normalizeGooglePlace(googlePlace: GooglePlaceResult): SimplePlace {
   const sido = addressParts[addressParts.length - 1] || ''
   const sigungu = addressParts[addressParts.length - 2] || ''
 
-  // 카테고리 매핑
   const category = googlePlace.types.includes('cafe') ? 'cafe' :
     googlePlace.types.includes('restaurant') ? 'restaurant' :
       googlePlace.types.includes('lodging') ? 'accommodation' :
@@ -151,7 +145,6 @@ function normalizeKakaoPlace(kakaoPlace: KakaoPlaceResult): SimplePlace {
   const sido = addressParts[0] || ''
   const sigungu = addressParts[1] || ''
 
-  // 카테고리 매핑
   const category = kakaoPlace.category_group_code === 'CE7' ? 'cafe' :
     kakaoPlace.category_group_code === 'FD6' ? 'restaurant' :
       kakaoPlace.category_group_code === 'AD5' ? 'accommodation' :
@@ -174,7 +167,7 @@ function normalizeKakaoPlace(kakaoPlace: KakaoPlaceResult): SimplePlace {
     longitude: parseFloat(kakaoPlace.x),
     phone: kakaoPlace.phone,
     website: kakaoPlace.place_url,
-    rating: 0, // 카카오맵은 평점 정보가 부족
+    rating: 0,
     reviewCount: 0,
     source: 'Kakao Map',
     sourceId: kakaoPlace.id,
@@ -192,41 +185,71 @@ function generateSlug(name: string, address: string): string {
     .replace(/\s+/g, '-')
     .replace(/--+/g, '-')
     .replace(/^-|-$/g, '')
-  
+
   const addressSlug = address
     .split(' ')[0]
     .toLowerCase()
     .replace(/[^a-z0-9가-힣]/g, '')
-  
+
   return `${nameSlug}-${addressSlug}-${Date.now().toString().slice(-5)}`
 }
 
 // 데이터 통합 및 저장
 export async function ingestPlaces(places: SimplePlace[]): Promise<CollectionResult> {
+  const repo = new PlaceRepository()
   let addedCount = 0
   let updatedCount = 0
   let skippedCount = 0
 
   for (const newPlace of places) {
     if (!newPlace.name || !newPlace.address) {
-      console.warn('Skipping place due to missing name or address:', newPlace)
       skippedCount++
       continue
     }
 
-    // 중복 확인
-    const existingPlace = findDuplicate(newPlace.name, newPlace.address)
+    try {
+      // 중복 확인
+      const existingPlace = await repo.findDuplicate(newPlace.name, newPlace.address)
 
-    if (existingPlace) {
-      // 기존 장소 업데이트
-      updatePlace(existingPlace.id, newPlace)
-      updatedCount++
-      console.log(`Updated existing place: ${newPlace.name}`)
-    } else {
-      // 새 장소 추가
-      addPlace(newPlace)
-      addedCount++
-      console.log(`Added new place: ${newPlace.name}`)
+      if (existingPlace) {
+        // 기존 장소 업데이트
+        await repo.update(existingPlace.id, {
+          category: newPlace.category,
+          description: newPlace.description,
+          latitude: newPlace.latitude,
+          longitude: newPlace.longitude,
+          phone: newPlace.phone,
+          website: newPlace.website,
+          overall_rating: newPlace.rating,
+          review_count: newPlace.reviewCount,
+          source: newPlace.source
+        })
+        updatedCount++
+      } else {
+        // 새 장소 추가
+        await repo.create({
+          id: newPlace.id,
+          name: newPlace.name,
+          slug: newPlace.slug,
+          category: newPlace.category,
+          description: newPlace.description,
+          address: newPlace.address,
+          sido: newPlace.sido,
+          sigungu: newPlace.sigungu,
+          latitude: newPlace.latitude,
+          longitude: newPlace.longitude,
+          phone: newPlace.phone,
+          website: newPlace.website,
+          overall_rating: newPlace.rating,
+          review_count: newPlace.reviewCount,
+          verified: false,
+          source: newPlace.source
+        })
+        addedCount++
+      }
+    } catch (error) {
+      console.error(`Failed to ingest place ${newPlace.name}:`, error)
+      skippedCount++
     }
   }
 
@@ -236,57 +259,4 @@ export async function ingestPlaces(places: SimplePlace[]): Promise<CollectionRes
     skipped: skippedCount,
     total: places.length
   }
-}
-
-// 목업 데이터
-function getMockGooglePlaces(): SimplePlace[] {
-  return [
-    {
-      id: 'mock_google_1',
-      slug: 'mock-cafe-seoul',
-      name: '목업 카페 (Google)',
-      category: 'cafe',
-      description: 'Google Places API 연동 테스트용 목업 데이터입니다.',
-      address: '서울특별시 강남구 테헤란로 123',
-      sido: '서울특별시',
-      sigungu: '강남구',
-      latitude: 37.50,
-      longitude: 127.04,
-      phone: '02-1234-5678',
-      website: 'https://example.com',
-      rating: 4.5,
-      reviewCount: 100,
-      source: 'Google Places (Mock)',
-      sourceId: 'mock_google_1',
-      isVerified: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-  ]
-}
-
-function getMockKakaoPlaces(): SimplePlace[] {
-  return [
-    {
-      id: 'mock_kakao_1',
-      slug: 'mock-restaurant-seoul',
-      name: '목업 식당 (Kakao)',
-      category: 'restaurant',
-      description: '카카오맵 API 연동 테스트용 목업 데이터입니다.',
-      address: '서울특별시 마포구 홍대입구역 1번 출구',
-      sido: '서울특별시',
-      sigungu: '마포구',
-      latitude: 37.55,
-      longitude: 126.91,
-      phone: '02-2345-6789',
-      website: 'https://example.com',
-      rating: 0,
-      reviewCount: 0,
-      source: 'Kakao Map (Mock)',
-      sourceId: 'mock_kakao_1',
-      isVerified: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
-  ]
 }

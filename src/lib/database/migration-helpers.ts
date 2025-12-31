@@ -7,13 +7,13 @@ import { SimplePlace } from '@/types/simple-place'
 /**
  * SimplePlace를 D1 places 테이블 형식으로 변환
  */
-export function convertSimplePlaceToD1(place: SimplePlace): Record<string, any> {
+export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unknown> {
   return {
     id: place.id,
     name: place.name,
     slug: place.slug,
     category: place.category,
-    subcategory: (place as any).subcategory || null,
+    subcategory: (place as Record<string, unknown>).subcategory || null,
     description: place.description || null,
     short_description: place.description?.substring(0, 200) || null,
     
@@ -86,7 +86,7 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, any> 
 /**
  * D1 INSERT 쿼리 생성
  */
-export function generateInsertQuery(table: string, data: Record<string, any>): { query: string; values: any[] } {
+export function generateInsertQuery(table: string, data: Record<string, unknown>): { query: string; values: unknown[] } {
   const columns = Object.keys(data)
   const placeholders = columns.map(() => '?').join(', ')
   const values = columns.map(col => data[col])

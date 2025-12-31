@@ -3,6 +3,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
+import { logger } from '@/lib/logger'
 
 // 배치 작업 API (크론에서 호출)
 export async function POST(
@@ -11,11 +12,11 @@ export async function POST(
 ) {
   try {
     const { jobType } = await params
-    
+
     // 인증 확인
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
-    
+
     if (!token || !env.INTERNAL_TOKEN || token !== env.INTERNAL_TOKEN) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -64,7 +65,7 @@ export async function POST(
     })
 
   } catch (error) {
-    console.error('Job API error:', error)
+    logger.error('Job API error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -75,11 +76,11 @@ export async function POST(
 // 장소 데이터 수집
 async function ingestPlaces() {
   // 실제로는 공공데이터 API 호출
-  console.log('Starting places ingestion...')
-  
+  logger.info('Starting places ingestion...')
+
   // 시뮬레이션
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   return {
     processed: 150,
     new: 12,
@@ -92,11 +93,11 @@ async function ingestPlaces() {
 // 행사 데이터 수집
 async function ingestEvents() {
   // 실제로는 TourAPI 호출
-  console.log('Starting events ingestion...')
-  
+  logger.info('Starting events ingestion...')
+
   // 시뮬레이션
   await new Promise(resolve => setTimeout(resolve, 800))
-  
+
   return {
     processed: 45,
     new: 8,
@@ -109,11 +110,11 @@ async function ingestEvents() {
 // 날씨 데이터 수집
 async function ingestWeather() {
   // 실제로는 기상청 API 호출
-  console.log('Starting weather ingestion...')
-  
+  logger.info('Starting weather ingestion...')
+
   // 시뮬레이션
   await new Promise(resolve => setTimeout(resolve, 500))
-  
+
   return {
     regions: 17,
     temperature: 'collected',
@@ -125,11 +126,11 @@ async function ingestWeather() {
 // 콘텐츠 생성
 async function generateContent() {
   // 실제로는 ChatGPT API 호출
-  console.log('Starting content generation...')
-  
+  logger.info('Starting content generation...')
+
   // 시뮬레이션
   await new Promise(resolve => setTimeout(resolve, 2000))
-  
+
   return {
     summaries: 45,
     faqs: 135,

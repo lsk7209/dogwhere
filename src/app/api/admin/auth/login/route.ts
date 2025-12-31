@@ -6,6 +6,8 @@ import { cookies } from 'next/headers'
 import { env } from '@/lib/env'
 import { generateToken, verifyToken } from '@/lib/auth/jwt-edge'
 import { verifyPassword, hashPassword } from '@/lib/auth/password-edge'
+import { handleApiError, ValidationError, AuthenticationError } from '@/lib/api-error'
+import type { AuthResponse } from '@/types/api'
 
 // 관리자 인증 정보 (환경변수에서 읽음)
 // 실제 운영에서는 데이터베이스에 해시된 비밀번호를 저장해야 합니다
@@ -32,18 +34,12 @@ export async function POST(request: Request) {
 
     // 입력 검증
     if (!username || !password) {
-      return NextResponse.json({
-        success: false,
-        message: '사용자명과 비밀번호를 입력해주세요.'
-      }, { status: 400 })
+      throw new ValidationError('사용자명과 비밀번호를 입력해주세요.')
     }
 
     // 사용자명 검증
     if (username !== ADMIN_USERNAME) {
-      return NextResponse.json({
-        success: false,
-        message: '사용자명 또는 비밀번호가 올바르지 않습니다.'
-      }, { status: 401 })
+      throw new AuthenticationError('사용자명 또는 비밀번호가 올바르지 않습니다.')
     }
 
     // 비밀번호 검증
@@ -51,10 +47,7 @@ export async function POST(request: Request) {
     const isValidPassword = await verifyPassword(password, hashedPassword)
 
     if (!isValidPassword) {
-      return NextResponse.json({
-        success: false,
-        message: '사용자명 또는 비밀번호가 올바르지 않습니다.'
-      }, { status: 401 })
+      throw new AuthenticationError('사용자명 또는 비밀번호가 올바르지 않습니다.')
     }
 
     // JWT 토큰 생성 (24시간 = 86400초)
@@ -69,16 +62,16 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24 // 24시간
     })
 
-    return NextResponse.json({
+    const response: AuthResponse = {
       success: true,
-      message: '로그인 성공'
-    })
+      data: {
+        authenticated: true,
+        message: '로그인 성공'
+      }
+    }
+    return NextResponse.json(response)
   } catch (error) {
-    console.error('로그인 오류:', error)
-    return NextResponse.json({
-      success: false,
-      message: '서버 오류가 발생했습니다.'
-    }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
@@ -88,31 +81,32 @@ export async function GET(request: Request) {
     const token = cookieStore.get('admin_token')
 
     if (!token) {
-      return NextResponse.json({
-        authenticated: false
-      }, { status: 401 })
+      const response: AuthResponse = {
+        success: true,
+        data: {
+          authenticated: false
+        }
+      }
+      return NextResponse.json(response, { status: 401 })
     }
 
     // JWT 토큰 검증
     const payload = await verifyToken(token.value, env.JWT_SECRET)
 
     if (!payload) {
-      return NextResponse.json({
-        authenticated: false,
-        message: '유효하지 않은 토큰입니다.'
-      }, { status: 401 })
+      throw new AuthenticationError('유효하지 않은 토큰입니다.')
     }
 
-    return NextResponse.json({
-      authenticated: true,
-      username: payload.username
-    })
+    const response: AuthResponse = {
+      success: true,
+      data: {
+        authenticated: true,
+        username: payload.username
+      }
+    }
+    return NextResponse.json(response)
   } catch (error) {
-    console.error('인증 확인 오류:', error)
-    return NextResponse.json({
-      authenticated: false,
-      message: '서버 오류가 발생했습니다.'
-    }, { status: 500 })
+    return handleApiError(error)
   }
 }
 
@@ -126,9 +120,6 @@ export async function DELETE() {
       message: '로그아웃 성공'
     })
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      message: '서버 오류가 발생했습니다.'
-    }, { status: 500 })
+    return handleApiError(error)
   }
 }

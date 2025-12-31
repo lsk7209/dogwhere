@@ -27,7 +27,11 @@ const envSchema = z.object({
   // 내부 토큰 (선택)
   INTERNAL_TOKEN: z.string().optional(),
   
-  // 클라우드플레어 설정 (선택)
+  // Turso 데이터베이스 설정 (Vercel 배포 시)
+  TURSO_DATABASE_URL: z.string().url().optional(),
+  TURSO_AUTH_TOKEN: z.string().optional(),
+  
+  // 클라우드플레어 설정 (선택 - 기존 D1 사용 시)
   CF_KV_NAMESPACE: z.string().optional(),
   CF_D1_BINDING: z.string().optional(),
   CF_R2_BUCKET: z.string().optional(),
@@ -35,6 +39,12 @@ const envSchema = z.object({
   // 공개 URL (선택)
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().url().optional(),
+  
+  // Gemini API (컨텐츠 재생성용)
+  GEMINI_API_KEY: z.string().optional(),
+  
+  // 공공데이터포털 API 키 (선택)
+  PUBLIC_DATA_API_KEY: z.string().optional(),
   
   // 슬랙 웹훅 (선택)
   SLACK_WEBHOOK_URL: z.string().url().optional(),

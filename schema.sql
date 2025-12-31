@@ -188,6 +188,8 @@ CREATE TABLE IF NOT EXISTS posts (
   
   -- 메타데이터
   featured BOOLEAN DEFAULT 0,
+  thumbnail_url TEXT,
+  thumbnail_prompt TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

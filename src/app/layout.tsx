@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./providers";
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 // 커스텀 스크립트 슬롯: 서버/빌드 환경에서 기본값(null)로 안전 선언
 const headCustomScripts: React.ReactNode = null;
@@ -97,17 +98,19 @@ export default function RootLayout({
         {/* BODY 영역용 커스텀 스크립트*/}
         {bodyCustomScripts && <>{bodyCustomScripts}</>}
         <Providers>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1 pt-16">
-              {children}
-            </main>
-            <Footer />
-            {/* FOOTER 영역용 커스텀 스크립트 */}
-            {footerCustomScripts && <>{footerCustomScripts}</>}
-            {/* body 실제 끝 JS 삽입 slot */}
-            {customBodyEndScripts && <>{customBodyEndScripts}</>}
-          </div>
+          <ErrorBoundary>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-1 pt-16">
+                {children}
+              </main>
+              <Footer />
+              {/* FOOTER 영역용 커스텀 스크립트 */}
+              {footerCustomScripts && <>{footerCustomScripts}</>}
+              {/* body 실제 끝 JS 삽입 slot */}
+              {customBodyEndScripts && <>{customBodyEndScripts}</>}
+            </div>
+          </ErrorBoundary>
         </Providers>
         {/* (참고) Strict mode/react portal, 등 추가 영역 구분 가능 */}
       </body>

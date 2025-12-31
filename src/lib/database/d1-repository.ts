@@ -117,13 +117,13 @@ export class PlaceRepository {
     filters: FilterParams = {},
     sort: SortParams = { field: 'created_at', order: 'DESC' },
     pagination: PaginationParams = { page: 1, limit: 20 }
-  ): Promise<PaginationResult<any>> {
+  ): Promise<PaginationResult<Record<string, unknown>>> {
     const { page, limit } = pagination
     const offset = (page - 1) * limit
 
     // WHERE 조건 구성
     const conditions: string[] = []
-    const params: any[] = []
+    const params: (string | number | boolean)[] = []
 
     if (filters.sido) {
       conditions.push('sido = ?')
@@ -196,7 +196,7 @@ export class PlaceRepository {
       .bind(...params, limit, offset)
       .all()
 
-    const data = dataResult.results || []
+    const data = (dataResult.results || []) as Record<string, unknown>[]
     const totalPages = Math.ceil(total / limit)
 
     return {
@@ -252,7 +252,7 @@ export class PlaceRepository {
     }
 
     let query = 'SELECT COUNT(*) as total FROM places'
-    const params: any[] = []
+    const params: (string | number)[] = []
 
     if (sido && sigungu) {
       query += ' WHERE sido = ? AND sigungu = ?'
@@ -325,7 +325,7 @@ export class PlaceRepository {
       .bind(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, limit, offset)
       .all()
 
-    const data = dataResult.results || []
+    const data = (dataResult.results || []) as Record<string, unknown>[]
     const totalPages = Math.ceil(total / limit)
 
     return {
@@ -372,12 +372,12 @@ export class PostRepository {
     filters: { category?: string; featured?: boolean; search?: string } = {},
     sort: SortParams = { field: 'date', order: 'DESC' },
     pagination: PaginationParams = { page: 1, limit: 12 }
-  ): Promise<PaginationResult<any>> {
+  ): Promise<PaginationResult<Record<string, unknown>>> {
     const { page, limit } = pagination
     const offset = (page - 1) * limit
 
     const conditions: string[] = []
-    const params: any[] = []
+    const params: (string | number | boolean)[] = []
 
     if (filters.category) {
       conditions.push('category = ?')
@@ -429,7 +429,7 @@ export class PostRepository {
       .bind(...params, limit, offset)
       .all()
 
-    const data = dataResult.results || []
+    const data = (dataResult.results || []) as Record<string, unknown>[]
     const totalPages = Math.ceil(total / limit)
 
     return {
@@ -472,7 +472,8 @@ export class PostRepository {
       .prepare('SELECT slug FROM posts ORDER BY date DESC')
       .all()
 
-    return (result.results || []).map((row: any) => row.slug)
+    const rows = (result.results || []) as Record<string, unknown>[]
+    return rows.map((row) => String(row.slug || ''))
   }
 
   /**
@@ -578,7 +579,7 @@ export class EventRepository {
       .bind(...params, limit, offset)
       .all()
 
-    const data = dataResult.results || []
+    const data = (dataResult.results || []) as Record<string, unknown>[]
     const totalPages = Math.ceil(total / limit)
 
     return {

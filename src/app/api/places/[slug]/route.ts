@@ -1,24 +1,50 @@
 /**
- * 장소 상세 조회 API
- * 캐싱 최적화
+ * 장소 상세 조회 API (Turso 기반)
  */
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { PlaceRepository } from '@/lib/database/d1-repository'
+import { PlaceRepository, PlaceRow } from '@/lib/database/turso-repository'
 import { PlaceCacheKeys, cachedFetch } from '@/lib/cache/kv-cache'
-import { log } from '@/lib/logger'
+import { logger } from '@/lib/logger'
+import type { SimplePlace } from '@/types/simple-place'
 
 const CACHE_TTL = 3600 // 1시간
+
+// PlaceRow를 SimplePlace로 변환하는 헬퍼 함수
+function mapToSimplePlace(row: PlaceRow): SimplePlace {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    category: row.category,
+    description: row.description || '',
+    address: row.address,
+    sido: row.sido,
+    sigungu: row.sigungu,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    phone: row.phone || undefined,
+    website: row.website || undefined,
+    rating: row.overall_rating,
+    reviewCount: row.review_count,
+    imageUrl: (row.main_image as string) || null,
+    source: (row.source as string) || 'unknown',
+    sourceId: row.id,
+    isVerified: !!row.verified,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  }
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   let slug: string | undefined
-  
+
   try {
     const resolvedParams = await params
     slug = resolvedParams.slug
@@ -40,19 +66,16 @@ export async function GET(
       cacheKey,
       async () => {
         if (!slug) return null
-        
+
         try {
           const repository = new PlaceRepository()
-          if (repository.isAvailable()) {
-            return await repository.findBySlug(slug)
-          }
+          const row = await repository.findBySlug(slug)
+          if (!row) return null
+          return mapToSimplePlace(row)
         } catch (error) {
-          log.warn('D1 access failed, using fallback', { error, slug })
+          logger.error('Turso access failed', error as Error, { slug })
+          return null
         }
-        
-        // D1 사용 불가능 시 폴백: simple-places 사용
-        const { getPlaceBySlug } = await import('@/lib/database/simple-places')
-        return getPlaceBySlug(slug) || null
       },
       {
         ttl: CACHE_TTL,
@@ -75,7 +98,7 @@ export async function GET(
       data: place,
       meta: {
         timestamp: new Date().toISOString(),
-        version: '2.0'
+        version: '2.0 (Turso)'
       }
     }, {
       status: 200,
@@ -86,7 +109,7 @@ export async function GET(
     })
 
   } catch (error) {
-    log.error('Place Detail API Error', error, { slug: slug || 'unknown' })
+    logger.error('Place Detail API Error', error as Error, { slug: slug || 'unknown' })
 
     return NextResponse.json({
       success: false,
@@ -97,4 +120,3 @@ export async function GET(
     }, { status: 500 })
   }
 }
-
