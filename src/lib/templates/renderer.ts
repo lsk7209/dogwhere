@@ -140,7 +140,7 @@ export class TemplateRenderer {
     return template.replace(/\{\{josa\s+([^}]+)\s+'([^']+)'\}\}/g, (match, wordKey, josaString) => {
       const word = this.getNestedValue(variables, wordKey.trim())
       if (!word) return match
-      
+
       return josa(String(word), josaString)
     })
   }
@@ -151,7 +151,7 @@ export class TemplateRenderer {
   private processPatterns(template: string, variables: TemplateVariables): string {
     return template.replace(/\{\{pattern\s+([^}]+)\s+'([^']+)'\s+'([^']+)'\}\}/g, (match, category, section, wordKey) => {
       const word = this.getNestedValue(variables, wordKey.trim())
-      return this.selectPattern(category, section, word)
+      return this.selectPattern(category, section, typeof word === 'string' ? word : undefined)
     })
   }
 
@@ -210,13 +210,13 @@ export class TemplateRenderer {
   private validateOutput(result: string, variables: TemplateVariables): string {
     // 빈 변수 치환 제거
     result = result.replace(/\{\{[^}]+\}\}/g, '')
-    
+
     // 연속된 공백 정리
     result = result.replace(/\s+/g, ' ')
-    
+
     // 빈 줄 정리
     result = result.replace(/\n\s*\n\s*\n/g, '\n\n')
-    
+
     return result.trim()
   }
 
@@ -232,7 +232,7 @@ export class TemplateRenderer {
    */
   renderJSONLD(template: string, variables: TemplateVariables, options?: RenderOptions): object {
     const result = this.render(template, variables, options)
-    
+
     try {
       const json = JSON.parse(result)
       return this.cleanJSONLD(json)
@@ -249,7 +249,7 @@ export class TemplateRenderer {
     if (Array.isArray(obj)) {
       return obj.map(item => this.cleanJSONLD(item)).filter(item => item !== null && item !== undefined)
     }
-    
+
     if (obj && typeof obj === 'object') {
       const cleaned: Record<string, unknown> = {}
       Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
@@ -259,7 +259,7 @@ export class TemplateRenderer {
       })
       return cleaned
     }
-    
+
     return obj
   }
 }

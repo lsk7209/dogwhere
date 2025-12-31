@@ -62,7 +62,7 @@ export interface PublicDataPlace {
   publicDataId: string
   sourceApi: string
   rawData: Record<string, unknown>
-  
+
   // 변환된 정보
   name: string
   category?: string
@@ -86,17 +86,17 @@ export async function fetchPublicData(
   pageSize: number = 100
 ): Promise<PublicDataPlace[]> {
   const apiKey = config.serviceKey || config.apiKey
-  
+
   // serviceKey는 이미 URL 인코딩되어 있을 수 있으므로 직접 URL 문자열 구성
   // URLSearchParams는 자동 인코딩하므로 이미 인코딩된 값은 직접 추가
   const baseUrl = config.baseUrl + config.endpoint
   const params: string[] = []
-  
+
   // serviceKey는 이미 인코딩되어 있으므로 직접 추가 (이중 인코딩 방지)
   params.push(`serviceKey=${apiKey}`)
   params.push(`pageNo=${page}`)
   params.push(`numOfRows=${pageSize}`)
-  
+
   // 한국관광공사 API 전용 파라미터
   if (config.mobileOS) {
     params.push(`MobileOS=${encodeURIComponent(config.mobileOS)}`)
@@ -106,7 +106,7 @@ export async function fetchPublicData(
   }
   // JSON 응답 형식
   params.push('_type=json')
-  
+
   // 추가 파라미터
   if (config.params) {
     Object.entries(config.params).forEach(([key, value]) => {
@@ -115,7 +115,7 @@ export async function fetchPublicData(
       }
     })
   }
-  
+
   const url = `${baseUrl}?${params.join('&')}`
 
   try {
@@ -132,14 +132,14 @@ export async function fetchPublicData(
     }
 
     const data = await response.json() as KorPetTourResponse | DataGoKrResponse | SeoulOpenApiResponse
-    
-    // 에러 응답 확인 (한국관광공사 API)
-    if ('response' in data && data.response?.header?.resultCode && data.response.header.resultCode !== '0000') {
-      const errorMsg = data.response.header.resultMsg || 'Unknown error'
-      console.error(`API 에러 (${data.response.header.resultCode}):`, errorMsg)
-      throw new Error(`API 에러: ${errorMsg}`)
+
+    const resp = (data as any).response;
+    if (resp && resp.header && resp.header.resultCode && resp.header.resultCode !== '0000') {
+      const errorMsg = resp.header.resultMsg || 'Unknown error';
+      console.error(`API 에러 (${resp.header.resultCode}):`, errorMsg);
+      throw new Error(`API 에러: ${errorMsg}`);
     }
-    
+
     // API 응답 형식에 따라 파싱
     const sourceApi = config.sourceApi || detectSourceApi(config.baseUrl, config.endpoint)
     return parsePublicDataResponse(data, sourceApi)
@@ -181,23 +181,23 @@ function parsePublicDataResponse(
       console.error('한국관광공사 API 에러:', header.resultMsg || 'Unknown error')
       return []
     }
-    
+
     // 응답 형식: response.body.items.item (단일 객체 또는 배열)
     const body = korData.response?.body
     if (!body || !body.items) {
       return []
     }
-    
+
     const items = body.items
     if (!items.item) {
       return []
     }
-    
+
     // item이 배열인지 단일 객체인지 확인
     const itemArray = Array.isArray(items.item) ? items.item : (items.item ? [items.item] : [])
     return itemArray.map((item: Record<string, unknown>) => parseKorPetTourItem(item))
   }
-  
+
   // 국가공공데이터포털 형식
   if (sourceApi === 'data.go.kr') {
     const dataGoKr = data as DataGoKrResponse
@@ -207,7 +207,7 @@ function parsePublicDataResponse(
     const itemArray = Array.isArray(items) ? items : (items ? [items] : [])
     return itemArray.map((item: Record<string, unknown>) => parseDataGoKrItem(item))
   }
-  
+
   // 서울시 열린데이터광장 형식
   if (sourceApi === 'openapi.seoul.go.kr' && 'DATA' in data) {
     const seoulData = data as SeoulOpenApiResponse
@@ -215,7 +215,7 @@ function parsePublicDataResponse(
     const items = firstKey ? (seoulData[firstKey]?.row || []) : []
     return items.map((item: Record<string, unknown>) => parseSeoulOpenApiItem(item))
   }
-  
+
   // 기본 형식 (커스텀 파서 필요)
   return []
 }
@@ -226,22 +226,22 @@ function parsePublicDataResponse(
 function parseKorPetTourItem(item: Record<string, unknown>): PublicDataPlace {
   // contentid가 고유 ID
   const contentId = String(item.contentid || item.contentId || generateId())
-  
+
   // 좌표 변환 (mapx, mapy는 문자열로 제공됨)
   const mapx = item.mapx ? parseFloat(String(item.mapx)) : undefined
   const mapy = item.mapy ? parseFloat(String(item.mapy)) : undefined
-  
+
   // 좌표가 있으면 변환 (한국관광공사는 KATEC 좌표계 사용, WGS84로 변환 필요)
   // 간단한 변환 공식 사용 (정확도는 낮지만 기본 변환)
   let latitude: number | undefined
   let longitude: number | undefined
-  
+
   if (mapx && mapy) {
     // KATEC -> WGS84 변환 (근사치)
     latitude = mapy / 1000000
     longitude = mapx / 1000000
   }
-  
+
   return {
     publicDataId: contentId,
     sourceApi: 'kor-pet-tour',
@@ -279,39 +279,39 @@ function getCategoryFromContentType(contentTypeId?: string): string {
 /**
  * data.go.kr 형식 파싱
  */
-function parseDataGoKrItem(item: Record<string, unknown>): PublicDataPlace {
+function parseDataGoKrItem(item: any): PublicDataPlace {
   return {
     publicDataId: item.관리번호 || item.id || generateId(),
     sourceApi: 'data.go.kr',
     rawData: item,
-    name: item.시설명 || item.업소명 || item.이름 || '',
-    category: item.업종 || item.카테고리 || '기타',
-    address: item.소재지 || item.주소 || '',
-    sido: extractSido(item.소재지 || item.주소 || ''),
-    sigungu: extractSigungu(item.소재지 || item.주소 || ''),
-    phone: item.전화번호 || item.연락처 || '',
-    website: item.홈페이지 || item.웹사이트 || '',
-    latitude: parseFloat(item.위도 || item.latitude || '0'),
-    longitude: parseFloat(item.경도 || item.longitude || '0'),
+    name: String(item.시설명 || item.업소명 || item.이름 || ''),
+    category: String(item.업종 || item.카테고리 || '기타'),
+    address: String(item.소재지 || item.주소 || ''),
+    sido: extractSido(String(item.소재지 || item.주소 || '')),
+    sigungu: extractSigungu(String(item.소재지 || item.주소 || '')),
+    phone: String(item.전화번호 || item.연락처 || ''),
+    website: String(item.홈페이지 || item.웹사이트 || ''),
+    latitude: parseFloat(String(item.위도 || item.latitude || '0')),
+    longitude: parseFloat(String(item.경도 || item.longitude || '0')),
   }
 }
 
 /**
  * 서울시 Open API 형식 파싱
  */
-function parseSeoulOpenApiItem(item: Record<string, unknown>): PublicDataPlace {
+function parseSeoulOpenApiItem(item: any): PublicDataPlace {
   return {
     publicDataId: item.관리번호 || item.id || generateId(),
     sourceApi: 'openapi.seoul.go.kr',
     rawData: item,
-    name: item.시설명 || item.업소명 || '',
-    category: item.업종 || '기타',
-    address: item.소재지 || '',
+    name: String(item.시설명 || item.업소명 || ''),
+    category: String(item.업종 || '기타'),
+    address: String(item.소재지 || ''),
     sido: '서울특별시',
-    sigungu: extractSigungu(item.소재지 || ''),
-    phone: item.전화번호 || '',
-    latitude: parseFloat(item.위도 || '0'),
-    longitude: parseFloat(item.경도 || '0'),
+    sigungu: extractSigungu(String(item.소재지 || '')),
+    phone: String(item.전화번호 || ''),
+    latitude: parseFloat(String(item.위도 || '0')),
+    longitude: parseFloat(String(item.경도 || '0')),
   }
 }
 
@@ -320,11 +320,11 @@ function parseSeoulOpenApiItem(item: Record<string, unknown>): PublicDataPlace {
  */
 function extractSido(address: string): string {
   if (!address) return ''
-  
+
   const sidoPattern = /(서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주)/
   const match = address.match(sidoPattern)
   if (!match) return ''
-  
+
   const sido = match[0]
   const sidoMap: Record<string, string> = {
     '서울': '서울특별시',
@@ -345,7 +345,7 @@ function extractSido(address: string): string {
     '경남': '경상남도',
     '제주': '제주특별자치도',
   }
-  
+
   return sidoMap[sido] || sido
 }
 
@@ -379,13 +379,13 @@ export async function collectAllPages(
   while (hasMore && page <= maxPages) {
     try {
       const places = await fetchPublicData(config, page, 100)
-      
+
       if (places.length === 0) {
         hasMore = false
       } else {
         allPlaces.push(...places)
         page++
-        
+
         // API 제한을 위한 대기
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
