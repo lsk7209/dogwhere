@@ -50,3 +50,38 @@ export interface AuthResponse extends ApiResponse<{
   username?: string
   message?: string
 }> { }
+
+export interface PublicDataPlace {
+  id: string
+  name: string
+  slug: string
+  category?: string
+  address?: string
+  sido?: string
+  sigungu?: string
+  latitude?: number
+  longitude?: number
+  phone?: string
+  website?: string
+  sitemap_excluded: boolean
+  noindex: boolean
+  regeneration_status: string
+  created_at: string
+  updated_at: string
+}
+
+export interface PublicDataSearchResponse extends ApiResponse<{
+  results: PublicDataPlace[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasNext: boolean
+    hasPrev: boolean
+  }
+}> {
+  meta?: {
+    timestamp: string
+  }
+}
