@@ -235,7 +235,7 @@ export class TemplateRenderer {
 
     try {
       const json = JSON.parse(result)
-      return this.cleanJSONLD(json)
+      return this.cleanJSONLD(json) as object
     } catch (error) {
       console.error('JSON-LD parsing error:', error)
       return {}
