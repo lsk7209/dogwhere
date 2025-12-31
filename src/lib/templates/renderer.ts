@@ -245,7 +245,7 @@ export class TemplateRenderer {
   /**
    * JSON-LD에서 빈 값들을 제거합니다.
    */
-  private cleanJSONLD(obj: unknown): unknown {
+  private cleanJSONLD(obj: unknown): any {
     if (Array.isArray(obj)) {
       return obj.map(item => this.cleanJSONLD(item)).filter(item => item !== null && item !== undefined)
     }
