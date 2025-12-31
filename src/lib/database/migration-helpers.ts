@@ -2,12 +2,12 @@
  * 데이터베이스 마이그레이션 헬퍼 함수
  */
 
-import { SimplePlace } from '@/types/simple-place'
+// import { SimplePlace } from '@/types/simple-place' // removed: SimplePlace not defined
 
 /**
  * SimplePlace를 D1 places 테이블 형식으로 변환
  */
-export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unknown> {
+export function convertSimplePlaceToD1(place: any): Record<string, unknown> {
   return {
     id: place.id,
     name: place.name,
@@ -15,8 +15,8 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unkno
     category: place.category,
     subcategory: (place as Record<string, unknown>).subcategory || null,
     description: place.description || null,
-    short_description: place.description?.substring(0, 200) || null,
-    
+    short_description: (place as any).description?.substring(0, 200) || null,
+
     // 위치 정보
     address: place.address,
     sido: place.sido,
@@ -25,35 +25,35 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unkno
     latitude: place.latitude,
     longitude: place.longitude,
     postal_code: null,
-    
+
     // 연락처 정보
     phone: place.phone || null,
     website: place.website || null,
     instagram: null,
     kakao: null,
-    
+
     // 운영 정보
     operating_hours: null,
     closed_days: null,
     last_order: null,
     break_time: null,
-    
+
     // 강아지 관련 정보
     pet_allowed: true,
     pet_size_restriction: 'all',
     pet_additional_fee: 0,
     pet_requirements: null,
     pet_facilities: null,
-    
+
     // 편의시설
     amenities: null,
-    
+
     // 가격 정보
     price_range: 'medium',
     average_price: null,
     currency: 'KRW',
     additional_fees: null,
-    
+
     // 평점 및 리뷰
     overall_rating: place.rating || 0,
     pet_friendly_rating: place.rating || 0,
@@ -61,12 +61,12 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unkno
     atmosphere_rating: place.rating || 0,
     value_rating: place.rating || 0,
     review_count: place.reviewCount || 0,
-    
+
     // 이미지
     main_image: null,
     gallery_images: null,
     thumbnail_image: null,
-    
+
     // 메타데이터
     verified: place.isVerified ? 1 : 0,
     featured: 0,
@@ -74,7 +74,7 @@ export function convertSimplePlaceToD1(place: SimplePlace): Record<string, unkno
     updated_at: place.updatedAt || new Date().toISOString(),
     last_verified: null,
     source: place.source || 'manual',
-    
+
     // SEO 정보
     seo_title: null,
     seo_description: null,

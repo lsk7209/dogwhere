@@ -13,6 +13,15 @@ export interface ApiResponse<T = unknown> {
   message?: string
 }
 
+export interface ApiErrorResponse {
+  success: false,
+  error: {
+    message: string,
+    code: string,
+    details?: unknown
+  }
+}
+
 export interface PaginatedResponse<T> extends ApiResponse<{
   items: T[]
   pagination: {
