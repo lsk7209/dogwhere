@@ -39,3 +39,11 @@ export interface SimplePlacesResponse extends ApiResponse<{
     version: string
   }
 }
+
+export interface AuthResponse extends ApiResponse<{
+  token: string
+  user: {
+    username: string
+    role: string
+  }
+}> { }
