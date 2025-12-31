@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
 
           published++
         } catch (error) {
-          console.error(`[Publish] 실패: ${id}`, error)
+          logger.error(`[Publish] 실패: ${id}`, error)
           failed++
         }
       }
@@ -161,8 +162,8 @@ export async function POST(request: NextRequest) {
       })
     }
   } catch (error) {
-    console.error('Publish API error:', error)
-    
+    logger.error('Publish API error', error)
+
     return NextResponse.json({
       success: false,
       error: {

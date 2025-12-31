@@ -4,6 +4,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
+import { logger } from '@/lib/logger'
 
 /**
  * 데이터 검증 디버깅 API
@@ -199,7 +200,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Validate Data API error:', error)
-    
+
     return NextResponse.json({
       success: false,
       error: {

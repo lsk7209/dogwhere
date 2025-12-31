@@ -3,6 +3,7 @@ export const runtime = 'edge'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { ImageResponse } from 'next/og'
+import { logger } from '@/lib/logger'
 
 // OG 이미지 생성 API
 export async function GET(request: NextRequest) {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     return generateDefaultOG(title, region, badge)
 
   } catch (error) {
-    console.error('OG image generation error:', error)
+    logger.error('OG image generation error', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

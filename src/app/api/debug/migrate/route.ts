@@ -4,6 +4,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
+import { logger } from '@/lib/logger'
 
 /**
  * 데이터베이스 마이그레이션 API
@@ -99,9 +100,9 @@ export async function POST(request: NextRequest) {
         await db.execute({ sql: statement, args: [] })
         results.push({ statement: statement.substring(0, 50) + '...', status: 'success' })
       } catch (error: any) {
-        if (error?.message?.includes('already exists') || 
-            error?.message?.includes('duplicate') ||
-            error?.message?.includes('UNIQUE constraint')) {
+        if (error?.message?.includes('already exists') ||
+          error?.message?.includes('duplicate') ||
+          error?.message?.includes('UNIQUE constraint')) {
           results.push({ statement: statement.substring(0, 50) + '...', status: 'skipped', reason: 'already exists' })
         } else {
           results.push({ statement: statement.substring(0, 50) + '...', status: 'error', error: error?.message })
@@ -126,7 +127,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Migrate API error:', error)
-    
+
     return NextResponse.json({
       success: false,
       error: {

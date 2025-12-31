@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '../logger'
+import { PlaceRepository } from '../database/turso-repository'
 
 // 사이트맵 생성 API
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'index'
-    
+
     switch (type) {
       case 'index':
         return generateSitemapIndex()
@@ -28,7 +30,7 @@ export async function GET(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('Sitemap generation error:', error)
+    logger.error('Sitemap generation error', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -213,8 +215,8 @@ ${urls.map(url => `  <url>
 // 사이트맵 업데이트 로직
 export function updateSitemapLastmod(sitemapType: string, identifiers: string[]) {
   // 실제로는 데이터베이스에서 해당 사이트맵의 lastmod를 업데이트
-  console.log(`Updating sitemap ${sitemapType} for:`, identifiers)
-  
+  logger.info(`Updating sitemap ${sitemapType}`, { identifiers })
+
   // 예시: 사이트맵 캐시 무효화
   // await invalidateSitemapCache(sitemapType)
 }
@@ -222,5 +224,5 @@ export function updateSitemapLastmod(sitemapType: string, identifiers: string[])
 // 사이트맵 캐시 무효화
 export function invalidateSitemapCache(sitemapType: string) {
   // 실제로는 Cloudflare Cache API 또는 Redis를 사용
-  console.log(`Invalidating cache for sitemap: ${sitemapType}`)
+  logger.info(`Invalidating cache for sitemap: ${sitemapType}`)
 }

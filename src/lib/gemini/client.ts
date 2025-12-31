@@ -1,13 +1,20 @@
+import { logger } from '../logger'
+
 /**
- * Google Gemini API 클라이언트
- * Gemini 2.0 Flash (Lite) 모델 사용
+ * Gemini 모델 리스트
  */
+export enum GeminiModel {
+  FLASH_LITE = 'gemini-2.5-flash-lite',
+  FLASH_2_0 = 'gemini-2.0-flash',
+  PRO = 'gemini-pro',
+}
 
 export interface GeminiConfig {
   apiKey: string
-  model?: string
+  model?: string | GeminiModel
   temperature?: number
   maxTokens?: number
+  retryCount?: number
 }
 
 export interface RegenerationPrompt {
@@ -37,13 +44,55 @@ export class GeminiClient {
   private baseUrl: string
   private temperature: number
   private maxTokens: number
+  private retryCount: number
 
   constructor(config: GeminiConfig) {
     this.apiKey = config.apiKey
-    this.model = config.model || 'gemini-2.5-flash-lite'
+    this.model = config.model || GeminiModel.FLASH_LITE
     this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta'
-    this.temperature = config.temperature || 0.7
-    this.maxTokens = config.maxTokens || 2000
+    this.temperature = config.temperature ?? 0.7
+    this.maxTokens = config.maxTokens ?? 2000
+    this.retryCount = config.retryCount ?? 3
+  }
+
+  /**
+   * 공통 요청 메서드 (재시도 로직 포함)
+   */
+  private async request(payload: any, retries = this.retryCount): Promise<any> {
+    const url = `${this.baseUrl}/models/${this.model}:generateContent?key=${this.apiKey}`
+
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          const message = error.error?.message || response.statusText
+
+          if (response.status === 429 && i < retries) {
+            const delay = Math.pow(2, i) * 1000
+            logger.warn(`Gemini API Rate Limit (429). Retrying in ${delay}ms... (${i + 1}/${retries})`)
+            await new Promise(resolve => setTimeout(resolve, delay))
+            continue
+          }
+
+          throw new Error(`Gemini API 오류: ${message}`)
+        }
+
+        return await response.json()
+      } catch (error) {
+        if (i === retries) throw error
+        const delay = Math.pow(2, i) * 500
+        logger.error(`Gemini API 요청 실패. 재시도 중... (${i + 1}/${retries})`, error)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
   }
 
   /**
@@ -55,50 +104,31 @@ export class GeminiClient {
     const systemPrompt = this.buildSystemPrompt()
     const userPrompt = this.buildUserPrompt(prompt)
 
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/models/${this.model}:generateContent?key=${this.apiKey}`,
+    const payload = {
+      contents: [
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: systemPrompt },
-                  { text: userPrompt },
-                ],
-              },
-            ],
-            generationConfig: {
-              temperature: this.temperature,
-              maxOutputTokens: this.maxTokens,
-              topP: 0.95,
-              topK: 40,
-            },
-          }),
-        }
-      )
+          parts: [
+            { text: systemPrompt },
+            { text: userPrompt },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: this.temperature,
+        maxOutputTokens: this.maxTokens,
+        topP: 0.95,
+        topK: 40,
+      },
+    }
 
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Gemini API 오류: ${error.error?.message || response.statusText}`)
-      }
+    const data = await this.request(payload)
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
 
-      const data = await response.json()
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
-
-      return {
-        content,
-        model: this.model,
-        tokensUsed: data.usageMetadata?.totalTokenCount,
-        finishReason: data.candidates?.[0]?.finishReason,
-      }
-    } catch (error) {
-      // 에러는 상위로 전파
-      throw error
+    return {
+      content,
+      model: this.model,
+      tokensUsed: data.usageMetadata?.totalTokenCount,
+      finishReason: data.candidates?.[0]?.finishReason,
     }
   }
 
@@ -159,13 +189,11 @@ export class GeminiClient {
         const result = await this.regenerateContent(prompts[i])
         results.push(result)
 
-        // API 제한을 위한 대기
         if (i < prompts.length - 1) {
           await new Promise(resolve => setTimeout(resolve, delay))
         }
       } catch (error) {
-        console.error(`배치 재생성 실패 (${i + 1}/${prompts.length}):`, error)
-        // 실패해도 계속 진행
+        logger.error(`배치 재생성 실패 (${i + 1}/${prompts.length})`, error)
       }
     }
 
@@ -193,7 +221,7 @@ Google SEO, AEO(답변 엔진 최적화), GEO(생성 엔진 최적화)의 알고
 4. **검색 최적화(SEO/AEO/GEO)**:
    - 글의 시작 부분에 '핵심 요약' 섹션을 두어 검색 엔진 스니펫에 노출되게 하세요.
    - 글의 끝부분에 최소 3개 이상의 상세한 '자주 묻는 질문(FAQ)' 섹션을 포함하세요.
-5. **고유 섬네일 프롬프트**: 이 글의 주제를 가장 잘 나타내는 **고유하고 혁신적인 이미지 생성용 영문 프롬프트**를 작성하세요. (예: "A high-quality, cinematic close-up of a Shiba Inu looking thoughtfully at a sunset, vibrant colors, 4k, professional photography style")
+5. **고유 섬네일 프롬프트**: 이 글의 주제를 가장 잘 나타내는 **고유하고 혁신적인 이미지 생성용 영문 프롬프트**를 작성하세요.
 
 출력은 반드시 다음 구조의 JSON 형식이어야 합니다:
 {
@@ -205,65 +233,38 @@ Google SEO, AEO(답변 엔진 최적화), GEO(생성 엔진 최적화)의 알고
   "image_prompt": "이미지 생성을 위한 상세한 영문 프롬프트"
 }`
 
-    const userPrompt = `기존에 작성된 글의 제목들입니다:
-${existingTitles.join('\n')}
+    const userPrompt = `기존에 작성된 글의 제목들입니다:\n${existingTitles.join('\n')}\n\n위 제목들과 중복되지 않는 새로운 주제를 선정해서 블로그 글을 하나 작성해주세요.`
 
-위 제목들과 중복되지 않으며, 강아지를 키우는 사람들에게 정말 도움이 될 만한 새로운 주제를 선정해서 블로그 글을 하나 작성해주세요.
-한국어로 작성하고, 전문적이면서도 친근한 어조를 사용하세요.`
+    const payload = {
+      contents: [
+        {
+          parts: [
+            { text: systemPrompt },
+            { text: userPrompt },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.8,
+        maxOutputTokens: this.maxTokens,
+        responseMimeType: "application/json"
+      },
+    }
+
+    const data = await this.request(payload)
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
 
     try {
-      const response = await fetch(
-        `${this.baseUrl}/models/${this.model}:generateContent?key=${this.apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: systemPrompt },
-                  { text: userPrompt },
-                ],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.8,
-              maxOutputTokens: this.maxTokens,
-              responseMimeType: "application/json"
-            },
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(`Gemini API 오류: ${error.error?.message || response.statusText}`)
+      const parsed = JSON.parse(text)
+      const blogData = Array.isArray(parsed) ? parsed[0] : parsed
+      if (!blogData || !blogData.title) {
+        throw new Error("응답에 제목(title)이 포함되어 있지 않습니다.")
       }
-
-      const data = await response.json()
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
-
-      try {
-        const parsed = JSON.parse(text)
-        // 배열로 응답이 올 경우 첫 번째 요소 사용
-        const blogData = Array.isArray(parsed) ? parsed[0] : parsed
-
-        if (!blogData || !blogData.title) {
-          throw new Error("응답에 제목(title)이 포함되어 있지 않습니다.")
-        }
-
-        // 제목에서 마크다운 헤더 기호 제거 (## 등)
-        blogData.title = blogData.title.replace(/^#+\s*/, '').trim()
-
-        return blogData
-      } catch (e) {
-        console.error("Gemini JSON 파싱/처리 오류:", text)
-        throw new Error(`Gemini 응답 처리 실패: ${e instanceof Error ? e.message : 'Unknown'}`)
-      }
-    } catch (error) {
-      throw error
+      blogData.title = blogData.title.replace(/^#+\s*/, '').trim()
+      return blogData
+    } catch (e) {
+      logger.error("Gemini JSON 파싱 오류", e, { text })
+      throw new Error(`Gemini 응답 처리 실패: ${e instanceof Error ? e.message : 'Unknown'}`)
     }
   }
 }
@@ -280,7 +281,7 @@ export function createGeminiClient(): GeminiClient {
 
   return new GeminiClient({
     apiKey,
-    model: 'gemini-2.5-flash-lite',
+    model: GeminiModel.FLASH_LITE,
     temperature: 0.8,
     maxTokens: 4000,
   })

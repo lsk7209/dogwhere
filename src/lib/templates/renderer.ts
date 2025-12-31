@@ -1,4 +1,5 @@
-import { josa, josaFunctions } from './josa'
+import { josa } from './josa'
+import { logger } from '../logger'
 
 /**
  * 템플릿 변수 인터페이스
@@ -36,7 +37,7 @@ export class TemplateRenderer {
   private seed: number
 
   constructor(seed?: number) {
-    this.seed = seed || Date.now()
+    this.seed = seed ?? Date.now()
   }
 
   /**
@@ -60,22 +61,22 @@ export class TemplateRenderer {
     const patterns = pattern[section]
     if (patterns.length === 0) return ''
 
-    // 단어가 있으면 해시를 생성하여 패턴 선택
-    let hash = this.seed
+    // 단어가 있으면 해시를 생성하여 패턴 선택 (Unsigned 32-bit Integer)
+    let hash = (this.seed >>> 0)
     if (word) {
       for (let i = 0; i < word.length; i++) {
-        hash = ((hash << 5) - hash + word.charCodeAt(i)) & 0xffffffff
+        hash = ((hash << 5) - hash + word.charCodeAt(i)) >>> 0
       }
     }
 
-    const index = Math.abs(hash) % patterns.length
+    const index = hash % patterns.length
     return patterns[index]
   }
 
   /**
    * 템플릿 문자열을 렌더링합니다.
    */
-  render(template: string, variables: TemplateVariables, options: RenderOptions = {}): string {
+  render<T extends TemplateVariables>(template: string, variables: T, options: RenderOptions = {}): string {
     const {
       enableJosa = true,
       enablePatterns = true,
@@ -105,7 +106,7 @@ export class TemplateRenderer {
 
     // 6. 검증
     if (enableValidation) {
-      result = this.validateOutput(result, variables)
+      result = this.validateOutput(result)
     }
 
     return result
@@ -115,7 +116,7 @@ export class TemplateRenderer {
    * 변수 치환
    */
   private replaceVariables(template: string, variables: TemplateVariables): string {
-    return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+    return template.replace(/\{\{\s*([^}]+?)\s*\}\}/g, (match, key) => {
       const trimmedKey = key.trim()
       const value = this.getNestedValue(variables, trimmedKey)
       return value !== undefined ? String(value) : match
@@ -137,7 +138,7 @@ export class TemplateRenderer {
    * 조사 처리
    */
   private processJosa(template: string, variables: TemplateVariables): string {
-    return template.replace(/\{\{josa\s+([^}]+)\s+'([^']+)'\}\}/g, (match, wordKey, josaString) => {
+    return template.replace(/\{\{\s*josa\s+([^}]+?)\s+'([^']+?)'\s*\}\}/g, (match, wordKey, josaString) => {
       const word = this.getNestedValue(variables, wordKey.trim())
       if (!word) return match
 
@@ -149,7 +150,7 @@ export class TemplateRenderer {
    * 패턴 처리
    */
   private processPatterns(template: string, variables: TemplateVariables): string {
-    return template.replace(/\{\{pattern\s+([^}]+)\s+'([^']+)'\s+'([^']+)'\}\}/g, (match, category, section, wordKey) => {
+    return template.replace(/\{\{\s*pattern\s+([^}]+?)\s+'([^']+?)'\s+'([^']+?)'\s*\}\}/g, (match, category, section, wordKey) => {
       const word = this.getNestedValue(variables, wordKey.trim())
       return this.selectPattern(category, section, typeof word === 'string' ? word : undefined)
     })
@@ -159,8 +160,7 @@ export class TemplateRenderer {
    * 조건부 블록 처리
    */
   private processConditionalBlocks(template: string, variables: TemplateVariables): string {
-    // {{#if condition}}...{{/if}} 처리
-    return template.replace(/\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+    return template.replace(/\{\{\s*#if\s+([^}]+?)\s*\}\}([\s\S]*?)\{\{\s*\/if\s*\}\}/g, (match, condition, content) => {
       const value = this.getNestedValue(variables, condition.trim())
       if (this.isTruthy(value)) {
         return this.render(content, variables, { enableJosa: true, enablePatterns: true, enableValidation: false })
@@ -173,15 +173,14 @@ export class TemplateRenderer {
    * 반복 블록 처리
    */
   private processLoopBlocks(template: string, variables: TemplateVariables): string {
-    // {{#each array}}...{{/each}} 처리
-    return template.replace(/\{\{#each\s+([^}]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (match, arrayKey, content) => {
+    return template.replace(/\{\{\s*#each\s+([^}]+?)\s*\}\}([\s\S]*?)\{\{\s*\/each\s*\}\}/g, (match, arrayKey, content) => {
       const array = this.getNestedValue(variables, arrayKey.trim())
       if (!Array.isArray(array)) return ''
 
       return array.map((item, index) => {
         const itemVariables = {
           ...variables,
-          ...item,
+          ...(typeof item === 'object' && item !== null ? item : { value: item }),
           '@index': index,
           '@first': index === 0,
           '@last': index === array.length - 1
@@ -190,7 +189,6 @@ export class TemplateRenderer {
       }).join('')
     })
   }
-
   /**
    * 값이 참인지 확인
    */
@@ -207,17 +205,17 @@ export class TemplateRenderer {
   /**
    * 출력 검증
    */
-  private validateOutput(result: string, variables: TemplateVariables): string {
+  private validateOutput(result: string): string {
     // 빈 변수 치환 제거
-    result = result.replace(/\{\{[^}]+\}\}/g, '')
+    let output = result.replace(/\{\{\s*[^}]+\s*\}\}/g, '')
 
-    // 연속된 공백 정리
-    result = result.replace(/\s+/g, ' ')
+    // 연속된 공백 정리 (줄바꿈 제외)
+    output = output.replace(/[ \t]+/g, ' ')
 
-    // 빈 줄 정리
-    result = result.replace(/\n\s*\n\s*\n/g, '\n\n')
+    // 중복된 줄바꿈 정리
+    output = output.replace(/\n\s*\n\s*\n/g, '\n\n')
 
-    return result.trim()
+    return output.trim()
   }
 
   /**
@@ -225,6 +223,13 @@ export class TemplateRenderer {
    */
   renderMDX(template: string, variables: TemplateVariables, options?: RenderOptions): string {
     return this.render(template, variables, options)
+  }
+
+  /**
+   * 반복 블록 처리 (외부 노출용)
+   */
+  processLoops(template: string, variables: TemplateVariables): string {
+    return this.processLoopBlocks(template, variables)
   }
 
   /**
@@ -237,7 +242,7 @@ export class TemplateRenderer {
       const json = JSON.parse(result)
       return this.cleanJSONLD(json) as object
     } catch (error) {
-      console.error('JSON-LD parsing error:', error)
+      logger.error('JSON-LD parsing error', error)
       return {}
     }
   }
@@ -247,14 +252,15 @@ export class TemplateRenderer {
    */
   private cleanJSONLD(obj: unknown): any {
     if (Array.isArray(obj)) {
-      return obj.map(item => this.cleanJSONLD(item)).filter(item => item !== null && item !== undefined)
+      return obj.map(item => this.cleanJSONLD(item)).filter(item => item !== null && item !== undefined && item !== '')
     }
 
     if (obj && typeof obj === 'object') {
       const cleaned: Record<string, unknown> = {}
       Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
-        if (value !== null && value !== undefined && value !== '') {
-          cleaned[key] = this.cleanJSONLD(value)
+        const cleanedValue = this.cleanJSONLD(value)
+        if (cleanedValue !== null && cleanedValue !== undefined && cleanedValue !== '') {
+          cleaned[key] = cleanedValue
         }
       })
       return cleaned
@@ -263,7 +269,6 @@ export class TemplateRenderer {
     return obj
   }
 }
-
 /**
  * 기본 패턴 데이터
  */
@@ -307,10 +312,10 @@ export const defaultPatterns: Record<string, SentencePattern> = {
 }
 
 /**
- * 템플릿 렌더러 인스턴스 생성
+ * 템플릿 렌더러 생성 팩토리 함수
  */
-export function createRenderer(seed?: number): TemplateRenderer {
-  const renderer = new TemplateRenderer(seed)
-  renderer.loadPatterns(defaultPatterns)
-  return renderer
+export function createRenderer(options: RenderOptions = {}): TemplateRenderer {
+  return new TemplateRenderer(options.seed)
 }
+
+export const defaultRenderer = createRenderer()

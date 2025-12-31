@@ -1,3 +1,5 @@
+import { logger } from '../logger'
+
 /**
  * 한국어 조사 함수
  * 단어의 받침 유무에 따라 적절한 조사를 선택합니다.
@@ -15,15 +17,15 @@ interface JosaOptions {
  */
 function hasBatchim(word: string): boolean {
   if (!word) return false
-  
+
   const lastChar = word[word.length - 1]
   const lastCharCode = lastChar.charCodeAt(0)
-  
+
   // 한글 유니코드 범위 확인
   if (lastCharCode < 0xAC00 || lastCharCode > 0xD7A3) {
     return false
   }
-  
+
   // 받침이 있는지 확인 (유니코드 계산)
   return (lastCharCode - 0xAC00) % 28 !== 0
 }
@@ -39,7 +41,7 @@ function parseJosa(josaString: string): { withBatchim: string; withoutBatchim: s
   if (parts.length !== 2) {
     throw new Error(`Invalid josa format: ${josaString}. Expected format: "은/는"`)
   }
-  
+
   return {
     withBatchim: parts[0].trim(),
     withoutBatchim: parts[1].trim()
@@ -54,14 +56,14 @@ function parseJosa(josaString: string): { withBatchim: string; withoutBatchim: s
  */
 export function josa(word: string, josaString: string): string {
   if (!word || !josaString) return word
-  
+
   try {
     const { withBatchim, withoutBatchim } = parseJosa(josaString)
     const hasBatchimResult = hasBatchim(word)
-    
+
     return word + (hasBatchimResult ? withBatchim : withoutBatchim)
   } catch (error) {
-    console.error('Josa error:', error)
+    logger.error('Josa error', error)
     return word
   }
 }
@@ -109,18 +111,16 @@ export const josaFunctions = {
  */
 export const josaTests = {
   testBasic: () => {
-    console.log('기본 테스트:')
-    console.log('강아지' + josa('강아지', '이/가')) // 강아지가
-    console.log('고양이' + josa('고양이', '이/가')) // 고양이가
-    console.log('책' + josa('책', '을/를')) // 책을
-    console.log('펜' + josa('펜', '을/를')) // 펜을
-  },
-  
-  testComplex: () => {
-    console.log('복잡한 테스트:')
-    console.log('서울' + josa('서울', '에서/에서')) // 서울에서
-    console.log('부산' + josa('부산', '에서/에서')) // 부산에서
-    console.log('카페' + josa('카페', '에/에')) // 카페에
-    console.log('공원' + josa('공원', '에/에')) // 공원에
+    logger.info('기본 테스트')
+    logger.info(`강아지${josa('강아지', '이/가')}`) // 강아지가
+    logger.info(`고양이${josa('고양이', '이/가')}`) // 고양이가
+    logger.info(`책${josa('책', '을/를')}`) // 책을
+    logger.info(`펜${josa('펜', '을/를')}`) // 펜을
+
+    logger.info('복잡한 테스트')
+    logger.info(`서울${josa('서울', '에서/에서')}`) // 서울에서
+    logger.info(`부산${josa('부산', '에서/에서')}`) // 부산에서
+    logger.info(`카페${josa('카페', '에/에')}`) // 카페에
+    logger.info(`공원${josa('공원', '에/에')}`) // 공원에
   }
 }

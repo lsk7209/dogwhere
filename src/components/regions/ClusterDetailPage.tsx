@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Star, Users, Clock, Car, Train, Filter, ChevronRight } from 'lucide-react'
 import { RegionClusterUtils, RegionKey } from '@/lib/regions/clusters'
+import { logger } from "@/lib/logger"
 import type { SimplePlace } from '@/types/simple-place'
 
 interface ClusterDetailPageProps {
@@ -43,7 +44,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
       try {
         const response = await fetch('/api/simple-places')
         if (!response.ok) throw new Error('Failed to fetch places')
-        
+
         const data = await response.json()
         if (data.success && data.data.places) {
           // 클러스터에 포함된 지역의 장소만 필터링
@@ -54,7 +55,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
           setPlaces(filteredPlaces)
         }
       } catch (error) {
-        console.error('Error fetching places:', error)
+        logger.error('Error fetching places', error)
       } finally {
         setLoading(false)
       }
@@ -113,7 +114,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
       {/* 히어로 섹션 */}
       <section className="relative h-[400px] bg-gradient-to-r from-blue-600 to-purple-600 overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center opacity-30"></div>
-        
+
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
           <div className="flex items-center space-x-4 mb-4">
             <span className="text-5xl">{cluster.icon}</span>
@@ -123,9 +124,9 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
             </div>
           </div>
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${cluster.color}`}>
-            {cluster.type === 'hotspot' ? '핫스팟' : 
-             cluster.type === 'cluster' ? '클러스터' :
-             cluster.type === 'special' ? '특별지역' : '일반지역'}
+            {cluster.type === 'hotspot' ? '핫스팟' :
+              cluster.type === 'cluster' ? '클러스터' :
+                cluster.type === 'special' ? '특별지역' : '일반지역'}
           </span>
         </div>
       </section>
@@ -133,7 +134,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
       <div className="container mx-auto px-4 py-12">
         {/* 네비게이션 */}
         <div className="mb-8">
-          <Link 
+          <Link
             href={`/${region}`}
             className="flex items-center space-x-2 text-gray-600 hover:text-blue-600 mb-4"
           >
@@ -187,7 +188,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
                 ))}
               </select>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Star className="w-4 h-4 text-gray-500" />
               <label className="text-sm font-medium text-gray-700">정렬:</label>
@@ -222,7 +223,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
                     <span className="text-sm font-medium">{regionData.dogFriendlyScore}</span>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-600">{regionData.dogFriendlyScore}</div>
@@ -233,14 +234,14 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
                     <div className="text-xs text-gray-500">인기도</div>
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span>인구: {Math.round(regionData.population / 10000)}만명</span>
                     <span>접근성: {regionData.accessibilityScore}</span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-2">
                     <Link
@@ -288,7 +289,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPlaces.map((place) => {
                 const oDogScore = Math.min(100, Math.max(80, Math.floor((place.rating || 0) * 20 + (place.reviewCount || 0) / 10)))
-                
+
                 return (
                   <Link
                     key={place.id}
@@ -297,7 +298,7 @@ export function ClusterDetailPage({ region, regionName, clusterId, initialPlaces
                   >
                     <div className="aspect-video overflow-hidden bg-gray-100">
                       {place.imageUrl ? (
-                        <img 
+                        <img
                           src={place.imageUrl}
                           alt={place.name}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"

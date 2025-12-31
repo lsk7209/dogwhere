@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
@@ -103,8 +104,8 @@ export async function POST(request: NextRequest) {
       message: '통계가 성공적으로 업데이트되었습니다.',
     })
   } catch (error) {
-    console.error('Update Stats API error:', error)
-    
+    logger.error('Update Stats API error', error)
+
     return NextResponse.json({
       success: false,
       error: {

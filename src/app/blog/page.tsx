@@ -1,16 +1,14 @@
 import { getAllPosts as getAllStaticPosts, BlogPost } from '@/lib/blog-data'
-import { createPostRepository } from '@/lib/database/db-adapter'
+import { PostRepository } from '@/lib/database/turso-repository'
+import { logger } from '@/lib/logger'
 import BlogListContainer from '@/components/blog/BlogListContainer'
 
 export const dynamic = 'force-dynamic'
 
 async function getDBPosts(): Promise<BlogPost[]> {
   try {
-    const postRepo = createPostRepository()
-    // TursoPostRepository에 findAll 메서드가 있는지 확인하거나 search를 사용해야 함
-    // findAllTitles만 있는 경우 전체 조회를 위해 search({}) 등을 사용할 수 있음
-    // 여기서는 findAll/search 메서드가 있다고 가정 (없는 경우 추가 필요)
-    const result = await postRepo.findAll({}, { field: 'date', order: 'DESC' }, { page: 1, limit: 100 })
+    const repo = new PostRepository()
+    const result = await repo.findAll({ category: 'blog' }, { field: 'date', order: 'DESC' }, { page: 1, limit: 100 })
     const posts = result.data
 
     return posts.map((post: any) => ({
@@ -29,7 +27,7 @@ async function getDBPosts(): Promise<BlogPost[]> {
       seoKeywords: typeof post.seo_keywords === 'string' ? JSON.parse(post.seo_keywords) : (Array.isArray(post.seo_keywords) ? post.seo_keywords : [])
     }))
   } catch (error) {
-    console.error('Error fetching blog posts from DB:', error)
+    logger.error('Error fetching blog posts from DB', error)
     return []
   }
 }

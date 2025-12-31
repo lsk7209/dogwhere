@@ -1,3 +1,5 @@
+import { logger } from '../logger'
+
 /**
  * Cloudflare KV 캐싱 유틸리티
  * 대규모 컨텐츠 조회 성능 최적화
@@ -28,12 +30,12 @@ function getKV(): KVNamespaceLocal | null {
   if (typeof globalThis !== 'undefined') {
     // @ts-expect-error - Cloudflare Workers global binding
     const env = globalThis.env || globalThis.process?.env
-    
+
     // Pages Functions에서 env.KV로 접근
     if (env?.KV) {
       return env.KV as KVNamespaceLocal
     }
-    
+
     // 직접 바인딩 확인
     // @ts-expect-error
     if (globalThis.KV) {
@@ -41,7 +43,7 @@ function getKV(): KVNamespaceLocal | null {
       return globalThis.KV as KVNamespaceLocal
     }
   }
-  
+
   // 개발 환경 또는 KV가 설정되지 않은 경우
   return null
 }
@@ -50,8 +52,8 @@ function getKV(): KVNamespaceLocal | null {
  * 캐시 키 생성
  */
 function createCacheKey(prefix: string, key: string, params?: Record<string, any>): string {
-  const paramStr = params 
-    ? `:${JSON.stringify(params)}` 
+  const paramStr = params
+    ? `:${JSON.stringify(params)}`
     : ''
   return `${prefix}:${key}${paramStr}`
 }
@@ -77,7 +79,7 @@ export async function getFromCache<T>(
 
     return cached
   } catch (error) {
-    console.error('Cache get error:', error)
+    logger.error('Cache get error', error)
     return null
   }
 }
@@ -110,7 +112,7 @@ export async function setToCache<T>(
       }
     }
   } catch (error) {
-    console.error('Cache set error:', error)
+    logger.error('Cache set error', error)
   }
 }
 
@@ -126,7 +128,7 @@ export async function deleteFromCache(key: string): Promise<void> {
   try {
     await kv.delete(key)
   } catch (error) {
-    console.error('Cache delete error:', error)
+    logger.error('Cache delete error', error)
   }
 }
 
@@ -142,7 +144,7 @@ export async function invalidateCacheByTag(tag: string): Promise<void> {
   try {
     // 태그로 시작하는 모든 키 찾기 (KV는 prefix 검색 지원)
     const keys = await kv.list({ prefix: `tag:${tag}:` })
-    
+
     for (const key of keys.keys) {
       // 실제 캐시 키 추출
       const cacheKey = key.name.replace(`tag:${tag}:`, '')
@@ -150,7 +152,7 @@ export async function invalidateCacheByTag(tag: string): Promise<void> {
       await kv.delete(key.name)
     }
   } catch (error) {
-    console.error('Cache invalidation error:', error)
+    logger.error('Cache invalidation error', error)
   }
 }
 
@@ -183,16 +185,16 @@ export async function cachedFetch<T>(
 export const PlaceCacheKeys = {
   list: (filters: Record<string, any>, page: number, limit: number) =>
     createCacheKey('places', 'list', { ...filters, page, limit }),
-  
+
   bySlug: (slug: string) =>
     createCacheKey('places', 'slug', { slug }),
-  
+
   byId: (id: string) =>
     createCacheKey('places', 'id', { id }),
-  
+
   byRegion: (sido: string, sigungu?: string) =>
     createCacheKey('places', 'region', { sido, sigungu }),
-  
+
   search: (query: string, page: number, limit: number) =>
     createCacheKey('places', 'search', { query, page, limit }),
 }
@@ -203,13 +205,13 @@ export const PlaceCacheKeys = {
 export const PostCacheKeys = {
   list: (filters: Record<string, any>, page: number, limit: number) =>
     createCacheKey('posts', 'list', { ...filters, page, limit }),
-  
+
   bySlug: (slug: string) =>
     createCacheKey('posts', 'slug', { slug }),
-  
+
   byCategory: (category: string, page: number, limit: number) =>
     createCacheKey('posts', 'category', { category, page, limit }),
-  
+
   search: (query: string, page: number, limit: number) =>
     createCacheKey('posts', 'search', { query, page, limit }),
 }
@@ -220,7 +222,7 @@ export const PostCacheKeys = {
 export const EventCacheKeys = {
   list: (filters: Record<string, any>, page: number, limit: number) =>
     createCacheKey('events', 'list', { ...filters, page, limit }),
-  
+
   bySlug: (slug: string) =>
     createCacheKey('events', 'slug', { slug }),
 }

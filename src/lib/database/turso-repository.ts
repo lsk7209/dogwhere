@@ -4,6 +4,7 @@
  */
 
 import { getTursoDatabase, isTursoAvailable } from './turso-client'
+import { logger } from '../logger'
 import { env } from '@/lib/env'
 
 export interface PaginationParams {
@@ -150,7 +151,7 @@ export class PlaceRepository {
     } catch (error) {
       this.db = null
       if (env.NODE_ENV === 'development') {
-        console.warn('Turso database not available, using fallback')
+        logger.warn('Turso database not available, using fallback')
       }
     }
   }
@@ -253,9 +254,9 @@ export class PlaceRepository {
 
     const data: PlaceRow[] = dataResult.rows.map(row => {
       const obj: Record<string, unknown> = {}
-      for (let i = 0; i < dataResult.columns.length; i++) {
-        obj[dataResult.columns[i]] = row[i]
-      }
+      dataResult.columns.forEach((col, i) => {
+        obj[col] = row[i]
+      })
       return obj as PlaceRow
     })
 
@@ -292,9 +293,9 @@ export class PlaceRepository {
 
     const row = result.rows[0]
     const obj: Record<string, unknown> = {}
-    for (let i = 0; i < result.columns.length; i++) {
-      obj[result.columns[i]] = row[i]
-    }
+    result.columns.forEach((col, i) => {
+      obj[col] = row[i]
+    })
     return obj as PlaceRow
   }
 
@@ -317,9 +318,9 @@ export class PlaceRepository {
 
     const row = result.rows[0]
     const obj: Record<string, unknown> = {}
-    for (let i = 0; i < result.columns.length; i++) {
-      obj[result.columns[i]] = row[i]
-    }
+    result.columns.forEach((col, i) => {
+      obj[col] = row[i]
+    })
     return obj as PlaceRow
   }
 
@@ -410,9 +411,9 @@ export class PlaceRepository {
 
     const data: PlaceRow[] = dataResult.rows.map(row => {
       const obj: Record<string, unknown> = {}
-      for (let i = 0; i < dataResult.columns.length; i++) {
-        obj[dataResult.columns[i]] = row[i]
-      }
+      dataResult.columns.forEach((col, i) => {
+        obj[col] = row[i]
+      })
       return obj as PlaceRow
     })
 
@@ -522,9 +523,9 @@ export class PlaceRepository {
 
     const row = result.rows[0]
     const obj: Record<string, unknown> = {}
-    for (let i = 0; i < result.columns.length; i++) {
-      obj[result.columns[i]] = row[i]
-    }
+    result.columns.forEach((col, i) => {
+      obj[col] = row[i]
+    })
     return obj as PlaceRow
   }
 
@@ -576,7 +577,7 @@ export class PostRepository {
     } catch (error) {
       this.db = null
       if (process.env.NODE_ENV === 'development') {
-        console.warn('Turso database not available for PostRepository, using fallback')
+        logger.warn('Turso database not available for PostRepository, using fallback')
       }
     }
   }

@@ -15,13 +15,14 @@ interface AdminPlace {
   updatedAt: string
 }
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger"
 import { useRouter } from 'next/navigation'
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
   Eye,
   MapPin,
   Star,
@@ -77,7 +78,7 @@ export default function PlacesManagement() {
         setCollectionStatus(data.data)
       }
     } catch (error) {
-      console.error('Failed to fetch collection status:', error)
+      logger.error('Failed to fetch collection status', error)
     }
   }
 
@@ -93,7 +94,7 @@ export default function PlacesManagement() {
         },
         body: JSON.stringify({ region })
       })
-      
+
       const data = await response.json()
       if (data.success) {
         alert('데이터 수집이 완료되었습니다!')
@@ -103,7 +104,7 @@ export default function PlacesManagement() {
         alert('데이터 수집 중 오류가 발생했습니다.')
       }
     } catch (error) {
-      console.error('Data collection failed:', error)
+      logger.error('Data collection failed', error)
       alert('데이터 수집 중 오류가 발생했습니다.')
     } finally {
       setIsLoading(false)
@@ -145,7 +146,7 @@ export default function PlacesManagement() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
         alert(`데이터 수집 완료!\n추가: ${result.data.summary.added}개\n업데이트: ${result.data.summary.updated}개\n건너뜀: ${result.data.summary.skipped}개`)
         fetchPlaces() // 목록 새로고침
@@ -154,7 +155,7 @@ export default function PlacesManagement() {
         alert(`데이터 수집 실패: ${result.error.message}`)
       }
     } catch (error) {
-      console.error('Data collection error:', error)
+      logger.error('Data collection error', error)
       alert('데이터 수집 중 오류가 발생했습니다.')
     } finally {
       setIsCollecting(false)
@@ -166,12 +167,12 @@ export default function PlacesManagement() {
     try {
       const response = await fetch('/api/jobs/collect-real-places')
       const result = await response.json()
-      
+
       if (result.success) {
         setCollectionStatus(result.data)
       }
     } catch (error) {
-      console.error('Failed to fetch collection status:', error)
+      logger.error('Failed to fetch collection status', error)
     }
   }
 
@@ -223,9 +224,9 @@ export default function PlacesManagement() {
 
       // 필터링 로직
       let filteredPlaces = mockPlaces
-      
+
       if (searchQuery) {
-        filteredPlaces = filteredPlaces.filter(place => 
+        filteredPlaces = filteredPlaces.filter(place =>
           place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           place.address.toLowerCase().includes(searchQuery.toLowerCase())
         )
@@ -242,7 +243,7 @@ export default function PlacesManagement() {
       setPlaces(filteredPlaces)
       setTotalPages(Math.ceil(filteredPlaces.length / 10))
     } catch (error) {
-      console.error('Failed to fetch places:', error)
+      logger.error('Failed to fetch places', error)
     } finally {
       setIsLoading(false)
     }
@@ -253,10 +254,10 @@ export default function PlacesManagement() {
 
     try {
       // 실제 운영에서는 DELETE API 호출
-      console.log('Deleting place:', id)
+      logger.info('Deleting place', { id })
       fetchPlaces() // 목록 새로고침
     } catch (error) {
-      console.error('Failed to delete place:', error)
+      logger.error('Failed to delete place', error)
     }
   }
 

@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
 import { createGeminiClient } from '@/lib/gemini/client'
 import { handleApiError, AuthenticationError, ValidationError, NotFoundError } from '@/lib/api-error'
-import { logger } from '@/lib/logger'
 
 /**
  * Gemini를 사용한 컨텐츠 재생성 API
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const fs = require('fs')
     fs.appendFileSync('error_debug.txt', `\n[${new Date().toISOString()}] Regenerate Error: ${error instanceof Error ? error.message : 'Unknown'}\n${error instanceof Error ? error.stack : ''}\n`)
-    console.error('Regenerate API error:', error)
+    logger.error('Regenerate API error', error)
 
     return NextResponse.json({
       success: false,

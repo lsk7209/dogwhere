@@ -8,6 +8,54 @@
  * - 기타 지자체 Open API
  */
 
+import { z } from 'zod'
+import { logger } from '../logger'
+
+const DEFAULT_TIMEOUT = 15000; // 15 seconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+/**
+ * 재시도 로직이 포함된 fetch 유틸리티
+ */
+async function fetchWithRetry(url: string, options: RequestInit = {}, retries = MAX_RETRIES): Promise<Response> {
+  const timeout = DEFAULT_TIMEOUT;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+
+    clearTimeout(id);
+
+    // 5xx 에러나 429(Too Many Requests)일 경우 재시도
+    if (retries > 0 && (response.status >= 500 || response.status === 429)) {
+      logger.warn(`API 요청 재시도 중... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`, {
+        status: response.status,
+        url: url.split('?')[0]
+      });
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (MAX_RETRIES - retries + 1)));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+
+    return response;
+  } catch (error: any) {
+    clearTimeout(id);
+    if (retries > 0 && (error.name === 'AbortError' || error.name === 'FetchError')) {
+      logger.warn(`API 요청 재시도 중... (네트워크 에러/타임아웃)`, {
+        error: error.name,
+        url: url.split('?')[0]
+      });
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (MAX_RETRIES - retries + 1)));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+}
+
 export interface PublicDataConfig {
   apiKey: string
   serviceKey?: string
@@ -119,7 +167,7 @@ export async function fetchPublicData(
   const url = `${baseUrl}?${params.join('&')}`
 
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithRetry(url, {
       headers: {
         'Accept': 'application/json',
       },
@@ -127,7 +175,8 @@ export async function fetchPublicData(
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error(`API 호출 실패 (${response.status}):`, errorText.substring(0, 200))
+      const truncatedError = errorText.substring(0, 200)
+      logger.error(`API 호출 실패 (${response.status})`, { status: response.status, error: truncatedError })
       throw new Error(`API 호출 실패: ${response.status} ${response.statusText}`)
     }
 
@@ -136,7 +185,7 @@ export async function fetchPublicData(
     const resp = (data as any).response;
     if (resp && resp.header && resp.header.resultCode && resp.header.resultCode !== '0000') {
       const errorMsg = resp.header.resultMsg || 'Unknown error';
-      console.error(`API 에러 (${resp.header.resultCode}):`, errorMsg);
+      logger.error(`API 에러 (${resp.header.resultCode})`, new Error(errorMsg))
       throw new Error(`API 에러: ${errorMsg}`);
     }
 
@@ -144,7 +193,7 @@ export async function fetchPublicData(
     const sourceApi = config.sourceApi || detectSourceApi(config.baseUrl, config.endpoint)
     return parsePublicDataResponse(data, sourceApi)
   } catch (error) {
-    console.error('공공데이터 API 호출 실패:', error)
+    logger.error('공공데이터 API 호출 실패', error)
     throw error
   }
 }
@@ -178,7 +227,7 @@ function parsePublicDataResponse(
     // 먼저 에러 응답 확인
     const header = korData.response?.header
     if (header && header.resultCode && header.resultCode !== '0000') {
-      console.error('한국관광공사 API 에러:', header.resultMsg || 'Unknown error')
+      logger.error('한국관광공사 API 에러', new Error(header.resultMsg || 'Unknown error'))
       return []
     }
 
@@ -390,7 +439,7 @@ export async function collectAllPages(
         await new Promise(resolve => setTimeout(resolve, 1000))
       }
     } catch (error) {
-      console.error(`페이지 ${page} 수집 실패:`, error)
+      logger.error(`페이지 ${page} 수집 실패`, error)
       hasMore = false
     }
   }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger";
 import { useRouter } from 'next/navigation'
 import {
     Settings,
@@ -50,7 +51,7 @@ export default function SettingsPage() {
                 }
             }
         } catch (error) {
-            console.error('Failed to fetch settings:', error)
+            logger.error('Failed to fetch settings', error)
         } finally {
             setIsLoading(false)
         }

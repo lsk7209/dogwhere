@@ -4,6 +4,7 @@
  */
 
 import { getTursoDatabase } from '@/lib/database/turso-client'
+import { logger } from '../logger'
 
 export interface PlaceIdentifier {
   publicDataId: string
@@ -25,21 +26,27 @@ export async function checkDuplicate(
 ): Promise<DuplicateCheckResult> {
   const db = getTursoDatabase()
 
-  const result = await db.execute({
-    sql: `
-      SELECT id, collected_at 
-      FROM public_data_places 
-      WHERE public_data_id = ? AND source_api = ?
-    `,
-    args: [publicDataId, sourceApi],
-  })
+  try {
+    const result = await db.execute({
+      sql: `
+        SELECT id, collected_at 
+        FROM public_data_places 
+        WHERE public_data_id = ? AND source_api = ?
+      `,
+      args: [publicDataId, sourceApi],
+    })
 
-  if (result.rows.length > 0) {
-    return {
-      isNew: false,
-      existingId: result.rows[0][0] as string,
-      collectedAt: result.rows[0][1] as string || undefined,
+    if (result.rows && result.rows.length > 0) {
+      return {
+        isNew: false,
+        existingId: String(result.rows[0][0]),
+        collectedAt: result.rows[0][1] ? String(result.rows[0][1]) : undefined,
+      }
     }
+  } catch (error) {
+    logger.error('중복 체크 실패', { error, publicDataId, sourceApi })
+    // 에러 발생 시 신규 데이터로 처리하여 수집 중단 방지 (또는 필요에 따라 변경)
+    return { isNew: true }
   }
 
   return { isNew: true }

@@ -11,13 +11,32 @@ export interface ApiResponse<T = unknown> {
     details?: unknown
   }
   message?: string
+  meta?: {
+    timestamp: string
+    version?: string
+    requestId?: string
+  }
 }
 
-export interface ApiErrorResponse {
-  success: false,
+/**
+ * 표준 에러 코드 정의
+ */
+export enum ApiErrorCode {
+  BAD_REQUEST = 'BAD_REQUEST',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
+  NOT_FOUND = 'NOT_FOUND',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  EXTERNAL_API_ERROR = 'EXTERNAL_API_ERROR',
+}
+
+export interface ApiErrorResponse extends ApiResponse<never> {
+  success: false
   error: {
-    message: string,
-    code: string,
+    message: string
+    code: string
     details?: unknown
   }
 }
@@ -42,12 +61,7 @@ export interface SimplePlacesResponse extends ApiResponse<{
     category?: string
     slug?: string
   }
-}> {
-  meta?: {
-    timestamp: string
-    version: string
-  }
-}
+}> { }
 
 export interface AuthResponse extends ApiResponse<{
   authenticated: boolean
@@ -89,8 +103,4 @@ export interface PublicDataSearchResponse extends ApiResponse<{
     hasNext: boolean
     hasPrev: boolean
   }
-}> {
-  meta?: {
-    timestamp: string
-  }
-}
+}> { }

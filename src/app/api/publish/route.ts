@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
     // 인증 확인
     const authHeader = request.headers.get('authorization')
     const token = authHeader?.replace('Bearer ', '')
-    
+
     if (!token || !env.INTERNAL_TOKEN || token !== env.INTERNAL_TOKEN) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     // 멱등성 키 확인
     const idempotencyKey = request.headers.get('idempotency-key')
     const contentVersion = request.headers.get('x-content-version')
-    
+
     if (!idempotencyKey || !contentVersion) {
       return NextResponse.json(
         { success: false, error: 'Missing required headers' },
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Publish API error:', error)
+    logger.error('Publish API error', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -122,7 +123,7 @@ function generateSlug(name: string, regionCode: string): string {
     .replace(/\s+/g, '-')
     .replace(/--+/g, '-')
     .trim()
-  
+
   const region = regionCode.split('-')[0]
   return `${cleanName}-${region}`
 }
@@ -131,13 +132,13 @@ function generateSlug(name: string, regionCode: string): string {
 function generateRoutes(data: any): string[] {
   const routes = []
   const [sido, sig] = data.regionCode.split('-')
-  
+
   // 허브 경로
   routes.push(`/${sido}`)
   if (sig && sig !== 'unknown') {
     routes.push(`/${sido}/${sig}`)
   }
-  
+
   // 클러스터 경로
   if (data.category) {
     routes.push(`/${sido}/${data.category}`)
@@ -145,6 +146,6 @@ function generateRoutes(data: any): string[] {
       routes.push(`/${sido}/${sig}/${data.category}`)
     }
   }
-  
+
   return routes
 }

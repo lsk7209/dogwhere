@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 
 // 행사 목록 API
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
       weekStart.setDate(now.getDate() - now.getDay())
       const weekEnd = new Date(weekStart)
       weekEnd.setDate(weekStart.getDate() + 6)
-      
+
       filteredEvents = filteredEvents.filter(event => {
         const eventDate = new Date(event.startDate)
         return eventDate >= weekStart && eventDate <= weekEnd
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       nextWeekStart.setDate(now.getDate() + (7 - now.getDay()))
       const nextWeekEnd = new Date(nextWeekStart)
       nextWeekEnd.setDate(nextWeekStart.getDate() + 6)
-      
+
       filteredEvents = filteredEvents.filter(event => {
         const eventDate = new Date(event.startDate)
         return eventDate >= nextWeekStart && eventDate <= nextWeekEnd
@@ -97,13 +98,13 @@ export async function GET(request: NextRequest) {
 
     // 지역 필터링
     if (sido) {
-      filteredEvents = filteredEvents.filter(event => 
+      filteredEvents = filteredEvents.filter(event =>
         event.address.includes(sido) || event.regionCode.includes(sido)
       )
     }
 
     if (sig) {
-      filteredEvents = filteredEvents.filter(event => 
+      filteredEvents = filteredEvents.filter(event =>
         event.address.includes(sig) || event.regionCode.includes(sig)
       )
     }
@@ -116,8 +117,8 @@ export async function GET(request: NextRequest) {
     }
 
     const paginatedEvents = filteredEvents.slice(startIndex, startIndex + limit)
-    const nextCursor = paginatedEvents.length === limit 
-      ? paginatedEvents[paginatedEvents.length - 1]?.id 
+    const nextCursor = paginatedEvents.length === limit
+      ? paginatedEvents[paginatedEvents.length - 1]?.id
       : null
 
     return NextResponse.json({

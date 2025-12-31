@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  FileText, 
-  Code, 
-  Eye, 
-  Play, 
-  Save, 
+import { Button } from "@/components/ui/button"
+import { logger } from "@/lib/logger"
+import {
+  FileText,
+  Code,
+  Eye,
+  Play,
+  Save,
   Download,
   Upload,
   Settings,
@@ -125,7 +127,7 @@ export default function TemplatesManagement() {
         warnings: lintResult.warnings
       })
     } catch (error) {
-      console.error('Preview error:', error)
+      logger.error('Preview error', error)
     } finally {
       setIsLoading(false)
     }
@@ -134,10 +136,10 @@ export default function TemplatesManagement() {
   const handleSave = async () => {
     try {
       // 실제 운영에서는 템플릿을 서버에 저장
-      console.log('Saving template:', { selectedTemplate, templateType, templateContent })
+      logger.info('Saving template', { selectedTemplate, templateType, templateContent })
       alert('템플릿이 저장되었습니다.')
     } catch (error) {
-      console.error('Save error:', error)
+      logger.error('Save error', error)
       alert('저장 중 오류가 발생했습니다.')
     }
   }
@@ -149,7 +151,7 @@ export default function TemplatesManagement() {
       content: templateContent,
       variables: testVariables
     }, null, 2)
-    
+
     const dataBlob = new Blob([dataStr], { type: 'application/json' })
     const url = URL.createObjectURL(dataBlob)
     const link = document.createElement('a')
@@ -174,7 +176,7 @@ export default function TemplatesManagement() {
           setTestVariables(data.variables)
         }
       } catch (error) {
-        console.error('Import error:', error)
+        logger.error('Import error', error)
         alert('파일을 읽는 중 오류가 발생했습니다.')
       }
     }
@@ -299,7 +301,7 @@ export default function TemplatesManagement() {
                       (CQS: {(preview.score * 100).toFixed(1)}%)
                     </span>
                   </div>
-                  
+
                   {preview.errors.length > 0 && (
                     <div>
                       <h4 className="text-sm font-medium text-red-700 mb-2">오류:</h4>
@@ -310,7 +312,7 @@ export default function TemplatesManagement() {
                       </ul>
                     </div>
                   )}
-                  
+
                   {preview.warnings.length > 0 && (
                     <div>
                       <h4 className="text-sm font-medium text-yellow-700 mb-2">경고:</h4>

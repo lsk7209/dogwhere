@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Test Endpoint API error:', error)
-    
+
     return NextResponse.json({
       success: false,
       error: {

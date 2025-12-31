@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { logger } from '@/lib/logger'
 
 interface AdSlotProps {
   id: string
@@ -11,10 +12,10 @@ interface AdSlotProps {
   lazyOffset?: number
 }
 
-export default function AdSlot({ 
-  id, 
-  width = 728, 
-  height = 90, 
+export default function AdSlot({
+  id,
+  width = 728,
+  height = 90,
   className = '',
   lazy = true,
   lazyOffset = 200
@@ -66,14 +67,14 @@ export default function AdSlot({
         // 광고 초기화
         setTimeout(() => {
           try {
-            ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({})
+            ; ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({})
             setIsLoaded(true)
           } catch (error) {
-            console.warn('AdSense initialization failed:', error)
+            logger.warn('AdSense initialization failed', { error })
           }
         }, 100)
       } catch (error) {
-        console.warn('AdSense script loading failed:', error)
+        logger.warn('AdSense script loading failed', { error })
       }
     }
 
@@ -81,11 +82,11 @@ export default function AdSlot({
   }, [isVisible, isLoaded])
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`ad-slot ${className}`}
-      style={{ 
-        width: `${width}px`, 
+      style={{
+        width: `${width}px`,
         height: `${height}px`,
         minHeight: `${height}px`, // CLS 방지를 위한 최소 높이
         display: 'flex',

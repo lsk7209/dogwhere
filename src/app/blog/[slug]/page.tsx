@@ -7,7 +7,8 @@ import { getPostBySlug as getStaticPostBySlug, getAllPosts as getAllStaticPosts,
 import { notFound } from 'next/navigation'
 import TableOfContents from '@/components/blog/TableOfContents'
 import AdsenseSlot from '@/components/ads/AdsenseSlot'
-import { createPostRepository } from '@/lib/database/db-adapter'
+import { PostRepository } from '@/lib/database/turso-repository'
+import { logger } from '@/lib/logger'
 import './../blog.css' // 전용 스타일 임포트
 
 export const dynamic = 'force-dynamic'
@@ -18,10 +19,10 @@ interface BlogPostPageProps {
   }>
 }
 
-async function getDBPost(slug: string): Promise<BlogPost | null> {
+async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    const postRepo = createPostRepository()
-    const post = await postRepo.findBySlug(slug)
+    const repo = new PostRepository()
+    const post = await repo.findBySlug(slug)
     if (!post) return null
 
     return {
@@ -40,18 +41,14 @@ async function getDBPost(slug: string): Promise<BlogPost | null> {
       seoKeywords: typeof post.seo_keywords === 'string' ? JSON.parse(post.seo_keywords) : (Array.isArray(post.seo_keywords) ? post.seo_keywords : [])
     }
   } catch (error) {
-    console.error('Error fetching post from DB:', error)
+    logger.error('Error fetching post from DB', error)
     return null
   }
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const { slug: rawSlug } = await params
-  const slug = decodeURIComponent(rawSlug)
-  let post = getStaticPostBySlug(slug)
-  if (!post) {
-    post = await getDBPost(slug) || undefined
-  }
+  const { slug } = await params
+  const post = await getPost(slug)
 
   if (!post) {
     return {
@@ -99,7 +96,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const slug = decodeURIComponent(rawSlug)
   let post = getStaticPostBySlug(slug)
   if (!post) {
-    post = await getDBPost(slug) || undefined
+    post = await getPost(slug) || undefined
   }
 
   if (!post) {

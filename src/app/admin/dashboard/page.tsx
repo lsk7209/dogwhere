@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger";
 import { useRouter } from 'next/navigation'
-import { 
-  BarChart3, 
-  MapPin, 
-  Calendar, 
-  FileText, 
-  Users, 
+import {
+  BarChart3,
+  MapPin,
+  Calendar,
+  FileText,
+  Users,
   TrendingUp,
   AlertCircle,
   CheckCircle,
@@ -95,10 +96,10 @@ export default function AdminDashboard() {
           storage: 'warning'
         }
       }
-      
+
       setStats(mockStats)
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
+      logger.error('Failed to fetch dashboard data', error)
     } finally {
       setIsLoading(false)
     }
@@ -109,7 +110,7 @@ export default function AdminDashboard() {
       await fetch('/api/admin/auth/login', { method: 'DELETE' })
       router.push('/admin/login')
     } catch (error) {
-      console.error('Logout failed:', error)
+      logger.error('Logout failed', error)
     }
   }
 

@@ -4,6 +4,7 @@ export const runtime = 'edge'
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { getTursoDatabase } from '@/lib/database/turso-client'
+import { logger } from '@/lib/logger'
 
 /**
  * 데이터베이스 쿼리 디버깅 API
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Query Debug API error:', error)
-    
+
     return NextResponse.json({
       success: false,
       error: {

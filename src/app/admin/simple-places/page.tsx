@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { logger } from '@/lib/logger';
 import { useRouter } from 'next/navigation'
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
   Eye,
   MapPin,
   Star,
@@ -71,13 +72,13 @@ export default function SimplePlacesManagement() {
     try {
       const response = await fetch('/api/simple-places')
       const data = await response.json()
-      
+
       if (data.success) {
         let filteredPlaces = data.data.places
-        
+
         // 검색 필터링
         if (searchQuery) {
-          filteredPlaces = filteredPlaces.filter((place: SimplePlace) => 
+          filteredPlaces = filteredPlaces.filter((place: SimplePlace) =>
             place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             place.address.toLowerCase().includes(searchQuery.toLowerCase())
           )
@@ -85,14 +86,14 @@ export default function SimplePlacesManagement() {
 
         // 카테고리 필터링
         if (filterCategory !== 'all') {
-          filteredPlaces = filteredPlaces.filter((place: SimplePlace) => 
+          filteredPlaces = filteredPlaces.filter((place: SimplePlace) =>
             place.category === filterCategory
           )
         }
 
         // 소스 필터링
         if (filterSource !== 'all') {
-          filteredPlaces = filteredPlaces.filter((place: SimplePlace) => 
+          filteredPlaces = filteredPlaces.filter((place: SimplePlace) =>
             place.source === filterSource
           )
         }
@@ -100,7 +101,7 @@ export default function SimplePlacesManagement() {
         setPlaces(filteredPlaces)
       }
     } catch (error) {
-      console.error('Failed to fetch places:', error)
+      logger.error('Failed to fetch places', error)
     } finally {
       setIsLoading(false)
     }
@@ -110,12 +111,12 @@ export default function SimplePlacesManagement() {
     try {
       const response = await fetch('/api/jobs/simple-collect')
       const data = await response.json()
-      
+
       if (data.success) {
         setCollectionStatus(data.data)
       }
     } catch (error) {
-      console.error('Failed to fetch collection status:', error)
+      logger.error('Failed to fetch collection status', error)
     }
   }
 
@@ -135,7 +136,7 @@ export default function SimplePlacesManagement() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
         alert(`데이터 수집 완료!\n추가: ${result.data.summary.added}개\n업데이트: ${result.data.summary.updated}개\n건너뜀: ${result.data.summary.skipped}개`)
         fetchPlaces()
@@ -144,7 +145,7 @@ export default function SimplePlacesManagement() {
         alert(`데이터 수집 실패: ${result.error.message}`)
       }
     } catch (error) {
-      console.error('Data collection error:', error)
+      logger.error('Data collection error', error)
       alert('데이터 수집 중 오류가 발생했습니다.')
     } finally {
       setIsCollecting(false)
@@ -233,7 +234,7 @@ export default function SimplePlacesManagement() {
                 <p className="text-2xl font-bold text-purple-900 mt-2">{collectionStatus.sources?.google || 0}</p>
               </div>
             </div>
-            
+
             <div className="mt-4 text-sm text-gray-600">
               <div className="flex items-center gap-4">
                 <span>API 키 상태:</span>
@@ -307,7 +308,7 @@ export default function SimplePlacesManagement() {
               장소 목록 ({places.length}개)
             </h2>
           </div>
-          
+
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
@@ -355,19 +356,17 @@ export default function SimplePlacesManagement() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          place.source === 'Google Places' ? 'bg-green-100 text-green-800' :
-                          place.source === 'Kakao Map' ? 'bg-yellow-100 text-yellow-800' :
-                          place.source === 'sample' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${place.source === 'Google Places' ? 'bg-green-100 text-green-800' :
+                            place.source === 'Kakao Map' ? 'bg-yellow-100 text-yellow-800' :
+                              place.source === 'sample' ? 'bg-blue-100 text-blue-800' :
+                                'bg-gray-100 text-gray-800'
+                          }`}>
                           {place.source}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          place.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${place.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                          }`}>
                           {place.isVerified ? '검증됨' : '검토 대기'}
                         </span>
                       </td>

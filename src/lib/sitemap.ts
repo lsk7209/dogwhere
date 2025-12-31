@@ -1,4 +1,5 @@
-import { PlaceRepository } from '@/lib/database/turso-repository'
+import { PlaceRepository, PlaceRow } from '@/lib/database/turso-repository'
+import { logger } from './logger'
 
 // 사이트맵 URL 타입 정의
 export interface SitemapUrl {
@@ -192,11 +193,11 @@ export async function generatePlaceSitemap(): Promise<SitemapUrl[]> {
       return [...placeUrls, ...publicDataUrls]
     } catch (error) {
       // Turso가 없으면 기존 places만 반환
-      console.warn('Turso database not available for public data sitemap')
+      logger.warn('Turso database not available for public data sitemap')
       return placeUrls
     }
   } catch (error) {
-    console.error('Error generating place sitemap:', error)
+    logger.error('Error generating place sitemap', error)
     return []
   }
 }

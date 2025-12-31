@@ -1,3 +1,5 @@
+import { logger } from '../logger'
+
 /**
  * Cloudflare D1 데이터베이스 Repository
  * 대규모 컨텐츠를 위한 최적화된 데이터 접근 레이어
@@ -73,7 +75,7 @@ interface D1ExecResult {
  */
 function getDB(): D1Database {
   const db = getD1Database()
-  
+
   if (!db) {
     throw new Error(
       'D1 database binding not available. ' +
@@ -81,7 +83,7 @@ function getDB(): D1Database {
       'are running in Cloudflare Workers/Pages environment.'
     )
   }
-  
+
   return db as D1Database
 }
 
@@ -98,7 +100,7 @@ export class PlaceRepository {
       // D1이 사용 불가능한 환경 (로컬 개발 등)
       this.db = null
       if (env.NODE_ENV === 'development') {
-        console.warn('D1 database not available, using fallback')
+        logger.warn('D1 database not available, using fallback')
       }
     }
   }
@@ -161,17 +163,17 @@ export class PlaceRepository {
       params.push(searchTerm, searchTerm, searchTerm)
     }
 
-    const whereClause = conditions.length > 0 
+    const whereClause = conditions.length > 0
       ? `WHERE ${conditions.join(' AND ')}`
       : ''
 
     // 정렬 필드 검증 (SQL injection 방지)
     const allowedSortFields = [
-      'created_at', 'updated_at', 'overall_rating', 
+      'created_at', 'updated_at', 'overall_rating',
       'review_count', 'name', 'featured'
     ]
-    const sortField = allowedSortFields.includes(sort.field) 
-      ? sort.field 
+    const sortField = allowedSortFields.includes(sort.field)
+      ? sort.field
       : 'created_at'
     const sortOrder = sort.order === 'ASC' ? 'ASC' : 'DESC'
 
@@ -353,7 +355,7 @@ export class PostRepository {
     } catch (error) {
       this.db = null
       if (process.env.NODE_ENV === 'development') {
-        console.warn('D1 database not available for PostRepository, using fallback')
+        logger.warn('D1 database not available for PostRepository, using fallback')
       }
     }
   }
@@ -395,13 +397,13 @@ export class PostRepository {
       params.push(searchTerm, searchTerm, searchTerm)
     }
 
-    const whereClause = conditions.length > 0 
+    const whereClause = conditions.length > 0
       ? `WHERE ${conditions.join(' AND ')}`
       : ''
 
     const allowedSortFields = ['date', 'created_at', 'title', 'featured']
-    const sortField = allowedSortFields.includes(sort.field) 
-      ? sort.field 
+    const sortField = allowedSortFields.includes(sort.field)
+      ? sort.field
       : 'date'
     const sortOrder = sort.order === 'ASC' ? 'ASC' : 'DESC'
 
@@ -556,7 +558,7 @@ export class EventRepository {
       params.push(filters.endDate)
     }
 
-    const whereClause = conditions.length > 0 
+    const whereClause = conditions.length > 0
       ? `WHERE ${conditions.join(' AND ')}`
       : ''
 

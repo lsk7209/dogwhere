@@ -1,6 +1,8 @@
 import { SimplePlace, CollectionResult } from '@/types/simple-place'
 import { PlaceRepository } from '@/lib/database/turso-repository'
 
+import { logger } from '../logger'
+
 // Google Places API 타입 (간단화)
 interface GooglePlaceResult {
   place_id: string
@@ -31,7 +33,7 @@ export async function collectFromGoogle(query: string, region?: { latitude: numb
   const apiKey = process.env.GOOGLE_PLACES_KEY
 
   if (!apiKey) {
-    console.warn('Google Places API key not found. Returning empty list.')
+    logger.warn('Google Places API key not found. Returning empty list.')
     return []
   }
 
@@ -59,7 +61,7 @@ export async function collectFromGoogle(query: string, region?: { latitude: numb
     const googlePlaces: GooglePlaceResult[] = data.results || []
     return googlePlaces.map(normalizeGooglePlace)
   } catch (error) {
-    console.error('Google Places API error:', error)
+    logger.error('Google Places API error', error)
     return []
   }
 }
@@ -69,7 +71,7 @@ export async function collectFromKakao(query: string, region?: { latitude: numbe
   const apiKey = process.env.KAKAO_API_KEY
 
   if (!apiKey) {
-    console.warn('Kakao API key not found. Returning empty list.')
+    logger.warn('Kakao API key not found. Returning empty list.')
     return []
   }
 
@@ -98,7 +100,7 @@ export async function collectFromKakao(query: string, region?: { latitude: numbe
 
     return kakaoPlaces.map(normalizeKakaoPlace)
   } catch (error) {
-    console.error('Kakao API error:', error)
+    logger.error('Kakao API error', error)
     return []
   }
 }
@@ -248,7 +250,7 @@ export async function ingestPlaces(places: SimplePlace[]): Promise<CollectionRes
         addedCount++
       }
     } catch (error) {
-      console.error(`Failed to ingest place ${newPlace.name}:`, error)
+      logger.error(`Failed to ingest place ${newPlace.name}`, error)
       skippedCount++
     }
   }
